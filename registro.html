@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INAOEP Servicio</title>
+    <link rel="shortcut icon" href="src/favicon.png" type="image/x-icon">
+    <link href="https://framework-gb.cdn.gob.mx/assets/styles/main.css" rel="stylesheet">
+</head>
+
+<body style="background-color: white">
+    <div class="container">
+        <div class="col">
+            <div id="app">
+                <nav-researcher></nav-researcher> <!-- Aquí insertas el componente NavBar -->
+            </div>
+            <div style="padding-top: 8rem;">
+                <h3>¡Bienvenido al Inicio de sesión!</h3>
+                <hr class="red">
+            </div>
+            <div style="display: flex; justify-content: center; padding: 8rem;">
+                <div class="card" style="width: 80%;">
+                    <div class="card-body">
+                        <form class="form-horizontal" role="form" id="loginForm" novalidate>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="email-03">Correo electrónico:</label>
+                                <div class="col-sm-9">
+                                    <input class="form-control" id="user" placeholder="Correo electrónico" type="text">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="password-03">Contraseña:</label>
+                                <div class="col-sm-9">
+                                    <input class="form-control" id="password" placeholder="Contraseña" type="password">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-sm-3 control-label" for="role">Rol:</label>
+                                <div class="col-sm-9">
+                                    <select class="form-control" id="role">
+                                        <option value="" disabled selected>Tipo de rol</option>
+                                        <!-- Las opciones de rol se llenarán dinámicamente aquí -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-3 col-sm-9">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox">
+                                            Recordarme
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-3 col-sm-9">
+                                    <button class="btn btn-primary pull-right" type="submit">Enviar</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div class="row">
+                            <div class="col">
+                                <div class="alert alert-danger mt-2" role="alert" id="alert_error" style="display:none">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="https://framework-gb.cdn.gob.mx/gobmx.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.js"></script>
+    <script src="controllers/validation/Tools.js"></script>
+    <script src="views/Components/nav/navLogin.js"></script>
+    
+    <script>
+        $(document).ready(function () {
+            $("#loginForm").on("submit", function (event) {
+                event.preventDefault(); // Evitar que el formulario se envíe
+
+                // Obtener los valores de los campos
+                var user = $("#user").val();
+                var password = $("#password").val();
+                var role = $("#role").val();
+
+                // Verificar si los campos están vacíos
+                if (!user || !password || !role) {
+                    $("#alert_error").text("Por favor, completa todos los campos.").show();
+                } else {
+
+                    $("#alert_error").hide();
+
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>
