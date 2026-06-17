@@ -8,20 +8,11 @@
     <link rel="shortcut icon" href="src/favicon.png" type="image/x-icon">
     <link href="https://framework-gb.cdn.gob.mx/assets/styles/main.css" rel="stylesheet">
 
-   <link rel="shortcut icon" href="https://framework-gb.cdn.gob.mx/favicon.ico">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+     <script src="models/ValidacionModel.js"></script>
+<script src="models/Model.js"></script>
+<script src="views/View.js"></script>
+<script src="controller/Controller.js"></script>
 
-    <!-- CSS propios -->
-  <link rel="stylesheet" href="./css/style.css"> 
-    <link rel="stylesheet" href="./css/form.css">
-    <link rel="stylesheet" href="./css/responsive.css">
-
-    <!-- MVC -->
-    <script src="./models/ValidacionModel.js"></script>
-    <script src="./models/Model.js"></script>
-    <script src="./views/View.js"></script>
-    <script src="./controllers/Controller.js"></script>
-</head>
 
 </head>
 
@@ -112,15 +103,11 @@
                         <small class="text-danger error-mensaje"></small>
                     </div>
                     
-                         <div class="form-group col-12 col-md-4">
+                    <div class="form-group col-12 col-md-4">
                         <div class="form-group datepicker-group">
-                            <label for="fecha_nacimiento">Fecha de nacimiento:</label>
-
-                            <div class="input-icon">
-                                <input type="text" class="form-control" id="fecha_nacimiento"
-                                    placeholder="FECHA DE NACIMIENTO" required>
-                                <span class="fa fa-calendar"></span>
-                            </div>
+                            <label for="fechaNacimiento">Fecha de nacimiento*:</label>
+                            <input type="text" class="form-control" id="fechaNacimiento" placeholder="FECHA DE NACIMIENTO">
+                            <i class="fa fa-calendar" aria-hidden="true"></i>
                             <small class="text-danger error-mensaje"></small>
                         </div>
                     </div>
@@ -134,8 +121,8 @@
 
                 <div class="row g-3">
                     <div class="form-group col-6 col-md-3">
-                        <label>Lada internacional*:</label>
-                        <input type="text" class="form-control mayus-auto solo-numeros" id="lada" placeholder="LADA " maxlength="10">
+                        <label>Lada*:</label>
+                        <input type="text" class="form-control mayus-auto solo-numeros" id="lada" placeholder="LADA" maxlength="10">
                         <small class="text-danger error-mensaje"></small>
                     </div>
                     <div class="col-6 col-md-3">
@@ -250,7 +237,7 @@
                         <small class="text-danger error-mensaje"></small>
                     </div>
                     <div class="col-6 col-md-4">
-                        <label>Lada internacional*:</label>
+                        <label>Lada*:</label>
                         <input type="text" class="form-control mayus-auto solo-numeros" id="ladaEmergencia" placeholder="LADA" required maxlength="10" inputmode="numeric" pattern="\d*">
                         <small class="text-danger error-mensaje"></small>
                     </div>
@@ -363,12 +350,12 @@
                         <label>Año de obtención del grado*:</label>
                         <input type="text" class="form-control mayus-auto solo-numeros" id="anioGrado" placeholder="AÑO DE OBTENCIÓN" maxlength="4">
                     </div>
-                   <div class="form-group col-12 col-md-6">
+                    <div class="form-group col-12 col-md-6">
                         <label>Promedio obtenido*:</label>
-                        <input type="number" id="promedio" class="form-control" placeholder="PROMEDIO" min="0" max="10"
-                            step="0.01" required>
+                        <input type="text" class="form-control mayus-auto solo-numeros" id="promedio" placeholder="PROMEDIO" maxlength="5">
                     </div>
                 </div>
+
                 <div class="row">
                     <div class="form-group col-12 col-md-6">
                         <label>Selecciona tu tipo de titulación*:</label>
@@ -418,113 +405,44 @@
                 <div class="row g-3"><div class="col-12 col-md-4"><div class="form-group"><label>TÍTULO:</label><input type="text" class="form-control mayus-auto" placeholder="TÍTULO"></div></div><div class="col-12 col-md-8"><div class="form-group"><label>DESCRIPCIÓN:</label><textarea rows="1" class="form-control mayus-auto" placeholder="DESCRIPCIÓN"></textarea></div></div></div>
                 <div class="row g-3"><div class="col-12 col-md-4"><div class="form-group"><label>TÍTULO:</label><input type="text" class="form-control mayus-auto" placeholder="TÍTULO"></div></div><div class="col-12 col-md-8"><div class="form-group"><label>DESCRIPCIÓN:</label><textarea rows="1" class="form-control mayus-auto" placeholder="DESCRIPCIÓN"></textarea></div></div></div>
                 <div class="row g-3"><div class="col-12 col-md-4"><div class="form-group"><label>TÍTULO:</label><input type="text" class="form-control mayus-auto" placeholder="TÍTULO"></div></div><div class="col-12 col-md-8"><div class="form-group"><label>DESCRIPCIÓN:</label><textarea rows="1" class="form-control mayus-auto" placeholder="DESCRIPCIÓN"></textarea></div></div></div>
-    <div class="row">
-                    <div class="form-group col-12 col-md-12">
-                        <label>Razón por la que deseas estudiar un posgrado en el INAOE*:</label>
-                        <textarea class="form-control mayus-auto" id="razon" rows="3"
-                            placeholder="ESCRIBE TU MOTIVACIÓN..." required></textarea>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="form-group col-12 col-md-8">
-                        <label>Medio por el cual te enteraste de los posgrados que ofrece el INAOE:</label>
-                        <div class="radio"><label><input type="radio" name="medio" value="Feria de posgrados" checked>
-                                FERIA DE POSGRADOS</label></div>
-                        <div class="radio"><label><input type="radio" name="medio" value="Página de internet"> PÁGINA DE
-                                INTERNET</label></div>
-                        <div class="radio"><label><input type="radio" name="medio" value="Amigo"> AMIGO</label></div>
-                        <div class="radio"><label><input type="radio" name="medio" value="Otro"> OTRO</label></div>
-                    </div>
-                </div>
-
-                <div class="row align-items-center">
+               <div class="row align-items-center">
                     <div class="col-12 col-md-4"><small>*Campos obligatorios</small></div>
                     <div class="col-12 col-md-8 form-group">
-                        <button type="button" class="btn btn-primary pull-right" id="btnEnviarModal">Enviar
-                            solicitud</button>
+                        <button type="button" class="btn btn-primary pull-right" id="btnEnviarModal">Enviar solicitud</button>
                     </div>
                 </div>
             </form>
-
-            <p>&nbsp;</p>
-            <hr>
-
-            <div class="alert alert-info">
-                <p><strong>Aviso de privacidad simplificado – INAOE</strong></p>
-                <p>El Instituto Nacional de Astrofísica, Óptica y Electrónica (INAOE) con domicilio en calle Luis
-                    Enrique Erro # 1, Santa María Tonantzintla, Municipio de San Andrés Cholula, Puebla, C.P. 72840, en
-                    base a los artículos 26 y 27 de acuerdo a la Ley General de Protección de Datos Personales en
-                    Posesión de Sujetos Obligados, hace de su conocimiento que: los datos personales (nombre, domicilio,
-                    información de contacto, rasgos físicos como huellas dactilares, fotografías) recabados por la
-                    Institución para el trámite de algún servicio relacionado con la gestión académica e institucional
-                    serán protegidos bajo la ley antes mencionada y fundamentada en los artículos 6o., Base A y 16,
-                    segundo párrafo, de la Constitución Política de los Estados Unidos Mexicanos, en materia de
-                    protección de datos personales en posesión de sujetos obligados. </p>
-                <p>Así mismo, se informa que el INAOE podrá transferir los datos proporcionados estrictamente en el
-                    ámbito académico o para el trámite de algún servicio relacionado con la gestión académica e
-                    institucional, así como cuando se requiera para la asistencia médica.</p>
-                <p>Se precisa que los mecanismos y medios disponibles para manifestar su negativa para el tratamiento de
-                    sus datos personales deberán ser enviados al correo electrónico <a
-                        href="mailto:grivera@inaoep.mx">grivera@inaoep.mx</a> adjuntando la <a
-                        href="https://www.inaoep.mx/archivos/FORMATO_DE_SOLICITUD_DERECHOS_ARCO.pdf"
-                        target="_blank">solicitud de derechos ARCO</a> (Acceso, Rectificación, Cancelación y Oposición)
-                    y un escrito libre y debidamente firmado, en donde justifique el ejercicio de los derechos ARCO y
-                    deberán ir acompañados de una copia de identificación oficial (credencial para votar, licencia de
-                    conducir, pasaporte). </p>
-                <p>Finalmente comunica que este documento podrá ser modificado en cualquier momento por el Instituto,
-                    notificándose el cambio a través de correo electrónico.</p>
-                <p>Si necesitas mayor información por favor escribe a <a
-                        href="mailto:grivera@inaoep.mx">grivera@inaoep.mx</a></p>
-                <p><br /><strong>Documentos de interés</strong>: <a
-                        href="https://www.inaoep.mx/archivos/AvisoIntegral.pdf" target="_blank">Aviso de privacidad
-                        integral - INAOE</a>, <a
-                        href="https://www.inaoep.mx/archivos/FORMATO_DE_SOLICITUD_DERECHOS_ARCO.pdf"
-                        target="_blank">Solicitud de derechos ARCO</a> , <a
-                        href="https://www.inaoep.mx/archivos/consentimiento.pdf" target="_blank">Consentimiento previo
-                        del titular para el tratamiento de los datos personales</a></p>
-            </div>
         </div>
     </main>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="https://framework-gb.cdn.gob.mx/gobmx.js"></script>
-    <script src="https://framework-gb.cdn.gob.mx/assets/scripts/jquery-ui-datepicker.js"></script>
+
+    <script src="vendor/jquery/jquery.min.js"></script>
     <script src="https://framework-gb.cdn.gob.mx/gobmx.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.js"></script>
     <script src="controllers/validation/Tools.js"></script>
     <script src="views/Components/nav/navLogin.js"></script>
+    
+    <script>
+        $(document).ready(function () {
+            $("#loginForm").on("submit", function (event) {
+                event.preventDefault(); // Evitar que el formulario se envíe
 
-    <!-- Modal Resumen -->
-    <div class="modal fade" id="modalResumen" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
+                // Obtener los valores de los campos
+                var user = $("#user").val();
+                var password = $("#password").val();
+                var role = $("#role").val();
 
-                <div class="modal-header">
-                    <h4 class="modal-title">Confirmar solicitud</h4>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
+                // Verificar si los campos están vacíos
+                if (!user || !password || !role) {
+                    $("#alert_error").text("Por favor, completa todos los campos.").show();
+                } else {
 
-                <div class="modal-body">
-                    <p>Verifica que los datos sean correctos:</p>
+                    $("#alert_error").hide();
 
-                    <div id="contenidoResumen"></div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        Cancelar
-                    </button>
-
-                    <button type="button" class="btn btn-primary" id="confirmarEnvio">
-                        Confirmar envío
-                    </button>
-                </div>
-
-            </div>
-        </div>
-    </div>
+                }
+            });
+        });
+    </script>
 
 </body>
 
