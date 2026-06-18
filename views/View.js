@@ -16,6 +16,36 @@ class AdmisionView {
         this.especificarTitulacion = document.getElementById('especificarTitulacion');
         this.modalResumen = document.getElementById('modalResumen');
         this.contenidoResumen = document.getElementById('contenidoResumen');
+        
+        // Elementos de parentesco
+        this.selectParentesco = document.getElementById('parentesco');
+        this.especificarParentescoContainer = document.getElementById('especificarParentescoContainer');
+        this.especificarParentesco = document.getElementById('especificarParentesco');
+        this.btnEnviarModal = document.getElementById('btnEnviarModal');
+        this.btnConfirmarEnvio = document.getElementById('confirmarEnvio');
+    }
+
+    validarParentesco() {
+        if (!this.selectParentesco) return true;
+        
+        const valor = this.selectParentesco.value;
+        
+        if (valor === '' || valor === 'SELECCIONA') {
+            this.mostrarErrorCampo(this.selectParentesco, 'Este campo es obligatorio');
+            return false;
+        }
+        
+        if (valor === 'OTRO') {
+            const especificacion = this.especificarParentesco?.value.trim() || '';
+            if (especificacion === '') {
+                this.mostrarErrorCampo(this.especificarParentesco, 'Debes especificar el parentesco');
+                return false;
+            }
+            this.limpiarErrorCampo(this.especificarParentesco);
+        }
+        
+        this.limpiarErrorCampo(this.selectParentesco);
+        return true;
     }
 
     inicializarCalendario() {
@@ -43,6 +73,7 @@ class AdmisionView {
         this.mostrarElemento(this.divDoctorados, false, false);
         this.mostrarElemento(this.evaluacionContainer, false, false);
         this.mostrarElemento(this.especificarTitulacionContainer, false, false);
+        this.mostrarElemento(this.especificarParentescoContainer, false, false);
     }
 
     mostrarElemento(elemento, visible, animado = true) {
@@ -116,10 +147,10 @@ class AdmisionView {
             : ['Agosto-Diciembre'];
 
         this.opcionesPeriodo.innerHTML = periodos.map(periodo => `
-                        <div class="radio">
-                            <label><input type="radio" name="periodo" value="${periodo}"> ${periodo.toUpperCase()}</label>
-                        </div>
-                    `).join('');
+            <div class="radio">
+                <label><input type="radio" name="periodo" value="${periodo}"> ${periodo.toUpperCase()}</label>
+            </div>
+        `).join('');
 
         this.limpiarErrorPeriodo();
     }
@@ -232,60 +263,256 @@ class AdmisionView {
     }
 
     construirResumen(datos) {
-        const nombreCompleto = `${datos.nombre} ${datos.primerApellido} ${datos.segundoApellido}`.trim();
-        const direccion = `${datos.domicilio.calle} ${datos.domicilio.numExt}, ${datos.domicilio.colonia}, CP ${datos.domicilio.cp}, ${datos.domicilio.municipio}, ${datos.domicilio.estado}`.trim();
-        const formaEvaluacion = datos.datosAcademicos.formaEvaluacion
-            ? `<li><strong>Forma de Evaluación:</strong> ${this.texto(datos.datosAcademicos.formaEvaluacion)}</li>`
-            : '';
+        if (!datos) {
+            return '<p>No hay datos para mostrar</p>';
+        }
 
-        return `
-                <div class="section-title"> Datos personales</div>
-                <ul>
-                    <li><strong>Posgrado seleccionado:</strong> ${this.texto(datos.datosAcademicos.posgradoDetalle, 'No seleccionado')}</li>
-                    <li><strong>Año de ingreso:</strong> ${this.texto(datos.datosAcademicos.anioIngreso)}</li>
-                    <li><strong>Periodo:</strong> ${this.texto(datos.datosAcademicos.periodo, 'No seleccionado')}</li>
-                    ${formaEvaluacion}
-                    <li><strong>Nacionalidad:</strong> ${this.texto(datos.nacionalidad)}</li>
-                    <li><strong>CURP:</strong> ${this.texto(datos.curp)}</li>
-                    <li><strong>Nombre completo:</strong> ${this.texto(nombreCompleto)}</li>
-                    <li><strong>Sexo:</strong> ${this.texto(datos.sexo)}</li>
-                    <li><strong>Fecha de nacimiento:</strong> ${this.texto(datos.fechaNacimiento, 'No especificada')}</li>
-                    <li><strong>Lugar de nacimiento:</strong> ${this.texto(datos.lugarNacimiento)}</li>
-                    <li><strong>Teléfono móvil:</strong> ${this.texto(datos.telMovil)}</li>
-                    <li><strong>Correo electrónico:</strong> ${this.texto(datos.email)}</li>
-                    <li><strong>Dirección completa:</strong> ${this.texto(direccion)}</li>
-                </ul>
-                <div class="section-title">Datos académicos</div>
-                <ul>
-                    <li><strong>Institución de procedencia:</strong> ${this.texto(datos.estudiosPrevios.institucion, 'No especificada')}</li>
-                    <li><strong>Grado obtenido:</strong> ${this.texto(datos.estudiosPrevios.gradoAcademico)}</li>
-                    <li><strong>Año de obtención:</strong> ${this.texto(datos.estudiosPrevios.anioGrado)}</li>
-                    <li><strong>Promedio:</strong> ${this.texto(datos.estudiosPrevios.promedio)}</li>
-                    <li><strong>Tipo de titulación:</strong> ${this.texto(datos.estudiosPrevios.tipoTitulacion)}</li>
-                </ul>
-                <div class="section-title">Dominio del inglés</div>
-                <ul>
-                    <li><strong>Expresión escrita:</strong> ${this.texto(datos.dominioIngles.expresionEscrita)}</li>
-                    <li><strong>Expresión oral:</strong> ${this.texto(datos.dominioIngles.expresionOral)}</li>
-                    <li><strong>Comprensión lectora:</strong> ${this.texto(datos.dominioIngles.comprensionLectora)}</li>
-                    <li><strong>Comprensión auditiva:</strong> ${this.texto(datos.dominioIngles.comprensionAuditiva)}</li>
-                </ul>
-                <div class="section-title"> Motivación</div>
-                <ul>
-                    <li><strong>Razón para estudiar en INAOE:</strong> ${this.texto(datos.motivacion.razon, 'No especificada')}</li>
-                </ul>
-            `;
+        // === DATOS PERSONALES ===
+        const nombreCompleto = `${datos.nombre || ''} ${datos.primerApellido || ''} ${datos.segundoApellido || ''}`.trim() || 'No especificado';
+        
+        // === DOMICILIO ===
+        const domicilio = datos.domicilio || {};
+        const direccion = `${domicilio.calle || ''} ${domicilio.numExt || ''}, ${domicilio.colonia || ''}, CP ${domicilio.cp || ''}, ${domicilio.municipio || ''}, ${domicilio.estado || ''}`.trim() || 'No especificada';
+
+        // === DATOS ACADÉMICOS ===
+        const datosAcademicos = datos.datosAcademicos || {};
+        const posgradoDetalle = datosAcademicos.posgradoDetalle || 'No seleccionado';
+        const anioIngreso = datosAcademicos.anioIngreso || 'No especificado';
+        const periodo = datosAcademicos.periodo || 'No seleccionado';
+        const formaEvaluacion = datosAcademicos.formaEvaluacion || '';
+
+        // === CONTACTO ===
+        const contacto = datos.contacto || {};
+        const lada = contacto.lada || 'No especificado';
+        const telFijo = contacto.telFijo || 'No especificado';
+        const ext = contacto.ext || '';
+        const telMovil = contacto.telMovil || 'No especificado';
+        const email = contacto.email || 'No especificado';
+
+        // === CONTACTO DE EMERGENCIA ===
+        const contactoEmergencia = datos.contactoEmergencia || {};
+        const nombreEmergencia = `${contactoEmergencia.nombre || ''} ${contactoEmergencia.primerApellido || ''} ${contactoEmergencia.segundoApellido || ''}`.trim() || 'No especificado';
+        const ladaEmergencia = contactoEmergencia.lada || 'No especificado';
+        const telFijoEmergencia = contactoEmergencia.telFijo || 'No especificado';
+        const extEmergencia = contactoEmergencia.ext || '';
+        const telMovilEmergencia = contactoEmergencia.telMovil || 'No especificado';
+        const parentesco = contactoEmergencia.parentesco || 'No especificado';
+
+        // === ESTUDIOS PREVIOS ===
+        const estudiosPrevios = datos.estudiosPrevios || {};
+        const institucion = estudiosPrevios.institucion || 'No especificada';
+        const gradoAcademico = estudiosPrevios.gradoAcademico || 'No especificado';
+        const anioGrado = estudiosPrevios.anioGrado || 'No especificado';
+        const promedio = estudiosPrevios.promedio || 'No especificado';
+        const tipoTitulacion = estudiosPrevios.tipoTitulacion || 'No especificado';
+
+        // === DOMINIO INGLÉS ===
+        const dominioIngles = datos.dominioIngles || {};
+        const expresionEscrita = dominioIngles.expresionEscrita || 'No especificado';
+        const expresionOral = dominioIngles.expresionOral || 'No especificado';
+        const comprensionLectora = dominioIngles.comprensionLectora || 'No especificado';
+        const comprensionAuditiva = dominioIngles.comprensionAuditiva || 'No especificado';
+
+        // === MOTIVACIÓN ===
+        const motivacion = datos.motivacion || {};
+        const razon = motivacion.razon || 'No especificada';
+        const medio = motivacion.medio || 'No especificado';
+
+        // === EXPERIENCIA LABORAL ===
+        const experienciaLaboral = datos.experienciaLaboral || [];
+
+        // === PUBLICACIONES ===
+        const publicaciones = datos.publicaciones || [];
+
+        // ============================================
+        // CONSTRUIR HTML DEL RESUMEN
+        // ============================================
+        let html = `
+            <!-- ========================================== -->
+            <!-- DATOS PERSONALES -->
+            <!-- ========================================== -->
+            <div class="section-title">📋 Datos personales</div>
+            <ul>
+                <li><strong>Nacionalidad:</strong> ${this.texto(datos.nacionalidad)}</li>
+                <li><strong>CURP:</strong> ${this.texto(datos.curp)}</li>
+                <li><strong>Nombre completo:</strong> ${this.texto(nombreCompleto)}</li>
+                <li><strong>Sexo:</strong> ${this.texto(datos.sexo)}</li>
+                <li><strong>Fecha de nacimiento:</strong> ${this.texto(datos.fechaNacimiento)}</li>
+                <li><strong>Lugar de nacimiento:</strong> ${this.texto(datos.lugarNacimiento)}</li>
+            </ul>
+
+            <!-- ========================================== -->
+            <!-- CONTACTO -->
+            <!-- ========================================== -->
+            <div class="section-title">📞 Contacto</div>
+            <ul>
+                <li><strong>Lada internacional:</strong> ${this.texto(lada)}</li>
+                <li><strong>Teléfono fijo:</strong> ${this.texto(telFijo)} ${ext ? `(Ext: ${this.texto(ext)})` : ''}</li>
+                <li><strong>Teléfono móvil:</strong> ${this.texto(telMovil)}</li>
+                <li><strong>Correo electrónico:</strong> ${this.texto(email)}</li>
+            </ul>
+
+            <!-- ========================================== -->
+            <!-- DOMICILIO -->
+            <!-- ========================================== -->
+            <div class="section-title">🏠 Domicilio</div>
+            <ul>
+                <li><strong>Código Postal:</strong> ${this.texto(domicilio.cp)}</li>
+                <li><strong>Estado:</strong> ${this.texto(domicilio.estado)}</li>
+                <li><strong>Municipio o Alcaldía:</strong> ${this.texto(domicilio.municipio)}</li>
+                <li><strong>Localidad:</strong> ${this.texto(domicilio.localidad)}</li>
+                <li><strong>Colonia:</strong> ${this.texto(domicilio.colonia)}</li>
+                <li><strong>Tipo de calle:</strong> ${this.texto(domicilio.tipoCalle)}</li>
+                <li><strong>Calle:</strong> ${this.texto(domicilio.calle)}</li>
+                <li><strong>Número exterior:</strong> ${this.texto(domicilio.numExt)}</li>
+                <li><strong>Número interior:</strong> ${this.texto(domicilio.numInt || 'N/A')}</li>
+                <li><strong>País:</strong> ${this.texto(domicilio.pais)}</li>
+            </ul>
+
+            <!-- ========================================== -->
+            <!-- CONTACTO DE EMERGENCIA -->
+            <!-- ========================================== -->
+            <div class="section-title">🚨 Contacto de emergencia</div>
+            <ul>
+                <li><strong>Nombre completo:</strong> ${this.texto(nombreEmergencia)}</li>
+                <li><strong>Lada internacional:</strong> ${this.texto(ladaEmergencia)}</li>
+                <li><strong>Teléfono fijo:</strong> ${this.texto(telFijoEmergencia)} ${extEmergencia ? `(Ext: ${this.texto(extEmergencia)})` : ''}</li>
+                <li><strong>Teléfono móvil:</strong> ${this.texto(telMovilEmergencia)}</li>
+                <li><strong>Parentesco:</strong> ${this.texto(parentesco)}</li>
+            </ul>
+
+            <!-- ========================================== -->
+            <!-- DATOS ACADÉMICOS -->
+            <!-- ========================================== -->
+            <div class="section-title">🎓 Datos académicos</div>
+            <ul>
+                <li><strong>Posgrado seleccionado:</strong> ${this.texto(posgradoDetalle)}</li>
+                <li><strong>Año de ingreso:</strong> ${this.texto(anioIngreso)}</li>
+                <li><strong>Periodo:</strong> ${this.texto(periodo)}`
+        ;
+
+        if (formaEvaluacion) {
+            html += `<li><strong>Forma de Evaluación:</strong> ${this.texto(formaEvaluacion)}</li>`;
+        }
+
+        html += `
+            </ul>
+
+            <!-- ========================================== -->
+            <!-- ESTUDIOS PREVIOS -->
+            <!-- ========================================== -->
+            <div class="section-title">📚 Estudios previos</div>
+            <ul>
+                <li><strong>Institución educativa:</strong> ${this.texto(institucion)}</li>
+                <li><strong>Grado académico:</strong> ${this.texto(gradoAcademico)}</li>
+                <li><strong>Año de obtención:</strong> ${this.texto(anioGrado)}</li>
+                <li><strong>Promedio:</strong> ${this.texto(promedio)}</li>
+                <li><strong>Tipo de titulación:</strong> ${this.texto(tipoTitulacion)}</li>
+            </ul>
+
+            <!-- ========================================== -->
+            <!-- DOMINIO DEL INGLÉS -->
+            <!-- ========================================== -->
+            <div class="section-title">🌐 Dominio del inglés</div>
+            <ul>
+                <li><strong>Expresión escrita:</strong> ${this.texto(expresionEscrita)}</li>
+                <li><strong>Expresión oral:</strong> ${this.texto(expresionOral)}</li>
+                <li><strong>Comprensión lectora:</strong> ${this.texto(comprensionLectora)}</li>
+                <li><strong>Comprensión auditiva:</strong> ${this.texto(comprensionAuditiva)}</li>
+            </ul>
+
+            <!-- ========================================== -->
+            <!-- EXPERIENCIA LABORAL -->
+            <!-- ========================================== -->
+            <div class="section-title">💼 Experiencia laboral</div>
+            <ul>`;
+
+        if (experienciaLaboral.length > 0) {
+            const expValida = experienciaLaboral.filter(exp => 
+                exp.institucion && exp.institucion !== 'No especificada'
+            );
+            if (expValida.length > 0) {
+                expValida.forEach(exp => {
+                    html += `
+                        <li>
+                            <strong>${this.texto(exp.institucion)}</strong> - 
+                            ${this.texto(exp.tipoExperiencia)} - 
+                            ${this.texto(exp.puesto)} 
+                            (${this.texto(exp.tiempoLaborado)})
+                        </li>
+                    `;
+                });
+            } else {
+                html += `<li>No se registró experiencia laboral</li>`;
+            }
+        } else {
+            html += `<li>No se registró experiencia laboral</li>`;
+        }
+
+        html += `
+            </ul>
+
+            <!-- ========================================== -->
+            <!-- PUBLICACIONES CIENTÍFICAS -->
+            <!-- ========================================== -->
+            <div class="section-title">📄 Publicaciones científicas</div>
+            <ul>`;
+
+        if (publicaciones.length > 0) {
+            const pubValida = publicaciones.filter(pub => 
+                pub.titulo && pub.titulo !== 'No especificado'
+            );
+            if (pubValida.length > 0) {
+                pubValida.forEach(pub => {
+                    html += `
+                        <li>
+                            <strong>${this.texto(pub.titulo)}</strong> - 
+                            ${this.texto(pub.tipoPublicacion)}
+                            ${pub.doi && pub.doi !== 'No especificado' ? `(DOI: ${this.texto(pub.doi)})` : ''}
+                        </li>
+                    `;
+                });
+            } else {
+                html += `<li>No se registraron publicaciones</li>`;
+            }
+        } else {
+            html += `<li>No se registraron publicaciones</li>`;
+        }
+
+        html += `
+            </ul>
+
+            <!-- ========================================== -->
+            <!-- MOTIVACIÓN -->
+            <!-- ========================================== -->
+            <div class="section-title">💡 Motivacidivón</>
+            <ul>
+                <li><strong>Razón para estudiar en INAOE:</strong> ${this.texto(razon)}</li>
+                <li><strong>Medio por el que se enteró:</strong> ${this.texto(medio)}</li>
+            </ul>
+        `;
+
+        return html;
     }
 
     mostrarResumen(html) {
-        if (this.contenidoResumen) this.contenidoResumen.innerHTML = html;
+        if (this.contenidoResumen) {
+            this.contenidoResumen.innerHTML = html || '<p>No hay datos para mostrar</p>';
+        }
 
         if (window.jQuery && window.jQuery.fn.modal) {
+            window.jQuery(this.modalResumen).modal({
+                backdrop: 'static',
+                keyboard: true
+            });
             window.jQuery(this.modalResumen).modal('show');
             return;
         }
 
-        if (this.modalResumen) this.modalResumen.style.display = 'block';
+        if (this.modalResumen) {
+            this.modalResumen.style.display = 'block';
+            this.modalResumen.style.backgroundColor = 'rgba(0,0,0,0.5)';
+        }
     }
 
     ocultarResumen() {
@@ -294,6 +521,8 @@ class AdmisionView {
             return;
         }
 
-        if (this.modalResumen) this.modalResumen.style.display = 'none';
+        if (this.modalResumen) {
+            this.modalResumen.style.display = 'none';
+        }
     }
 }
