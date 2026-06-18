@@ -32,10 +32,10 @@ class NavBar extends HTMLElement {
           <div class="collapse navbar-collapse" id="subenlaces">
             <ul class="nav navbar-nav navbar-right">
               <li class="dropdown">
-                <a href="views/Students/studentExamRequestProcess.html">Nuevo registro</a>
+                <a>Nuevo registro</a>
               </li>
               <li class="dropdown">
-                <a href="views/constancy/validateCertificate/validateCertificateForm.html">Ayuda</a>
+                <a>Ayuda</a>
               </li>
               <li class="dropdown">
                 <a href="http://192.168.72.19/reportes_dfa/index.html">Reportes</a>
