@@ -52,9 +52,13 @@
                     <div id="alertaError" class="alert alert-danger" style="display: none; margin-top: 15px;">
                         <strong>¡Error de registro!</strong> Has dejado campos obligatorios vacíos. Por favor verifica.
                     </div>
+
                     <form id="formAdmision" role="form">
                         <section id="Inicio"></section>
 
+                        <!-- ============================================ -->
+                        <!-- DATOS GENERALES DEL ASPIRANTE -->
+                        <!-- ============================================ -->
                         <h2>Datos generales del aspirante</h2>
                         <hr class="red">
 
@@ -80,7 +84,12 @@
                                 <small class="text-danger error-mensaje"></small>
                             </div>
                         </div>
-                        <p>¿No sabes tu CURP? ingresa <a href="https://www.gob.mx/curp/" id="linkCurp">Aquí</a></p>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <p>¿No sabes tu CURP? ingresa <a href="https://www.gob.mx/curp/" id="linkCurp">Aquí</a></p>
+                            </div>
+                        </div>
                         <hr>
 
                         <div class="row g-3">
@@ -96,7 +105,7 @@
                                     placeholder="INGRESA TU PRIMER APELLIDO" required>
                                 <small class="text-danger error-mensaje"></small>
                             </div>
-                            <div class="form-group col-sm-4">
+                            <div class="form-group col-12 col-md-4">
                                 <label>Segundo apellido:</label>
                                 <input type="text" class="form-control mayus-auto" id="segundoApellido"
                                     placeholder="INGRESA TU SEGUNDO APELLIDO">
@@ -119,7 +128,6 @@
                             <div class="form-group col-12 col-md-4">
                                 <div class="form-group datepicker-group">
                                     <label for="fecha_nacimiento">Fecha de nacimiento:</label>
-
                                     <div class="input-icon">
                                         <input type="text" class="form-control" id="fecha_nacimiento"
                                             placeholder="FECHA DE NACIMIENTO" required>
@@ -144,19 +152,19 @@
                                     placeholder="LADA" maxlength="10" required>
                                 <small class="text-danger error-mensaje"></small>
                             </div>
-                            <div class="col-6 col-md-3">
+                            <div class="form-group col-6 col-md-3">
                                 <label>Teléfono fijo:</label>
                                 <input type="text" class="form-control mayus-auto solo-numeros" id="telFijo"
                                     placeholder="TELÉFONO FIJO" maxlength="15">
                                 <small class="text-danger error-mensaje"></small>
                             </div>
-                            <div class="col-6 col-md-3">
+                            <div class="form-group col-6 col-md-3">
                                 <label>Ext.:</label>
                                 <input type="text" class="form-control mayus-auto solo-numeros" id="ext"
                                     placeholder="EXT" maxlength="10">
                                 <small class="text-danger error-mensaje"></small>
                             </div>
-                            <div class="col-6 col-md-3">
+                            <div class="form-group col-6 col-md-3">
                                 <label>Teléfono móvil*:</label>
                                 <input type="text" class="form-control mayus-auto solo-numeros" id="telMovil"
                                     placeholder="TELÉFONO MÓVIL" maxlength="15" required>
@@ -173,6 +181,9 @@
                             </div>
                         </div>
 
+                        <!-- ============================================ -->
+                        <!-- DOMICILIO -->
+                        <!-- ============================================ -->
                         <h2>Domicilio</h2>
                         <hr class="red">
 
@@ -197,7 +208,7 @@
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row g-3">
                             <div class="form-group col-12 col-md-4">
                                 <label>Localidad*:</label>
                                 <input type="text" class="form-control mayus-auto" id="localidad"
@@ -248,12 +259,14 @@
                             </div>
                         </div>
 
+                        <!-- ============================================ -->
+                        <!-- CONTACTO DE EMERGENCIA -->
+                        <!-- ============================================ -->
                         <h2>Contacto de emergencia</h2>
                         <p>(será el contacto de emergencia en caso de que algo suceda con el aspirante)</p>
                         <hr class="red">
 
-                        <!-- Fila 1 -->
-                        <div class="row">
+                        <div class="row g-3">
                             <div class="form-group col-12 col-md-4">
                                 <label>Nombre(s)*:</label>
                                 <input type="text" class="form-control mayus-auto" id="nombreEmergencia"
@@ -276,8 +289,7 @@
                             </div>
                         </div>
 
-                        <!-- Fila 2 -->
-                        <div class="row">
+                        <div class="row g-3">
                             <div class="form-group col-12 col-md-4">
                                 <label>Lada internacional*:</label>
                                 <input type="text" class="form-control mayus-auto solo-numeros" id="ladaEmergencia"
@@ -300,114 +312,82 @@
                             </div>
                         </div>
 
-                        <!-- Fila 3 -->
-                        <div class="row">
-                      <div class="form-group col-12 col-md-4">
-    <label>Parentesco*:</label>
+                        <div class="row g-3">
+                            <div class="form-group col-12 col-md-4">
+                                <label>Teléfono móvil*:</label>
+                                <input type="text" class="form-control mayus-auto solo-numeros" id="telMovilEmergencia"
+                                    placeholder="TELÉFONO MÓVIL" maxlength="15" required>
+                                <small class="text-danger error-mensaje"></small>
+                            </div>
 
-    <select class="form-control mayus-auto" id="parentesco" required>
-        <option value="" selected>SELECCIONA</option>
-        <option>MADRE</option>
-        <option>PADRE</option>
-        <option>HERMANO</option>
-        <option>HERMANA</option>
-        <option>TIO</option>
-        <option>TIA</option>
-        <option>ABUELO</option>
-        <option>ABUELA</option>
-        <option>PRIMO</option>
-        <option>PRIMA</option>
-        <option>HIJO</option>
-        <option>HIJA</option>
-        <option value="OTRO">OTRO</option>
-    </select>
+                            <div class="form-group col-12 col-md-4">
+                                <label>Parentesco*:</label>
+                                <select class="form-control mayus-auto" id="parentesco" required>
+                                    <option value="" selected>SELECCIONA</option>
+                                    <option>MADRE</option>
+                                    <option>PADRE</option>
+                                    <option>HERMANO</option>
+                                    <option>HERMANA</option>
+                                    <option>TIO</option>
+                                    <option>TIA</option>
+                                    <option>ABUELO</option>
+                                    <option>ABUELA</option>
+                                    <option>PRIMO</option>
+                                    <option>PRIMA</option>
+                                    <option>HIJO</option>
+                                    <option>HIJA</option>
+                                    <option value="OTRO">OTRO</option>
+                                </select>
 
-    <div id="especificarParentescoContainer" style="display: none; margin-top: 15px;">
-        <label>Especificar*:</label>
-        <input type="text" class="form-control mayus-auto" id="especificarParentesco" placeholder="OTRO PARENTESCO"required>
-        <small class="text-danger error-mensaje"></small>
-    </div>
-
-    <small class="text-danger error-mensaje"></small>
-</div>
-
-<script>
-document.getElementById("parentesco").addEventListener("change", function () {
-    const contenedor = document.getElementById("especificarParentescoContainer");
-
-    if (this.value === "OTRO") {
-        contenedor.style.display = "block";
-    } else {
-        contenedor.style.display = "none";
-        document.getElementById("especificarParentesco").value = "";
-    }
-});
-</script>
+                                <div id="especificarParentescoContainer" style="display: none; margin-top: 15px;">
+                                    <label>Especificar*:</label>
+                                    <input type="text" class="form-control mayus-auto" id="especificarParentesco" placeholder="OTRO PARENTESCO">
+                                    <small class="text-danger error-mensaje"></small>
+                                </div>
+                                <small class="text-danger error-mensaje"></small>
+                            </div>
                         </div>
+
+                        <!-- ============================================ -->
+                        <!-- DATOS ACADÉMICOS DEL ASPIRANTE -->
+                        <!-- ============================================ -->
                         <h2>Datos académicos del aspirante</h2>
                         <hr class="red">
+
                         <div class="row">
                             <div class="form-group col-12 col-md-8">
                                 <label>Posgrado a ingresar*:</label>
                                 <div class="radio">
                                     <label><input type="radio" name="posgrado" id="posgrado1" value="Maestría" />
                                         Maestría</label>
-                                    <div class="form-group" id="maestrias"
-                                        style="margin-top: 10px; margin-left: 20px; display: none;">
+                                    <div class="form-group" id="maestrias" style="margin-top: 10px; margin-left: 20px; display: none;">
                                         <select class="form-control mayus-auto" id="maestriaSelect">
                                             <option disabled selected>SELECCIONA</option>
-                                            <option value="Ciencias en la Especialidad de Astrofísica">CIENCIAS EN LA
-                                                ESPECIALIDAD DE ASTROFÍSICA</option>
-                                            <option value="Ciencias en la Especialidad de Óptica">CIENCIAS EN LA
-                                                ESPECIALIDAD DE
-                                                ÓPTICA</option>
-                                            <option value="Ciencias en la Especialidad de Electrónica">CIENCIAS EN LA
-                                                ESPECIALIDAD DE ELECTRÓNICA</option>
-                                            <option value="Ciencias en el Área de Ciencias Computacionales">CIENCIAS EN
-                                                EL ÁREA
-                                                DE CIENCIAS COMPUTACIONALES</option>
-                                            <option value="Ciencias en el Área de Ciencia y Tecnología del Espacio">
-                                                CIENCIAS EN
-                                                EL ÁREA DE CIENCIA Y TECNOLOGÍA DEL ESPACIO</option>
-                                            <option value="Ciencias y Tecnologías Biomédicas">CIENCIAS Y TECNOLOGÍAS
-                                                BIOMÉDICAS
-                                            </option>
-                                            <option value="Ciencias y Tecnologías de Seguridad">CIENCIAS Y TECNOLOGÍAS
-                                                DE
-                                                SEGURIDAD</option>
-                                            <option value="Enseñanza de Ciencias Exactas">ENSEÑANZA DE CIENCIAS EXACTAS
-                                            </option>
+                                            <option value="Ciencias en la Especialidad de Astrofísica">CIENCIAS EN LA ESPECIALIDAD DE ASTROFÍSICA</option>
+                                            <option value="Ciencias en la Especialidad de Óptica">CIENCIAS EN LA ESPECIALIDAD DE ÓPTICA</option>
+                                            <option value="Ciencias en la Especialidad de Electrónica">CIENCIAS EN LA ESPECIALIDAD DE ELECTRÓNICA</option>
+                                            <option value="Ciencias en el Área de Ciencias Computacionales">CIENCIAS EN EL ÁREA DE CIENCIAS COMPUTACIONALES</option>
+                                            <option value="Ciencias en el Área de Ciencia y Tecnología del Espacio">CIENCIAS EN EL ÁREA DE CIENCIA Y TECNOLOGÍA DEL ESPACIO</option>
+                                            <option value="Ciencias y Tecnologías Biomédicas">CIENCIAS Y TECNOLOGÍAS BIOMÉDICAS</option>
+                                            <option value="Ciencias y Tecnologías de Seguridad">CIENCIAS Y TECNOLOGÍAS DE SEGURIDAD</option>
+                                            <option value="Enseñanza de Ciencias Exactas">ENSEÑANZA DE CIENCIAS EXACTAS</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="radio">
                                     <label><input type="radio" name="posgrado" id="posgrado2" value="Doctorado" />
                                         Doctorado</label>
-                                    <div class="form-group" id="doctorados"
-                                        style="margin-top: 10px; margin-left: 20px; display: none;">
+                                    <div class="form-group" id="doctorados" style="margin-top: 10px; margin-left: 20px; display: none;">
                                         <select class="form-control mayus-auto" id="doctoradoSelect">
                                             <option disabled selected>SELECCIONA</option>
-                                            <option value="Ciencias en la Especialidad de Astrofísica">CIENCIAS EN LA
-                                                ESPECIALIDAD DE ASTROFÍSICA</option>
-                                            <option value="Ciencias en la Especialidad de Óptica">CIENCIAS EN LA
-                                                ESPECIALIDAD DE
-                                                ÓPTICA</option>
-                                            <option value="Ciencias en la Especialidad de Electrónica">CIENCIAS EN LA
-                                                ESPECIALIDAD DE ELECTRÓNICA</option>
-                                            <option value="Ciencias en el Área de Ciencias Computacionales">CIENCIAS EN
-                                                EL ÁREA
-                                                DE CIENCIAS COMPUTACIONALES</option>
-                                            <option value="Ciencias en el Área de Ciencia y Tecnología del Espacio">
-                                                CIENCIAS EN
-                                                EL ÁREA DE CIENCIA Y TECNOLOGÍA DEL ESPACIO</option>
-                                            <option value="Ciencias y Tecnologías Biomédicas">CIENCIAS Y TECNOLOGÍAS
-                                                BIOMÉDICAS
-                                            </option>
-                                            <option value="Ciencias y Tecnologías de Seguridad">CIENCIAS Y TECNOLOGÍAS
-                                                DE
-                                                SEGURIDAD</option>
-                                            <option value="Enseñanza de Ciencias Exactas">ENSEÑANZA DE CIENCIAS EXACTAS
-                                            </option>
+                                            <option value="Ciencias en la Especialidad de Astrofísica">CIENCIAS EN LA ESPECIALIDAD DE ASTROFÍSICA</option>
+                                            <option value="Ciencias en la Especialidad de Óptica">CIENCIAS EN LA ESPECIALIDAD DE ÓPTICA</option>
+                                            <option value="Ciencias en la Especialidad de Electrónica">CIENCIAS EN LA ESPECIALIDAD DE ELECTRÓNICA</option>
+                                            <option value="Ciencias en el Área de Ciencias Computacionales">CIENCIAS EN EL ÁREA DE CIENCIAS COMPUTACIONALES</option>
+                                            <option value="Ciencias en el Área de Ciencia y Tecnología del Espacio">CIENCIAS EN EL ÁREA DE CIENCIA Y TECNOLOGÍA DEL ESPACIO</option>
+                                            <option value="Ciencias y Tecnologías Biomédicas">CIENCIAS Y TECNOLOGÍAS BIOMÉDICAS</option>
+                                            <option value="Ciencias y Tecnologías de Seguridad">CIENCIAS Y TECNOLOGÍAS DE SEGURIDAD</option>
+                                            <option value="Enseñanza de Ciencias Exactas">ENSEÑANZA DE CIENCIAS EXACTAS</option>
                                         </select>
                                     </div>
                                 </div>
@@ -419,7 +399,8 @@ document.getElementById("parentesco").addEventListener("change", function () {
                             <div class="form-group col-12 col-md-4">
                                 <label>Año de ingreso al posgrado*:</label>
                                 <input type="text" class="form-control mayus-auto solo-numeros" id="anioIngreso"
-                                    placeholder="AÑO DE INGRESO" maxlength="4">
+                                    placeholder="AÑO DE INGRESO" maxlength="4" required>
+                                <small class="text-danger error-mensaje"></small>
                             </div>
                             <div class="form-group col-12 col-md-8" id="periodoContainer">
                                 <label>Periodo de ingreso al posgrado*:</label>
@@ -452,31 +433,39 @@ document.getElementById("parentesco").addEventListener("change", function () {
                             </div>
                         </div>
 
+                        <!-- ============================================ -->
+                        <!-- DATOS DE ESTUDIO PREVIOS -->
+                        <!-- ============================================ -->
                         <h3>Datos de estudio previos</h3>
                         <hr class="red">
-                        <div class="row">
+
+                        <div class="row g-3">
                             <div class="form-group col-12 col-md-6">
                                 <label>Nombre de la institución educativa anterior al INAOE*:</label>
                                 <input type="text" class="form-control mayus-auto" id="institucion"
                                     placeholder="NOMBRE DE LA INSTITUCIÓN" required>
+                                <small class="text-danger error-mensaje"></small>
                             </div>
                             <div class="form-group col-12 col-md-6">
                                 <label>Nombre del grado académico que obtuviste*:</label>
                                 <input type="text" class="form-control mayus-auto" id="gradoAcademico"
                                     placeholder="GRADO ACADÉMICO" required>
+                                <small class="text-danger error-mensaje"></small>
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row g-3">
                             <div class="form-group col-12 col-md-6">
                                 <label>Año de obtención del grado*:</label>
                                 <input type="text" class="form-control mayus-auto solo-numeros" id="anioGrado"
                                     placeholder="AÑO DE OBTENCIÓN" maxlength="4" required>
+                                <small class="text-danger error-mensaje"></small>
                             </div>
                             <div class="form-group col-12 col-md-6">
                                 <label>Promedio obtenido*:</label>
                                 <input type="number" id="promedio" class="form-control" placeholder="PROMEDIO" min="0"
                                     max="10" step="0.01" required>
+                                <small class="text-danger error-mensaje"></small>
                             </div>
                         </div>
 
@@ -501,8 +490,12 @@ document.getElementById("parentesco").addEventListener("change", function () {
                             </div>
                         </div>
 
+                        <!-- ============================================ -->
+                        <!-- DOMINIO DEL IDIOMA INGLÉS -->
+                        <!-- ============================================ -->
                         <h2>Dominio del idioma inglés</h2>
                         <hr class="red">
+
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
@@ -542,8 +535,12 @@ document.getElementById("parentesco").addEventListener("change", function () {
                             </table>
                         </div>
 
+                        <!-- ============================================ -->
+                        <!-- EXPERIENCIA LABORAL -->
+                        <!-- ============================================ -->
                         <h2>Experiencia laboral</h2>
                         <hr class="red">
+
                         <div class="table-responsive">
                             <table class="table table-hover">
                                 <thead>
@@ -601,98 +598,141 @@ document.getElementById("parentesco").addEventListener("change", function () {
                             </table>
                         </div>
 
+                        <!-- ============================================ -->
+                        <!-- PUBLICACIONES CIENTÍFICAS -->
+                        <!-- ============================================ -->
                         <h2>Publicaciones científicas</h2>
                         <hr class="red">
-                       <div class="row g-3">
 
-                         <div class="col-12 col-md-4">
-        <div class="form-group">
-            <label>TÍTULO DE LA PUBLICACIÓN:</label>
-            <input type="text" class="form-control mayus-auto" placeholder="TÍTULO">
-        </div>
-    </div>
-    <div class="col-12 col-md-4">
-        <div class="form-group">
-            <label>TIPO DE PUBLICACIÓN:</label>
-            <input type="text" class="form-control mayus-auto" placeholder="ARTÍCULO DE REVISTA, LIBRO">
-        </div>
-    </div>
-    <div class="col-12 col-md-4">
-        <div class="form-group">
-            <label>DOI O ENLACE DIRECTO DE PUBLICACIÓN:</label>
-            <input type="text" class="form-control mayus-auto" placeholder="10.XXXX/XXXX O URL DE LA PUBLICACIÓN">
-        </div>
-    </div>
-</div>
+                        <!-- Publicación 1 -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-4">
+                                <div class="form-group">
+                                    <label>TÍTULO DE LA PUBLICACIÓN:</label>
+                                    <input type="text" class="form-control mayus-auto" placeholder="TÍTULO">
+                                </div>
+                            </div>
 
-    <div class="col-12 col-md-4">
-        <div class="form-group">
-            <label>TÍTULO DE LA PUBLICACIÓN:</label>
-            <input type="text" class="form-control mayus-auto" placeholder="TÍTULO">
-        </div>
-    </div>
-    <div class="col-12 col-md-4">
-        <div class="form-group">
-            <label>TIPO DE PUBLICACIÓN:</label>
-            <input type="text" class="form-control mayus-auto" placeholder="ARTÍCULO DE REVISTA, LIBRO">
-        </div>
-    </div>
-    <div class="col-12 col-md-4">
-        <div class="form-group">
-            <label>DOI O ENLACE DIRECTO DE PUBLICACIÓN:</label>
-            <input type="text" class="form-control mayus-auto" placeholder="10.XXXX/XXXX O URL DE LA PUBLICACIÓN">
-        </div>
-    </div>
-</div>
+                            <div class="col-12 col-md-4">
+                                <div class="form-group">
+                                    <label>TIPO DE PUBLICACIÓN:</label>
+                                    <input type="text" class="form-control mayus-auto"
+                                        placeholder="ARTÍCULO DE REVISTA, LIBRO">
+                                </div>
+                            </div>
 
- <div class="col-12 col-md-4">
-        <div class="form-group">
-            <label>TÍTULO DE LA PUBLICACIÓN:</label>
-            <input type="text" class="form-control mayus-auto" placeholder="TÍTULO">
-        </div>
-    </div>
-    <div class="col-12 col-md-4">
-        <div class="form-group">
-            <label>TIPO DE PUBLICACIÓN:</label>
-            <input type="text" class="form-control mayus-auto" placeholder="ARTÍCULO DE REVISTA, LIBRO">
-        </div>
-    </div>
-    <div class="col-12 col-md-4">
-        <div class="form-group">
-            <label>DOI O ENLACE DIRECTO DE PUBLICACIÓN:</label>
-            <input type="text" class="form-control mayus-auto" placeholder="10.XXXX/XXXX O URL DE LA PUBLICACIÓN">
-        </div>
-    </div>
-</div>
+                            <div class="col-12 col-md-4">
+                                <div class="form-group">
+                                    <label>DOI O ENLACE DIRECTO DE PUBLICACIÓN:</label>
+                                    <input type="text" class="form-control mayus-auto"
+                                        placeholder="10.XXXX/XXXX O URL DE LA PUBLICACIÓN">
+                                </div>
+                            </div>
+                        </div>
 
-<hr>
-                        
-                        
+                        <!-- Publicación 2 -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-4">
+                                <div class="form-group">
+                                    <label>TÍTULO DE LA PUBLICACIÓN:</label>
+                                    <input type="text" class="form-control mayus-auto" placeholder="TÍTULO">
+                                </div>
+                            </div>
 
+                            <div class="col-12 col-md-4">
+                                <div class="form-group">
+                                    <label>TIPO DE PUBLICACIÓN:</label>
+                                    <input type="text" class="form-control mayus-auto"
+                                        placeholder="ARTÍCULO DE REVISTA, LIBRO">
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <div class="form-group">
+                                    <label>DOI O ENLACE DIRECTO DE PUBLICACIÓN:</label>
+                                    <input type="text" class="form-control mayus-auto"
+                                        placeholder="10.XXXX/XXXX O URL DE LA PUBLICACIÓN">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Publicación 3 -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-4">
+                                <div class="form-group">
+                                    <label>TÍTULO DE LA PUBLICACIÓN:</label>
+                                    <input type="text" class="form-control mayus-auto" placeholder="TÍTULO">
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <div class="form-group">
+                                    <label>TIPO DE PUBLICACIÓN:</label>
+                                    <input type="text" class="form-control mayus-auto"
+                                        placeholder="ARTÍCULO DE REVISTA, LIBRO">
+                                </div>
+                            </div>
+
+                            <div class="col-12 col-md-4">
+                                <div class="form-group">
+                                    <label>DOI O ENLACE DIRECTO DE PUBLICACIÓN:</label>
+                                    <input type="text" class="form-control mayus-auto"
+                                        placeholder="10.XXXX/XXXX O URL DE LA PUBLICACIÓN">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- ============================================ -->
+                        <!-- MOTIVACIÓN -->
+                        <!-- ============================================ -->
                         <div class="row">
-                            <div class="form-group col-12 col-md-12">
+                            <div class="form-group col-12 col-md-10">
                                 <label>Razón por la que deseas estudiar un posgrado en el INAOE*:</label>
                                 <textarea class="form-control mayus-auto" id="razon" rows="3"
                                     placeholder="ESCRIBE TU MOTIVACIÓN..." required></textarea>
+                                <small class="text-danger error-mensaje"></small>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="form-group col-12 col-md-8">
                                 <label>Medio por el cual te enteraste de los posgrados que ofrece el INAOE:</label>
-                                <div class="radio"><label><input type="radio" name="medio" value="Feria de posgrados"
-                                            checked>
-                                        FERIA DE POSGRADOS</label></div>
-                                <div class="radio"><label><input type="radio" name="medio" value="Página de internet">
-                                        PÁGINA DE
-                                        INTERNET</label></div>
-                                <div class="radio"><label><input type="radio" name="medio" value="Amigo"> AMIGO</label>
+
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="medio" value="Feria de posgrados" checked>
+                                        FERIA DE POSGRADOS
+                                    </label>
                                 </div>
-                                <div class="radio"><label><input type="radio" name="medio" value="Otro"> OTRO</label>
+
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="medio" value="Página de internet">
+                                        PÁGINA DE INTERNET
+                                    </label>
+                                </div>
+
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="medio" value="Amigo">
+                                        AMIGO
+                                    </label>
+                                </div>
+
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="medio" value="Otro">
+                                        OTRO
+                                    </label>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- ============================================ -->
+                        <!-- BOTONES -->
+                        <!-- ============================================ -->
                         <div class="row align-items-center">
                             <div class="col-12 col-md-4"><small>*Campos obligatorios</small></div>
                             <div class="col-12 col-md-8 form-group">
@@ -756,6 +796,7 @@ document.getElementById("parentesco").addEventListener("change", function () {
                     </div>
                 </div>
             </main>
+
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
             <script src="https://framework-gb.cdn.gob.mx/gobmx.js"></script>
             <script src="https://framework-gb.cdn.gob.mx/assets/scripts/jquery-ui-datepicker.js"></script>
@@ -768,7 +809,6 @@ document.getElementById("parentesco").addEventListener("change", function () {
             <div class="modal fade" id="modalResumen" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
-
                         <div class="modal-header">
                             <h4 class="modal-title">Confirmar solicitud</h4>
                             <button type="button" class="close" data-dismiss="modal">
@@ -778,7 +818,6 @@ document.getElementById("parentesco").addEventListener("change", function () {
 
                         <div class="modal-body">
                             <p>Verifica que los datos sean correctos:</p>
-
                             <div id="contenidoResumen"></div>
                         </div>
 
@@ -786,16 +825,16 @@ document.getElementById("parentesco").addEventListener("change", function () {
                             <button type="button" class="btn btn-default" data-dismiss="modal">
                                 Cancelar
                             </button>
-
                             <button type="button" class="btn btn-primary" id="confirmarEnvio">
                                 Confirmar envío
                             </button>
                         </div>
-
                     </div>
                 </div>
             </div>
 
+        </div>
+    </div>
 </body>
 
 </html>
