@@ -13,6 +13,15 @@ class AdmisionModel {
         if (!select || select.selectedIndex < 0) return '';
         return select.options[select.selectedIndex].text.trim();
     }
+    obtenerParentesco() {
+    const parentesco = this.obtenerValor('parentesco');
+
+    if (parentesco === 'OTRO') {
+        return this.obtenerValor('especificarParentesco') || 'OTRO';
+    }
+
+    return parentesco;
+}
 
     obtenerRadio(formulario, nombre) {
         return formulario.querySelector(`input[name="${nombre}"]:checked`)?.value || '';
@@ -80,7 +89,7 @@ class AdmisionModel {
                 telFijo: this.obtenerValor('telFijoEmergencia'),
                 ext: this.obtenerValor('extEmergencia'),
                 telMovil: this.obtenerValor('telMovilEmergencia'),
-                parentesco: this.obtenerValor('parentesco')
+                parentesco: this.obtenerParentesco()
             },
             datosAcademicos: {
                 posgrado: this.obtenerRadio(formulario, 'posgrado'),

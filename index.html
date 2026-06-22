@@ -320,33 +320,39 @@
                                 <small class="text-danger error-mensaje"></small>
                             </div>
 
-                            <div class="form-group col-12 col-md-4">
-                                <label>Parentesco*:</label>
-                                <select class="form-control mayus-auto" id="parentesco" required>
-                                    <option value="" selected>SELECCIONA</option>
-                                    <option>MADRE</option>
-                                    <option>PADRE</option>
-                                    <option>HERMANO</option>
-                                    <option>HERMANA</option>
-                                    <option>TIO</option>
-                                    <option>TIA</option>
-                                    <option>ABUELO</option>
-                                    <option>ABUELA</option>
-                                    <option>PRIMO</option>
-                                    <option>PRIMA</option>
-                                    <option>HIJO</option>
-                                    <option>HIJA</option>
-                                    <option value="OTRO">OTRO</option>
-                                </select>
+             <div class="form-group col-12 col-md-4">
+        <label>Parentesco*:</label>
+        <select class="form-control mayus-auto" id="parentesco" required>
+            <option value="" selected>SELECCIONA</option>
+            <option>MADRE</option>
+            <option>PADRE</option>
+            <option>HERMANO</option>
+            <option>HERMANA</option>
+            <option>TIO</option>
+            <option>TIA</option>
+            <option>ABUELO</option>
+            <option>ABUELA</option>
+            <option>PRIMO</option>
+            <option>PRIMA</option>
+            <option>HIJO</option>
+            <option>HIJA</option>
+            <option value="OTRO">OTRO</option>
+        </select>
+        <small class="text-danger error-mensaje"></small>
+    </div>
 
-                                <div id="especificarParentescoContainer" style="display: none; margin-top: 15px;">
-                                    <label>Especificar*:</label>
-                                    <input type="text" class="form-control mayus-auto" id="especificarParentesco" placeholder="OTRO PARENTESCO">
-                                    <small class="text-danger error-mensaje"></small>
-                                </div>
-                                <small class="text-danger error-mensaje"></small>
-                            </div>
-                        </div>
+    <div class="form-group col-12 col-md-4"
+         id="especificarParentescoContainer"
+         style="display:none;">
+        <label>Especificar*:</label>
+        <input type="text"
+               class="form-control mayus-auto"
+               id="especificarParentesco"
+               placeholder="OTRO PARENTESCO">
+        <small class="text-danger error-mensaje"></small>
+    </div>
+
+</div>
 
                         <!-- ============================================ -->
                         <!-- DATOS ACADÉMICOS DEL ASPIRANTE -->

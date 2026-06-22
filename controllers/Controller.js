@@ -12,8 +12,11 @@ class AdmisionController {
         this.actualizarCurp();
         this.actualizarTitulacion();
         this.actualizarPosgrado();
+        
+        if (this.view.selectParentesco) {
+        this.view.selectParentesco.dispatchEvent(new Event('change'));
     }
-
+}
     vincularEventos() {
         this.view.form.addEventListener('submit', evento => {
             evento.preventDefault();
@@ -80,8 +83,24 @@ class AdmisionController {
             this.view.ocultarResumen();
             alert('Solicitud enviada con éxito. Pronto recibirás respuesta del INAOE.');
         });
-    }
+          if (this.view.selectParentesco) {
+    this.view.selectParentesco.addEventListener('change', () => {
 
+        const esOtro = this.view.selectParentesco.value === 'OTRO';
+
+        this.view.mostrarElemento(
+            this.view.especificarParentescoContainer,
+            esOtro,
+            false
+        );
+
+        if (!esOtro && this.view.especificarParentesco) {
+            this.view.especificarParentesco.value = '';
+            this.view.limpiarErrorCampo(this.view.especificarParentesco);
+        }
+    });
+}
+    }
     actualizarCurp() {
         const nacionalidad = this.view.form.querySelector('input[name="nacionalidad"]:checked')?.value;
         this.view.actualizarCurp(nacionalidad === 'Otra (Extranjera)');
@@ -171,27 +190,32 @@ class AdmisionController {
         return false;
     }
 
-    validarYMostrarResumen() {
-        this.view.limpiarValidaciones();
+  validarYMostrarResumen() {
+    this.view.limpiarValidaciones();
 
-        const requeridosValidos = this.validarCamposRequeridos();
-        const posgradoValido = this.validarSelectPosgrado();
-        const periodoValido = this.validarPeriodo();
-        const esValido = requeridosValidos && posgradoValido && periodoValido;
+    const requeridosValidos = this.validarCamposRequeridos();
+    const posgradoValido = this.validarSelectPosgrado();
+    const periodoValido = this.validarPeriodo();
+    const parentescoValido = this.view.validarParentesco();
 
-        if (!esValido) {
-            this.view.mostrarBanner('error');
-            this.view.desplazarPrimerError();
-            return;
-        }
+    const esValido =
+        requeridosValidos &&
+        posgradoValido &&
+        periodoValido &&
+        parentescoValido;
 
-        const datos = this.model.mapearDatosFormulario(this.view.form);
-        this.model.enviarDatos();
-        this.view.mostrarBanner('exito');
-        this.view.mostrarResumen(this.view.construirResumen(datos));
+    if (!esValido) {
+        this.view.mostrarBanner('error');
+        this.view.desplazarPrimerError();
+        return;
     }
-}
 
+    const datos = this.model.mapearDatosFormulario(this.view.form);
+    this.model.enviarDatos();
+    this.view.mostrarBanner('exito');
+    this.view.mostrarResumen(this.view.construirResumen(datos));
+}
+}
 document.addEventListener('DOMContentLoaded', () => {
     new AdmisionController(new AdmisionModel(), new AdmisionView());
 });
