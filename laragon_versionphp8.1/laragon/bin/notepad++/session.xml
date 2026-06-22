@@ -1,0 +1,9 @@
+<NotepadPlus>
+    <Session activeView="0">
+        <mainView activeIndex="1">
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="9747442" startPos="0" endPos="0" selMode="0" lang="JSON" encoding="-1" filename="C:\Users\LVC\Downloads\solcitudes.json" backupFilePath="" originalFileLastModifTimestamp="0" mapFirstVisibleDisplayLine="-1" mapFirstVisibleDocLine="-1" mapLastVisibleDocLine="-1" mapNbLine="-1" mapHigherPos="-1" mapWidth="-1" mapHeight="-1" mapKByteInDoc="0" mapWrapIndentMode="-1" mapIsWrap="no" />
+            <File firstVisibleLine="0" xOffset="0" scrollWidth="862" startPos="37552" endPos="37552" selMode="0" lang="INI file" encoding="-1" filename="C:\laragon\bin\php\php-8.1.10-Win32-vs16-x64\php.ini" backupFilePath="" originalFileLastModifTimestamp="1710367376" mapFirstVisibleDisplayLine="-1" mapFirstVisibleDocLine="-1" mapLastVisibleDocLine="-1" mapNbLine="-1" mapHigherPos="-1" mapWidth="-1" mapHeight="-1" mapKByteInDoc="0" mapWrapIndentMode="-1" mapIsWrap="no" />
+        </mainView>
+        <subView activeIndex="0" />
+    </Session>
+</NotepadPlus>

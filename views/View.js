@@ -48,52 +48,37 @@ class AdmisionView {
         return true;
     }
 
-   inicializarCalendario() {
-    const campoFecha = document.getElementById('fecha_nacimiento');
-    if (!campoFecha) return;
+    inicializarCalendario() {
+        const campoFecha = document.getElementById('fecha_nacimiento');
+        if (!campoFecha) return;
 
-    if (window.jQuery && window.jQuery.fn.datepicker) {
-        window.jQuery('#fecha_nacimiento').datepicker({
-            changeYear: true,
-            yearRange: '-100:+0',
-            dateFormat: 'dd/mm/yy',
-
-            onSelect: function(dateText) {
-
-                // Asegurar que el valor quede asignado
-                this.value = dateText;
-
-                // Limpiar validación HTML5
-                this.setCustomValidity('');
-
-                // Quitar clases de error comunes
-                this.classList.remove('is-invalid');
-                this.classList.remove('error');
-
-                // Limpiar mensaje de error
-                const error = this.closest('.datepicker-group')
-                    ?.querySelector('.error-mensaje');
-
-                if (error) {
-                    error.textContent = '';
+        if (window.jQuery && window.jQuery.fn.datepicker) {
+            window.jQuery('#fecha_nacimiento').datepicker({
+                changeYear: true,
+                yearRange: '-100:+0',
+                dateFormat: 'dd/mm/yy',
+                onSelect: function(dateText) {
+                    this.value = dateText;
+                    this.setCustomValidity('');
+                    this.classList.remove('is-invalid');
+                    this.classList.remove('error');
+                    const error = this.closest('.datepicker-group')?.querySelector('.error-mensaje');
+                    if (error) {
+                        error.textContent = '';
+                    }
+                    this.dispatchEvent(new Event('input', { bubbles: true }));
+                    this.dispatchEvent(new Event('change', { bubbles: true }));
                 }
+            });
+            return;
+        }
 
-                // Disparar eventos para que la validación detecte el cambio
-                this.dispatchEvent(new Event('input', { bubbles: true }));
-                this.dispatchEvent(new Event('change', { bubbles: true }));
-            }
+        campoFecha.type = 'date';
+        campoFecha.removeAttribute('readonly');
+        campoFecha.addEventListener('click', () => {
+            if (campoFecha.showPicker) campoFecha.showPicker();
         });
-
-        return;
     }
-
-    campoFecha.type = 'date';
-    campoFecha.removeAttribute('readonly');
-
-    campoFecha.addEventListener('click', () => {
-        if (campoFecha.showPicker) campoFecha.showPicker();
-    });
-}
 
     ocultarElementosIniciales() {
         this.mostrarElemento(this.divMaestrias, false, false);
@@ -195,7 +180,7 @@ class AdmisionView {
 
     limpiarCampoNumerico(campo) {
         const valorOriginal = campo.value;
-        const valorLimpio = ValidacionModel.soloNumeros(valorOriginal);
+        const valorLimpio = valorOriginal.replace(/\D/g, '');
 
         if (valorOriginal !== valorLimpio) {
             campo.value = valorLimpio;
@@ -456,7 +441,7 @@ class AdmisionView {
 
         if (experienciaLaboral.length > 0) {
             const expValida = experienciaLaboral.filter(exp => 
-                exp.institucion && exp.institucion !== 'No especificada'
+                exp.institucion && exp.institucion !== 'No especificado' && exp.institucion !== ''
             );
             if (expValida.length > 0) {
                 expValida.forEach(exp => {
@@ -487,7 +472,7 @@ class AdmisionView {
 
         if (publicaciones.length > 0) {
             const pubValida = publicaciones.filter(pub => 
-                pub.titulo && pub.titulo !== 'No especificado'
+                pub.titulo && pub.titulo !== 'No especificado' && pub.titulo !== ''
             );
             if (pubValida.length > 0) {
                 pubValida.forEach(pub => {
@@ -495,7 +480,7 @@ class AdmisionView {
                         <li>
                             <strong>${this.texto(pub.titulo)}</strong> - 
                             ${this.texto(pub.tipoPublicacion)}
-                            ${pub.doi && pub.doi !== 'No especificado' ? `(DOI: ${this.texto(pub.doi)})` : ''}
+                            ${pub.doi && pub.doi !== 'No especificado' && pub.doi !== '' ? `(DOI: ${this.texto(pub.doi)})` : ''}
                         </li>
                     `;
                 });
@@ -512,7 +497,7 @@ class AdmisionView {
             <!-- ========================================== -->
             <!-- MOTIVACIÓN -->
             <!-- ========================================== -->
-            <div class="section-title">💡 Motivacidivón</>
+            <div class="section-title">💡 Motivación</div>
             <ul>
                 <li><strong>Razón para estudiar en INAOE:</strong> ${this.texto(razon)}</li>
                 <li><strong>Medio por el que se enteró:</strong> ${this.texto(medio)}</li>

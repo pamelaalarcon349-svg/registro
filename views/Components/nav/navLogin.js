@@ -38,7 +38,7 @@ class NavBar extends HTMLElement {
                 <a>Ayuda</a>
               </li>
               <li class="dropdown">
-                <a href="http://192.168.72.19/reportes_dfa/index.html">Reportes</a>
+             
               </li>
             </ul>
           </div>
