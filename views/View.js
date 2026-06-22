@@ -48,25 +48,52 @@ class AdmisionView {
         return true;
     }
 
-    inicializarCalendario() {
-        const campoFecha = document.getElementById('fecha_nacimiento');
-        if (!campoFecha) return;
+   inicializarCalendario() {
+    const campoFecha = document.getElementById('fecha_nacimiento');
+    if (!campoFecha) return;
 
-        if (window.jQuery && window.jQuery.fn.datepicker) {
-            window.jQuery('#fecha_nacimiento').datepicker({
-                changeYear: true,
-                yearRange: '-100:+0',
-                dateFormat: 'dd/mm/yy'
-            });
-            return;
-        }
+    if (window.jQuery && window.jQuery.fn.datepicker) {
+        window.jQuery('#fecha_nacimiento').datepicker({
+            changeYear: true,
+            yearRange: '-100:+0',
+            dateFormat: 'dd/mm/yy',
 
-        campoFecha.type = 'date';
-        campoFecha.removeAttribute('readonly');
-        campoFecha.addEventListener('click', () => {
-            if (campoFecha.showPicker) campoFecha.showPicker();
+            onSelect: function(dateText) {
+
+                // Asegurar que el valor quede asignado
+                this.value = dateText;
+
+                // Limpiar validación HTML5
+                this.setCustomValidity('');
+
+                // Quitar clases de error comunes
+                this.classList.remove('is-invalid');
+                this.classList.remove('error');
+
+                // Limpiar mensaje de error
+                const error = this.closest('.datepicker-group')
+                    ?.querySelector('.error-mensaje');
+
+                if (error) {
+                    error.textContent = '';
+                }
+
+                // Disparar eventos para que la validación detecte el cambio
+                this.dispatchEvent(new Event('input', { bubbles: true }));
+                this.dispatchEvent(new Event('change', { bubbles: true }));
+            }
         });
+
+        return;
     }
+
+    campoFecha.type = 'date';
+    campoFecha.removeAttribute('readonly');
+
+    campoFecha.addEventListener('click', () => {
+        if (campoFecha.showPicker) campoFecha.showPicker();
+    });
+}
 
     ocultarElementosIniciales() {
         this.mostrarElemento(this.divMaestrias, false, false);
