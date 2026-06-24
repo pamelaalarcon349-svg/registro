@@ -115,7 +115,7 @@
 
                         <div class="row g-3">
                             <div class="form-group col-12 col-md-4">
-                                <label>Sexo*:</label>
+                                <label>Genero*:</label>
                                 <select class="form-control mayus-auto" id="sexo" required>
                                     <option value="" selected>SELECCIONA</option>
                                     <option>HOMBRE</option>
@@ -841,6 +841,96 @@
 
         </div>
     </div>
+    <script>
+// ============================================
+// FUNCIÓN PARA ENVIAR DATOS AL BACKEND
+// ============================================
+async function enviarDatosAlServidor(datos) {
+    try {
+        // URL del backend (cambia el puerto si es necesario)
+const url = 'http://localhost/registro/backend/api/registro.php';
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(datos)
+        });
+
+        const resultado = await response.json();
+
+        if (resultado.success) {
+            return { 
+                success: true, 
+                message: resultado.message,
+                idAspirante: resultado.idAspirante
+            };
+        } else {
+            return { 
+                success: false, 
+                message: resultado.message || 'Error al enviar la solicitud' 
+            };
+        }
+    } catch (error) {
+        console.error('❌ Error de conexión:', error);
+        return { 
+            success: false, 
+            message: 'Error de conexión con el servidor. ¿Está el backend corriendo?' 
+        };
+    }
+}
+
+// ============================================
+// MODIFICAR EL EVENTO DE CONFIRMACIÓN
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Buscar el botón de confirmar envío
+    const btnConfirmar = document.getElementById('confirmarEnvio');
+    
+    if (btnConfirmar) {
+        btnConfirmar.addEventListener('click', async function(e) {
+            try {
+                // Ocultar el modal
+                const modal = document.getElementById('modalResumen');
+                if (modal && window.jQuery) {
+                    window.jQuery(modal).modal('hide');
+                }
+                
+                // Cambiar texto del botón
+                const textoOriginal = this.textContent;
+                this.textContent = '⏳ Enviando...';
+                this.disabled = true;
+                
+                // Obtener datos del formulario
+                const form = document.getElementById('formAdmision');
+                const model = new AdmisionModel();
+                const datos = model.mapearDatosFormulario(form);
+                
+                // Enviar al servidor
+                const resultado = await enviarDatosAlServidor(datos);
+                
+                // Restaurar botón
+                this.textContent = textoOriginal;
+                this.disabled = false;
+                
+                if (resultado.success) {
+                    alert('✅ ' + resultado.message + '\nID de registro: ' + resultado.idAspirante);
+                    // Opcional: limpiar formulario
+                    // form.reset();
+                } else {
+                    alert('❌ ' + resultado.message);
+                }
+            } catch (error) {
+                console.error('❌ Error:', error);
+                alert('❌ Ocurrió un error al procesar la solicitud.');
+                this.disabled = false;
+                this.textContent = 'Confirmar envío';
+            }
+        });
+    }
+});
+</script>
 </body>
 
 </html>

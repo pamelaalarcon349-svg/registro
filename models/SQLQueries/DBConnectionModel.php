@@ -19,9 +19,9 @@ class DBConnectionModel {
       
         /* Servidor de pruebas */
   
-        $this->server = '192.168.35.68';
-        $this->username = 'sga';
-        $this->password = '123456';
+        $this->server = '192.168.32.155';
+        $this->username = 'URIELM37\Drive';
+        $this->password = 'rgzFcPDMxp$$320';
         $this->database = 'pRegistro';
 
         /*$this->server = '192.168.73.34';
