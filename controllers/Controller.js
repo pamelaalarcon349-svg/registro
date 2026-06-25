@@ -78,7 +78,7 @@ class AdmisionController {
             const datos = this.model.mapearDatosFormulario(this.view.form);
             
             // Simular envío - reemplazar con tu fetch real
-            console.log('📤 Datos a enviar:', datos);
+            console.log('Datos a enviar:', datos);
             
             // Si tienes un endpoint real, descomenta esto:
             /*
@@ -192,6 +192,9 @@ class AdmisionController {
         return this.view.validarParentesco();
     }
 
+    // ==========================================
+    // 👇 NUEVO: VALIDAR Y MOSTRAR RESUMEN
+    // ==========================================
     validarYMostrarResumen() {
         this.view.limpiarValidaciones();
 
@@ -199,8 +202,15 @@ class AdmisionController {
         const posgradoValido = this.validarSelectPosgrado();
         const periodoValido = this.validarPeriodo();
         const parentescoValido = this.validarParentesco();
+        
+        // 👇 NUEVO: Validar nacionalidad extranjera
+        const nacionalidadExtranjeraValida = this.view.validarNacionalidadExtranjera();
 
-        const esValido = requeridosValidos && posgradoValido && periodoValido && parentescoValido;
+        const esValido = requeridosValidos && 
+                         posgradoValido && 
+                         periodoValido && 
+                         parentescoValido && 
+                         nacionalidadExtranjeraValida;
 
         if (!esValido) {
             this.view.mostrarBanner('error');

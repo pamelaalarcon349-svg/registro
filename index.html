@@ -126,8 +126,17 @@
                                         Mexicana</label>
                                 </div>
                                 <div class="radio">
-                                    <label><input type="radio" name="nacionalidad" value="Otra (Extranjera)"> Otra
-                                        (Extranjera)</label>
+                                    <label><input type="radio" name="nacionalidad" value="Otra (Extranjera)"> 
+                                        Otra (Extranjera)</label>
+                                </div>
+                                
+                                <!-- Selector de nacionalidades extranjeras -->
+                                <div id="nacionalidadExtranjeraContainer" style="display:none; margin-top: 15px; margin-left: 20px;">
+                                    <label>Selecciona tu nacionalidad*:</label>
+                                    <select class="form-control mayus-auto" id="nacionalidadExtranjera">
+                                        <option value="" selected>SELECCIONA</option>
+                                    </select>
+                                    <small class="text-danger error-mensaje"></small>
                                 </div>
                             </div>
                         </div>
@@ -183,7 +192,7 @@
 
                             <div class="form-group col-12 col-md-4">
                                 <div class="form-group datepicker-group">
-                                    <label for="fecha_nacimiento">Fecha de nacimiento:</label>
+                                    <label for="fecha_nacimiento">Fecha de nacimiento*:</label>
                                     <div class="input-icon">
                                         <input type="text" class="form-control" id="fecha_nacimiento"
                                             placeholder="FECHA DE NACIMIENTO" required>
@@ -379,19 +388,13 @@
                             <div class="form-group col-12 col-md-4">
                                 <label>Parentesco*:</label>
                                 <select class="form-control mayus-auto" id="parentesco" required>
-                                    <option value="" selected>SELECCIONA</option>
+                                    <option value="" selected disabled>SELECCIONA</option>
                                     <option>MADRE</option>
                                     <option>PADRE</option>
-                                    <option>HERMANO</option>
-                                    <option>HERMANA</option>
-                                    <option>TIO</option>
-                                    <option>TIA</option>
-                                    <option>ABUELO</option>
-                                    <option>ABUELA</option>
-                                    <option>PRIMO</option>
-                                    <option>PRIMA</option>
-                                    <option>HIJO</option>
-                                    <option>HIJA</option>
+                                    <option>HERMANO(A)</option>
+                                    <option>TIO(A)</option>
+                                    <option>PRIMO(A)</option>
+                                    <option>HIJO(A)</option>
                                     <option value="OTRO">OTRO</option>
                                 </select>
                                 <small class="text-danger error-mensaje"></small>
@@ -605,7 +608,7 @@
                                         <td><input type="text" class="form-control mayus-auto"
                                                 placeholder="INSTITUCIÓN"></td>
                                         <td><select class="form-control mayus-auto">
-                                                <option selected>SELECCIONA</option>
+                                                <option selected disabled>SELECCIONA</option>
                                                 <option>PROFESIONAL</option>
                                                 <option>DOCENTE</option>
                                                 <option>OTRO</option>
@@ -619,7 +622,7 @@
                                         <td><input type="text" class="form-control mayus-auto"
                                                 placeholder="INSTITUCIÓN"></td>
                                         <td><select class="form-control mayus-auto">
-                                                <option selected>SELECCIONA</option>
+                                                <option selected disabled>SELECCIONA</option>
                                                 <option>PROFESIONAL</option>
                                                 <option>DOCENTE</option>
                                                 <option>OTRO</option>
@@ -633,7 +636,7 @@
                                         <td><input type="text" class="form-control mayus-auto"
                                                 placeholder="INSTITUCIÓN"></td>
                                         <td><select class="form-control mayus-auto">
-                                                <option selected>SELECCIONA</option>
+                                                <option selected disabled>SELECCIONA</option>
                                                 <option>PROFESIONAL</option>
                                                 <option>DOCENTE</option>
                                                 <option>OTRO</option>

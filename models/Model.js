@@ -1,3 +1,5 @@
+// models/Model.js
+
 class AdmisionModel {
     constructor() {
         this.datos = {};
@@ -14,12 +16,37 @@ class AdmisionModel {
         return select.options[select.selectedIndex].text.trim();
     }
 
+    // ==========================================
+    // 👇 MODIFICADO: Obtener parentesco
+    // ==========================================
     obtenerParentesco() {
         const parentesco = this.obtenerValor('parentesco');
         if (parentesco === 'OTRO') {
             return this.obtenerValor('especificarParentesco') || 'OTRO';
         }
         return parentesco;
+    }
+
+    // ==========================================
+    // 👇 NUEVO: Obtener nacionalidad completa
+    // ==========================================
+    obtenerNacionalidadCompleta(formulario) {
+        const nacionalidadBase = this.obtenerRadio(formulario, 'nacionalidad');
+        
+        // Si es mexicana, devolver directamente
+        if (nacionalidadBase === 'Mexicana') {
+            return 'Mexicana';
+        }
+        
+        // Si es extranjera, obtener la nacionalidad seleccionada del select
+        const nacionalidadExtranjera = this.obtenerValor('nacionalidadExtranjera');
+        
+        // Si no seleccionó ninguna, devolver el valor base
+        if (!nacionalidadExtranjera || nacionalidadExtranjera === 'SELECCIONA') {
+            return 'Extranjera';
+        }
+        
+        return nacionalidadExtranjera;
     }
 
     obtenerRadio(formulario, nombre) {
@@ -118,9 +145,13 @@ class AdmisionModel {
         };
     }
 
+    // ==========================================
+    // MAPEAR DATOS DEL FORMULARIO
+    // ==========================================
     mapearDatosFormulario(formulario) {
         this.datos = {
-            nacionalidad: this.obtenerRadio(formulario, 'nacionalidad'),
+            // 👇 MODIFICADO: Usar el nuevo método
+            nacionalidad: this.obtenerNacionalidadCompleta(formulario),
             curp: this.obtenerValor('curp'),
             nombre: this.obtenerValor('nombre'),
             primerApellido: this.obtenerValor('primerApellido'),
@@ -199,3 +230,12 @@ class AdmisionModel {
         return Promise.resolve({ codigo: 200, mensaje: 'Datos transferidos exitosamente al servidor.' });
     }
 }
+
+// ==========================================
+// EXPORTAR CLASE PARA USO GLOBAL
+// ==========================================
+if (typeof window !== 'undefined') {
+    window.AdmisionModel = AdmisionModel;
+}
+
+console.log('📦 Clase AdmisionModel cargada correctamente');

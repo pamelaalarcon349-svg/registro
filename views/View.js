@@ -27,6 +27,10 @@ class AdmisionView {
         this.btnEnviarModal = document.getElementById('btnEnviarModal');
         this.btnConfirmarEnvio = document.getElementById('confirmarEnvio');
 
+        // NUEVO: Elementos de nacionalidad extranjera
+        this.nacionalidadExtranjeraContainer = document.getElementById('nacionalidadExtranjeraContainer');
+        this.selectNacionalidadExtranjera = document.getElementById('nacionalidadExtranjera');
+
         // Radio buttons de posgrado
         this.radiosPosgrado = document.querySelectorAll('input[name="posgrado"]');
 
@@ -47,7 +51,6 @@ class AdmisionView {
 
         if (tipoPosgrado === 'Maestría') {
             const reglas = {
-                // CORREGIDO: "Enseñanza de Ciencias Exactas" (sin "las")
                 'Enseñanza de Ciencias Exactas': {
                     periodos: ['Agosto - Diciembre', 'Enero - Mayo', 'Mayo - Julio'],
                     formasEvaluacion: ['Examen de Admisión', 'Entrevista']
@@ -170,7 +173,7 @@ class AdmisionView {
             });
         }
 
-        // Evento para nacionalidad
+        // MODIFICADO: Evento para nacionalidad
         document.querySelectorAll('input[name="nacionalidad"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 const esExtranjero = e.target.value === 'Otra (Extranjera)';
@@ -199,6 +202,9 @@ class AdmisionView {
             });
         }
 
+        // Cargar las nacionalidades extranjeras
+        this.cargarNacionalidadesExtranjeras();
+
         // Inicializar elementos ocultos
         this.ocultarElementosIniciales();
 
@@ -210,6 +216,72 @@ class AdmisionView {
 
         // Inicializar validación de números
         this.inicializarValidacionNumeros();
+    }
+
+    // ==========================================
+    // CARGAR NACIONALIDADES EXTRANJERAS
+    // ==========================================
+    cargarNacionalidadesExtranjeras() {
+        if (!this.selectNacionalidadExtranjera) return;
+        
+        // Lista de todas las nacionalidades 
+        const nacionalidades = [
+            'AFGANO', 'ALBANÉS', 'ALEMÁN', 'ANDORRANO', 'ANGOLEÑO', 
+            'ANTIGUANO', 'ARGELINO', 'ARGENTINO', 'ARMENIO', 'AUSTRALIANO',
+            'AUSTRIACO', 'AZERBAIYANO', 'BAHAMEÑO', 'BANGLADESÍ', 'BARBADENSE',
+            'BAREINÍ', 'BELGA', 'BELICEÑO', 'BENINÉS', 'BIELORRUSO',
+            'BIRMANO', 'BOLIVIANO', 'BOSNIOHERZEGOVINO', 'BOTSUANO', 'BRASILEÑO',
+            'BRUNEANO', 'BÚLGARO', 'BURKINÉS', 'BURUNDÉS', 'BUTANÉS',
+            'CABOVERDIANO', 'CAMBOYANO', 'CAMERUNÉS', 'CANADIENSE', 'CHADIANO',
+            'CATARÍ', 'CHILENO', 'CHINO', 'CHIPRIOTA', 'COLOMBIANO',
+            'COMORENSE', 'CONGOLEÑO','CONGOLENIO', 'NORCOREANO', 'SURCOREANO', 'COSTAMARFILEÑO',
+            'COSTARRICENSE', 'CROATA', 'CUBANO', 'DANÉS', 'DOMINIQUÉS',
+            'ECUATORIANO', 'EGIPCIO', 'SALVADOREÑO', 'EMIRATÍ', 'ERITREO',
+            'ESLOVACO', 'ESLOVENO', 'ESPAÑOL', 'ESTADOUNIDENSE', 'ESTONIO',
+            'ESUATINÍ', 'ETÍOPE', 'FILIPINO', 'FINLANDÉS', 'FIYIANO',
+            'FRANCÉS', 'GABONÉS', 'GAMBIANO', 'GEORGIANO', 'GHANÉS',
+            'GRANADINO', 'GRIEGO', 'GUATEMALTECO', 'GUINEANO', 'ECUATOGUINEANO',
+            'GUYANÉS', 'HAITIANO', 'HONDUREÑO', 'HÚNGARO', 'INDIO',
+            'INDONESIO', 'IRAQUÍ', 'IRANÍ', 'IRLANDÉS', 'ISLANDÉS',
+            'MARSHALÉS', 'SALOMONENSE', 'ISRAELÍ', 'ITALIANO', 'JAMAICANO',
+            'JAPONÉS', 'JORDANO', 'KAZAJO', 'KENIATA', 'KIRGUÍS',
+            'KIRIBATIANO', 'KOSOVAR', 'KUWAITÍ', 'LAOSIANO', 'LESOTENSE',
+            'LETÓN', 'LIBANÉS', 'LIBERIANO', 'LIBIO', 'LIECHTENSTEINIANO',
+            'LITUANO', 'LUXEMBURGUÉS', 'MACEDONIO', 'MALGACHE', 'MALASIO',
+            'MALAUI', 'MALDIVO', 'MALÍ', 'MALTÉS', 'MARROQUÍ',
+            'MAURICIANO', 'MAURITANO', 'MICRONESIO', 'MOLDAVO',
+            'MONEGASCO', 'MONGOL', 'MONTENEGRINO', 'MOZAMBIQUEÑO', 'NAMIBIO',
+            'NAURUANO', 'NEPALÉS', 'NICARAGÜENSE', 'NIGERINO', 'NIGERIANO',
+            'NORUEGO', 'NEOZELANDÉS', 'OMANÍ', 'NEERLANDÉS', 'PAKISTANÍ',
+            'PALAUANO', 'PALESTINO', 'PANAMEÑO', 'PAPÚ', 'PARAGUAYO',
+            'PERUANO', 'POLACO', 'PORTUGUÉS', 'BRITÁNICO', 'CENTROAFRICANO',
+            'CHECO', 'DOMINICANO', 'RUANDÉS', 'RUMANO', 'RUSO',
+            'SAUDÍ','SAMOANO', 'SANCRISTOBALEÑO', 'SANMARINENSE', 'SANVICENTINO', 'SANTALUCENSE',
+            'SANTOMENSE', 'SENEGALÉS', 'SERBIO', 'SEYCHELLENSE', 'SIERRALEONÉS',
+            'SINGAPURENSE', 'SIRIO', 'SOMALÍ', 'ESRILANQUÉS', 'SUDAFRICANO',
+            'SUDANÉS', 'SURSUDANÉS', 'SUECO', 'SUIZO', 'SURINAMÉS',
+            'TAILANDÉS', 'TAIWANÉS', 'TAYIKO', 'TANZANO', 'TIMORENSE',
+            'TOGOLÉS', 'TONGANO', 'TRINITENSE', 'TUNECINO', 'TURCOMANO',
+            'TURCO', 'TUVALUANO', 'UCRANIANO', 'UGANDÉS', 'URUGUAYO',
+            'UZBEKO', 'VANUATUENSE', 'VATICANO', 'VENEZOLANO', 'VIETNAMITA',
+            'YEMENÍ', 'YIBUTIANO', 'ZAMBIANO', 'ZIMBABUENSE'
+        ];
+        
+        // Ordenar alfabéticamente
+        nacionalidades.sort();
+        
+        // Limpiar opciones existentes (excepto la primera)
+        while (this.selectNacionalidadExtranjera.options.length > 1) {
+            this.selectNacionalidadExtranjera.remove(1);
+        }
+        
+        // Agregar las nuevas opciones
+        nacionalidades.forEach(nacionalidad => {
+            const option = document.createElement('option');
+            option.value = nacionalidad;
+            option.textContent = nacionalidad;
+            this.selectNacionalidadExtranjera.appendChild(option);
+        });
     }
 
     // ==========================================
@@ -353,6 +425,9 @@ class AdmisionView {
         this.mostrarElemento(this.especificarTitulacionContainer, false, false);
         this.mostrarElemento(this.especificarParentescoContainer, false, false);
         
+        // Ocultar selector de nacionalidades extranjeras
+        this.mostrarElemento(this.nacionalidadExtranjeraContainer, false, false);
+        
         // Mostrar mensaje inicial en periodos
         if (this.opcionesPeriodo) {
             this.opcionesPeriodo.innerHTML = '<p class="periodo-mensaje">Selecciona un posgrado para ver los periodos disponibles.</p>';
@@ -376,19 +451,37 @@ class AdmisionView {
         elemento.style.display = visible ? 'block' : 'none';
     }
 
+    // Método actualizarCurp
     actualizarCurp(esExtranjero) {
         if (!this.inputCurp || !this.linkCurp) return;
 
         if (esExtranjero) {
+            // Deshabilitar campo CURP
             this.inputCurp.disabled = true;
             this.inputCurp.value = '';
             this.limpiarErrorCampo(this.inputCurp);
+            // Deshabilitar enlace
             this.linkCurp.classList.add('deshabilitado-total');
+            
+            // Mostrar selector de nacionalidades y hacerlo obligatorio
+            this.mostrarElemento(this.nacionalidadExtranjeraContainer, true);
+            if (this.selectNacionalidadExtranjera) {
+                this.selectNacionalidadExtranjera.required = true;
+            }
             return;
         }
 
+        // Habilitar campo CURP
         this.inputCurp.disabled = false;
         this.linkCurp.classList.remove('deshabilitado-total');
+        
+        // Ocultar selector de nacionalidades y limpiar
+        this.mostrarElemento(this.nacionalidadExtranjeraContainer, false);
+        if (this.selectNacionalidadExtranjera) {
+            this.selectNacionalidadExtranjera.required = false;
+            this.selectNacionalidadExtranjera.value = '';
+            this.limpiarErrorCampo(this.selectNacionalidadExtranjera);
+        }
     }
 
     actualizarTitulacion(mostrarCampo) {
@@ -495,6 +588,9 @@ class AdmisionView {
         if (this.errorPeriodo) this.errorPeriodo.textContent = mensaje;
     }
 
+    // ==========================================
+    // VALIDAR PARENTESCO
+    // ==========================================
     validarParentesco() {
         if (!this.selectParentesco) return true;
         
@@ -515,6 +611,28 @@ class AdmisionView {
         }
         
         this.limpiarErrorCampo(this.selectParentesco);
+        return true;
+    }
+
+    // ==========================================
+    // VALIDAR NACIONALIDAD EXTRANJERA
+    // ==========================================
+    validarNacionalidadExtranjera() {
+        // Si el selector no está visible, no es necesario validar
+        if (this.nacionalidadExtranjeraContainer.style.display === 'none') {
+            return true;
+        }
+        
+        if (!this.selectNacionalidadExtranjera) return true;
+        
+        const valor = this.selectNacionalidadExtranjera.value;
+        
+        if (valor === '' || valor === 'SELECCIONA') {
+            this.mostrarErrorCampo(this.selectNacionalidadExtranjera, 'Selecciona tu nacionalidad');
+            return false;
+        }
+        
+        this.limpiarErrorCampo(this.selectNacionalidadExtranjera);
         return true;
     }
 
@@ -604,7 +722,7 @@ class AdmisionView {
         const motivacion = datos.motivacion || {};
 
         let html = `
-            <div class="section-title">📋 Datos personales</div>
+            <div class="section-title">Datos personales</div>
             <ul>
                 <li><strong>Nacionalidad:</strong> ${this.texto(datos.nacionalidad)}</li>
                 <li><strong>CURP:</strong> ${this.texto(datos.curp)}</li>
@@ -614,25 +732,25 @@ class AdmisionView {
                 <li><strong>Lugar de nacimiento:</strong> ${this.texto(datos.lugarNacimiento)}</li>
             </ul>
 
-            <div class="section-title">📞 Contacto</div>
+            <div class="section-title">Contacto</div>
             <ul>
                 <li><strong>Teléfono móvil:</strong> ${this.texto(contacto.telMovil)}</li>
                 <li><strong>Correo electrónico:</strong> ${this.texto(email)}</li>
             </ul>
 
-            <div class="section-title">🏠 Domicilio</div>
+            <div class="section-title">Domicilio</div>
             <ul>
                 <li><strong>Dirección:</strong> ${this.texto(direccion)}</li>
                 <li><strong>País:</strong> ${this.texto(domicilio.pais)}</li>
             </ul>
 
-            <div class="section-title">🚨 Contacto de emergencia</div>
+            <div class="section-title">Contacto de emergencia</div>
             <ul>
                 <li><strong>Nombre:</strong> ${this.texto(nombreEmergencia)}</li>
                 <li><strong>Parentesco:</strong> ${this.texto(contactoEmergencia.parentesco)}</li>
             </ul>
 
-            <div class="section-title">🎓 Datos académicos</div>
+            <div class="section-title">Datos académicos</div>
             <ul>
                 <li><strong>Posgrado:</strong> ${this.texto(posgradoDetalle)}</li>
                 <li><strong>Año de ingreso:</strong> ${this.texto(anioIngreso)}</li>
@@ -646,14 +764,14 @@ class AdmisionView {
         html += `
             </ul>
 
-            <div class="section-title">📚 Estudios previos</div>
+            <div class="section-title">Estudios previos</div>
             <ul>
                 <li><strong>Institución:</strong> ${this.texto(estudiosPrevios.institucion)}</li>
                 <li><strong>Grado:</strong> ${this.texto(estudiosPrevios.gradoAcademico)}</li>
                 <li><strong>Promedio:</strong> ${this.texto(estudiosPrevios.promedio)}</li>
             </ul>
 
-            <div class="section-title">💡 Motivación</div>
+            <div class="section-title">Motivación</div>
             <ul>
                 <li><strong>Razón:</strong> ${this.texto(motivacion.razon)}</li>
             </ul>
@@ -681,7 +799,7 @@ class AdmisionView {
 
         if (this.modalResumen) {
             this.modalResumen.style.display = 'block';
-            this.modalResumen.style.backgroundColor = 'rgba(0,0,0,0.5)';
+            this.modalResumen.style.backgroundColor = '#5A1332';
         }
     }
 
@@ -705,7 +823,7 @@ class AdmisionView {
             
             const btn = this.btnConfirmarEnvio;
             const textoOriginal = btn.textContent;
-            btn.textContent = '⏳ Enviando...';
+            btn.textContent = 'Enviando...';
             btn.disabled = true;
 
             // Disparar evento para que el Controller maneje el envío
