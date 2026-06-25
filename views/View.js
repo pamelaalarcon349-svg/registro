@@ -1,3 +1,5 @@
+// views/View.js
+
 class AdmisionView {
     constructor() {
         this.form = document.getElementById('formAdmision');
@@ -12,6 +14,7 @@ class AdmisionView {
         this.opcionesPeriodo = document.getElementById('opcionesPeriodo');
         this.errorPeriodo = document.getElementById('errorPeriodo');
         this.evaluacionContainer = document.getElementById('evaluacionContainer');
+        this.evaluacionOpciones = document.getElementById('evaluacionOpciones');
         this.especificarTitulacionContainer = document.getElementById('especificarTitulacionContainer');
         this.especificarTitulacion = document.getElementById('especificarTitulacion');
         this.modalResumen = document.getElementById('modalResumen');
@@ -23,69 +26,342 @@ class AdmisionView {
         this.especificarParentesco = document.getElementById('especificarParentesco');
         this.btnEnviarModal = document.getElementById('btnEnviarModal');
         this.btnConfirmarEnvio = document.getElementById('confirmarEnvio');
+
+        // Radio buttons de posgrado
+        this.radiosPosgrado = document.querySelectorAll('input[name="posgrado"]');
+
+        // Inicializar eventos
+        this.inicializarEventos();
     }
 
-    validarParentesco() {
-        if (!this.selectParentesco) return true;
-        
-        const valor = this.selectParentesco.value;
-        
-        if (valor === '' || valor === 'SELECCIONA') {
-            this.mostrarErrorCampo(this.selectParentesco, 'Este campo es obligatorio');
-            return false;
+    // ==========================================
+    // REGLAS DE POSGRADO (CORREGIDAS)
+    // ==========================================
+    obtenerReglasPosgrado(tipoPosgrado, programa) {
+        if (tipoPosgrado === 'Doctorado') {
+            return {
+                periodos: ['Agosto - Diciembre', 'Enero - Mayo'],
+                formasEvaluacion: []
+            };
         }
-        
-        if (valor === 'OTRO') {
-            const especificacion = this.especificarParentesco?.value.trim() || '';
-            if (especificacion === '') {
-                this.mostrarErrorCampo(this.especificarParentesco, 'Debes especificar el parentesco');
-                return false;
-            }
-            this.limpiarErrorCampo(this.especificarParentesco);
+
+        if (tipoPosgrado === 'Maestría') {
+            const reglas = {
+                // CORREGIDO: "Enseñanza de Ciencias Exactas" (sin "las")
+                'Enseñanza de Ciencias Exactas': {
+                    periodos: ['Agosto - Diciembre', 'Enero - Mayo', 'Mayo - Julio'],
+                    formasEvaluacion: ['Examen de Admisión', 'Entrevista']
+                },
+                'Ciencias y Tecnologías de Seguridad': {
+                    periodos: ['Agosto - Diciembre'],
+                    formasEvaluacion: [
+                        'Examen de Admisión en Mayo',
+                        'Examen de Admisión en Julio',
+                        'Cursos Propedéuticos de Mayo a Julio'
+                    ]
+                },
+                'Ciencias y Tecnologías Biomédicas': {
+                    periodos: ['Agosto - Diciembre'],
+                    formasEvaluacion: [
+                        'Examen de Admisión en Mayo',
+                        'Examen de Admisión en Julio',
+                        'Cursos Propedéuticos de Mayo a Julio'
+                    ]
+                },
+                'Ciencias en el Área de Ciencia y Tecnología del Espacio': {
+                    periodos: ['Agosto - Diciembre'],
+                    formasEvaluacion: [
+                        'Examen de Admisión en Mayo',
+                        'Examen de Admisión en Julio',
+                        'Cursos Propedéuticos de Mayo a Julio'
+                    ]
+                },
+                'Ciencias en el Área de Ciencias Computacionales': {
+                    periodos: ['Agosto - Diciembre'],
+                    formasEvaluacion: [
+                        'Examen de Admisión en Mayo',
+                        'Examen de Admisión en Julio',
+                        'Cursos Propedéuticos de Mayo a Julio',
+                        'Ingreso por Desempeño Académico'
+                    ]
+                },
+                'Ciencias en la Especialidad de Electrónica': {
+                    periodos: ['Agosto - Diciembre'],
+                    formasEvaluacion: [
+                        'Examen de Admisión en Mayo',
+                        'Examen de Admisión en Julio',
+                        'Cursos Propedéuticos de Mayo a Julio'
+                    ]
+                },
+                'Ciencias en la Especialidad de Óptica': {
+                    periodos: ['Agosto - Diciembre'],
+                    formasEvaluacion: [
+                        'Examen de Admisión en Mayo',
+                        'Examen de Admisión en Julio',
+                        'Cursos Propedéuticos de Mayo a Julio'
+                    ]
+                },
+                'Ciencias en la Especialidad de Astrofísica': {
+                    periodos: ['Agosto - Diciembre'],
+                    formasEvaluacion: [
+                        'Examen de Admisión en Mayo',
+                        'Examen de Admisión en Julio',
+                        'Cursos Propedéuticos de Mayo a Julio'
+                    ]
+                }
+            };
+
+            return reglas[programa] || { periodos: [], formasEvaluacion: [] };
         }
-        
-        this.limpiarErrorCampo(this.selectParentesco);
-        return true;
+
+        return { periodos: [], formasEvaluacion: [] };
     }
 
-    inicializarCalendario() {
-        const campoFecha = document.getElementById('fecha_nacimiento');
-        if (!campoFecha) return;
+    // ==========================================
+    // INICIALIZAR EVENTOS
+    // ==========================================
+    inicializarEventos() {
+        // Evento para radios de posgrado
+        this.radiosPosgrado.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const tipo = e.target.value;
+                this.actualizarPosgrado(tipo);
+                this.renderizarPeriodosYEvaluaciones(tipo);
+            });
+        });
 
-        if (window.jQuery && window.jQuery.fn.datepicker) {
-            window.jQuery('#fecha_nacimiento').datepicker({
-                changeYear: true,
-                yearRange: '-100:+0',
-                dateFormat: 'dd/mm/yy',
-                onSelect: function(dateText) {
-                    this.value = dateText;
-                    this.setCustomValidity('');
-                    this.classList.remove('is-invalid');
-                    this.classList.remove('error');
-                    const error = this.closest('.datepicker-group')?.querySelector('.error-mensaje');
-                    if (error) {
-                        error.textContent = '';
-                    }
-                    this.dispatchEvent(new Event('input', { bubbles: true }));
-                    this.dispatchEvent(new Event('change', { bubbles: true }));
+        // Evento para cambio en select de Maestría
+        if (this.selectMaestria) {
+            this.selectMaestria.addEventListener('change', () => {
+                const tipoPosgrado = this.obtenerTipoPosgradoSeleccionado();
+                if (tipoPosgrado === 'Maestría') {
+                    this.renderizarPeriodosYEvaluaciones('Maestría');
                 }
             });
-            return;
         }
 
-        campoFecha.type = 'date';
-        campoFecha.removeAttribute('readonly');
-        campoFecha.addEventListener('click', () => {
-            if (campoFecha.showPicker) campoFecha.showPicker();
+        // Evento para cambio en select de Doctorado
+        if (this.selectDoctorado) {
+            this.selectDoctorado.addEventListener('change', () => {
+                const tipoPosgrado = this.obtenerTipoPosgradoSeleccionado();
+                if (tipoPosgrado === 'Doctorado') {
+                    this.renderizarPeriodosYEvaluaciones('Doctorado');
+                }
+            });
+        }
+
+        // Evento para parentesco
+        if (this.selectParentesco) {
+            this.selectParentesco.addEventListener('change', () => {
+                const valor = this.selectParentesco.value;
+                if (valor === 'OTRO') {
+                    this.mostrarElemento(this.especificarParentescoContainer, true);
+                    if (this.especificarParentesco) {
+                        this.especificarParentesco.required = true;
+                    }
+                } else {
+                    this.mostrarElemento(this.especificarParentescoContainer, false);
+                    if (this.especificarParentesco) {
+                        this.especificarParentesco.required = false;
+                        this.especificarParentesco.value = '';
+                        this.limpiarErrorCampo(this.especificarParentesco);
+                    }
+                }
+            });
+        }
+
+        // Evento para nacionalidad
+        document.querySelectorAll('input[name="nacionalidad"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const esExtranjero = e.target.value === 'Otra (Extranjera)';
+                this.actualizarCurp(esExtranjero);
+            });
+        });
+
+        // Evento para titulación
+        document.querySelectorAll('input[name="titulacion"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                this.actualizarTitulacion(e.target.value === 'Otro');
+            });
+        });
+
+        // Evento para botón enviar
+        if (this.btnEnviarModal) {
+            this.btnEnviarModal.addEventListener('click', () => {
+                this.manejarEnvio();
+            });
+        }
+
+        // Evento para confirmar envío
+        if (this.btnConfirmarEnvio) {
+            this.btnConfirmarEnvio.addEventListener('click', () => {
+                this.confirmarEnvio();
+            });
+        }
+
+        // Inicializar elementos ocultos
+        this.ocultarElementosIniciales();
+
+        // Inicializar calendario
+        this.inicializarCalendario();
+
+        // Inicializar estado de CURP
+        this.actualizarCurp(false);
+
+        // Inicializar validación de números
+        this.inicializarValidacionNumeros();
+    }
+
+    // ==========================================
+    // INICIALIZAR VALIDACIÓN DE NÚMEROS
+    // ==========================================
+    inicializarValidacionNumeros() {
+        document.querySelectorAll('.solo-numeros').forEach(campo => {
+            campo.addEventListener('input', () => {
+                this.limpiarCampoNumerico(campo);
+            });
+            campo.addEventListener('paste', () => {
+                setTimeout(() => this.limpiarCampoNumerico(campo), 10);
+            });
         });
     }
 
+    // ==========================================
+    // OBTENER TIPO DE POSGRADO SELECCIONADO
+    // ==========================================
+    obtenerTipoPosgradoSeleccionado() {
+        const radioSeleccionado = document.querySelector('input[name="posgrado"]:checked');
+        return radioSeleccionado ? radioSeleccionado.value : null;
+    }
+
+    // ==========================================
+    // ACTUALIZAR POSGRADO
+    // ==========================================
+    actualizarPosgrado(tipoPosgrado) {
+        const esMaestria = tipoPosgrado === 'Maestría';
+        const esDoctorado = tipoPosgrado === 'Doctorado';
+
+        this.mostrarElemento(this.divMaestrias, esMaestria);
+        this.mostrarElemento(this.divDoctorados, esDoctorado);
+
+        if (!esMaestria && this.selectMaestria) {
+            this.selectMaestria.selectedIndex = 0;
+            this.limpiarErrorCampo(this.selectMaestria);
+        }
+
+        if (!esDoctorado && this.selectDoctorado) {
+            this.selectDoctorado.selectedIndex = 0;
+            this.limpiarErrorCampo(this.selectDoctorado);
+        }
+
+        if (!esMaestria) {
+            this.evaluacionContainer.style.display = 'none';
+        }
+    }
+
+    // ==========================================
+    // RENDERIZAR PERIODOS Y EVALUACIONES
+    // ==========================================
+    renderizarPeriodosYEvaluaciones(tipoPosgrado) {
+        let programa = '';
+
+        if (tipoPosgrado === 'Maestría' && this.selectMaestria) {
+            programa = this.selectMaestria.value;
+        } else if (tipoPosgrado === 'Doctorado' && this.selectDoctorado) {
+            programa = this.selectDoctorado.value;
+        }
+
+        // Si no hay programa seleccionado o es "SELECCIONA", mostrar mensaje por defecto
+        if (!programa || programa === 'SELECCIONA') {
+            this.renderizarPeriodos([]);
+            if (tipoPosgrado === 'Maestría') {
+                this.renderizarFormasEvaluacion([]);
+                this.evaluacionContainer.style.display = 'block';
+            } else {
+                this.evaluacionContainer.style.display = 'none';
+            }
+            return;
+        }
+
+        // Obtener reglas según el tipo de posgrado y programa
+        const reglas = this.obtenerReglasPosgrado(tipoPosgrado, programa);
+        
+        // Renderizar periodos
+        this.renderizarPeriodos(reglas.periodos);
+        
+        // Renderizar formas de evaluación (solo para maestría)
+        if (tipoPosgrado === 'Maestría') {
+            this.evaluacionContainer.style.display = 'block';
+            this.renderizarFormasEvaluacion(reglas.formasEvaluacion);
+        } else {
+            this.evaluacionContainer.style.display = 'none';
+        }
+    }
+
+    // ==========================================
+    // RENDERIZAR PERIODOS
+    // ==========================================
+    renderizarPeriodos(periodos) {
+        if (!this.opcionesPeriodo) return;
+
+        // Limpiar radios seleccionados
+        document.querySelectorAll('input[name="periodo"]').forEach(r => r.checked = false);
+
+        if (!periodos || periodos.length === 0) {
+            this.opcionesPeriodo.innerHTML = '<p class="periodo-mensaje">No hay periodos disponibles para esta selección.</p>';
+            this.limpiarErrorPeriodo();
+            return;
+        }
+
+        this.opcionesPeriodo.innerHTML = periodos.map(periodo => `
+            <div class="radio">
+                <label><input type="radio" name="periodo" value="${periodo}"> ${periodo}</label>
+            </div>
+        `).join('');
+
+        this.limpiarErrorPeriodo();
+    }
+
+    // ==========================================
+    // RENDERIZAR FORMAS DE EVALUACIÓN
+    // ==========================================
+    renderizarFormasEvaluacion(formasEvaluacion) {
+        if (!this.evaluacionOpciones) return;
+
+        // Limpiar radios seleccionados
+        document.querySelectorAll('input[name="formaEvaluacion"]').forEach(r => r.checked = false);
+
+        if (!formasEvaluacion || formasEvaluacion.length === 0) {
+            this.evaluacionOpciones.innerHTML = '<p class="periodo-mensaje">No hay formas de evaluación disponibles.</p>';
+            return;
+        }
+
+        this.evaluacionOpciones.innerHTML = formasEvaluacion.map(forma => `
+            <div class="radio">
+                <label><input type="radio" name="formaEvaluacion" value="${forma}"> ${forma}</label>
+            </div>
+        `).join('');
+    }
+
+    // ==========================================
+    // MÉTODOS DE UTILIDAD
+    // ==========================================
     ocultarElementosIniciales() {
         this.mostrarElemento(this.divMaestrias, false, false);
         this.mostrarElemento(this.divDoctorados, false, false);
         this.mostrarElemento(this.evaluacionContainer, false, false);
         this.mostrarElemento(this.especificarTitulacionContainer, false, false);
         this.mostrarElemento(this.especificarParentescoContainer, false, false);
+        
+        // Mostrar mensaje inicial en periodos
+        if (this.opcionesPeriodo) {
+            this.opcionesPeriodo.innerHTML = '<p class="periodo-mensaje">Selecciona un posgrado para ver los periodos disponibles.</p>';
+        }
+        
+        // Mostrar mensaje inicial en evaluaciones
+        if (this.evaluacionOpciones) {
+            this.evaluacionOpciones.innerHTML = '<p class="periodo-mensaje">Selecciona una maestría para ver las evaluaciones disponibles.</p>';
+        }
     }
 
     mostrarElemento(elemento, visible, animado = true) {
@@ -126,45 +402,46 @@ class AdmisionView {
         }
     }
 
-    actualizarPosgrado(tipoPosgrado) {
-        const esMaestria = tipoPosgrado === 'Maestría';
-        const esDoctorado = tipoPosgrado === 'Doctorado';
+    inicializarCalendario() {
+        const campoFecha = document.getElementById('fecha_nacimiento');
+        if (!campoFecha) return;
 
-        this.mostrarElemento(this.divMaestrias, esMaestria);
-        this.mostrarElemento(this.divDoctorados, esDoctorado);
-        this.mostrarElemento(this.evaluacionContainer, esMaestria);
-
-        if (!esMaestria && this.selectMaestria) {
-            this.selectMaestria.selectedIndex = 0;
-            this.limpiarErrorCampo(this.selectMaestria);
-        }
-
-        if (!esDoctorado && this.selectDoctorado) {
-            this.selectDoctorado.selectedIndex = 0;
-            this.limpiarErrorCampo(this.selectDoctorado);
-        }
-
-        if (!esMaestria) {
-            this.form.querySelectorAll('input[name="formaEvaluacion"]').forEach(radio => {
-                radio.checked = false;
+        if (window.jQuery && window.jQuery.fn.datepicker) {
+            window.jQuery('#fecha_nacimiento').datepicker({
+                changeYear: true,
+                yearRange: '-100:+0',
+                dateFormat: 'dd/mm/yy',
+                onSelect: function(dateText) {
+                    this.value = dateText;
+                    this.setCustomValidity('');
+                    this.classList.remove('is-invalid');
+                    this.classList.remove('error');
+                    const error = this.closest('.datepicker-group')?.querySelector('.error-mensaje');
+                    if (error) {
+                        error.textContent = '';
+                    }
+                    this.dispatchEvent(new Event('input', { bubbles: true }));
+                    this.dispatchEvent(new Event('change', { bubbles: true }));
+                }
             });
+            return;
         }
+
+        campoFecha.type = 'date';
+        campoFecha.removeAttribute('readonly');
+        campoFecha.addEventListener('click', () => {
+            if (campoFecha.showPicker) campoFecha.showPicker();
+        });
     }
 
-    renderizarPeriodos(tipoPosgrado) {
-        if (!this.opcionesPeriodo) return;
+    limpiarCampoNumerico(campo) {
+        const valorOriginal = campo.value;
+        const valorLimpio = valorOriginal.replace(/\D/g, '');
 
-        const periodos = tipoPosgrado === 'Doctorado'
-            ? ['Agosto-Diciembre', 'Enero-Mayo']
-            : ['Agosto-Diciembre'];
-
-        this.opcionesPeriodo.innerHTML = periodos.map(periodo => `
-            <div class="radio">
-                <label><input type="radio" name="periodo" value="${periodo}"> ${periodo.toUpperCase()}</label>
-            </div>
-        `).join('');
-
-        this.limpiarErrorPeriodo();
+        if (valorOriginal !== valorLimpio) {
+            campo.value = valorLimpio;
+            this.mostrarAlertaNumeros();
+        }
     }
 
     mostrarAlertaNumeros() {
@@ -176,16 +453,6 @@ class AdmisionView {
         document.body.appendChild(alerta);
 
         setTimeout(() => alerta.remove(), 2500);
-    }
-
-    limpiarCampoNumerico(campo) {
-        const valorOriginal = campo.value;
-        const valorLimpio = valorOriginal.replace(/\D/g, '');
-
-        if (valorOriginal !== valorLimpio) {
-            campo.value = valorLimpio;
-            this.mostrarAlertaNumeros();
-        }
     }
 
     limpiarErrorCampo(campo) {
@@ -220,12 +487,44 @@ class AdmisionView {
         if (mensajeError) mensajeError.textContent = '';
     }
 
+    limpiarErrorPeriodo() {
+        if (this.errorPeriodo) this.errorPeriodo.textContent = '';
+    }
+
+    mostrarErrorPeriodo(mensaje) {
+        if (this.errorPeriodo) this.errorPeriodo.textContent = mensaje;
+    }
+
+    validarParentesco() {
+        if (!this.selectParentesco) return true;
+        
+        const valor = this.selectParentesco.value;
+        
+        if (valor === '' || valor === 'SELECCIONA') {
+            this.mostrarErrorCampo(this.selectParentesco, 'Este campo es obligatorio');
+            return false;
+        }
+        
+        if (valor === 'OTRO') {
+            const especificacion = this.especificarParentesco?.value.trim() || '';
+            if (especificacion === '') {
+                this.mostrarErrorCampo(this.especificarParentesco, 'Debes especificar el parentesco');
+                return false;
+            }
+            this.limpiarErrorCampo(this.especificarParentesco);
+        }
+        
+        this.limpiarErrorCampo(this.selectParentesco);
+        return true;
+    }
+
     limpiarValidaciones() {
         document.querySelectorAll('.input-error').forEach(campo => campo.classList.remove('input-error'));
         document.querySelectorAll('.error-mensaje').forEach(mensaje => {
             mensaje.textContent = '';
         });
         this.ocultarBanners();
+        this.limpiarErrorPeriodo();
     }
 
     ocultarBanners() {
@@ -245,14 +544,6 @@ class AdmisionView {
         }
     }
 
-    mostrarErrorPeriodo(mensaje) {
-        if (this.errorPeriodo) this.errorPeriodo.textContent = mensaje;
-    }
-
-    limpiarErrorPeriodo() {
-        if (this.errorPeriodo) this.errorPeriodo.textContent = '';
-    }
-
     desplazarPrimerError() {
         const primerError = document.querySelector('.input-error');
         if (!primerError) return;
@@ -261,6 +552,20 @@ class AdmisionView {
         window.scrollTo({ top, behavior: 'smooth' });
     }
 
+    // ==========================================
+    // MANEJAR ENVÍO
+    // ==========================================
+    manejarEnvio() {
+        this.limpiarValidaciones();
+        
+        // Disparar evento personalizado para que el Controller maneje la validación
+        const evento = new CustomEvent('validarEnvio');
+        document.dispatchEvent(evento);
+    }
+
+    // ==========================================
+    // CONSTRUIR RESUMEN
+    // ==========================================
     escaparHtml(valor) {
         return String(valor || '')
             .replace(/&/g, '&amp;')
@@ -279,70 +584,26 @@ class AdmisionView {
             return '<p>No hay datos para mostrar</p>';
         }
 
-        // === DATOS PERSONALES ===
         const nombreCompleto = `${datos.nombre || ''} ${datos.primerApellido || ''} ${datos.segundoApellido || ''}`.trim() || 'No especificado';
-        
-        // === DOMICILIO ===
         const domicilio = datos.domicilio || {};
         const direccion = `${domicilio.calle || ''} ${domicilio.numExt || ''}, ${domicilio.colonia || ''}, CP ${domicilio.cp || ''}, ${domicilio.municipio || ''}, ${domicilio.estado || ''}`.trim() || 'No especificada';
 
-        // === DATOS ACADÉMICOS ===
         const datosAcademicos = datos.datosAcademicos || {};
         const posgradoDetalle = datosAcademicos.posgradoDetalle || 'No seleccionado';
         const anioIngreso = datosAcademicos.anioIngreso || 'No especificado';
         const periodo = datosAcademicos.periodo || 'No seleccionado';
         const formaEvaluacion = datosAcademicos.formaEvaluacion || '';
 
-        // === CONTACTO ===
         const contacto = datos.contacto || {};
-        const lada = contacto.lada || 'No especificado';
-        const telFijo = contacto.telFijo || 'No especificado';
-        const ext = contacto.ext || '';
-        const telMovil = contacto.telMovil || 'No especificado';
         const email = contacto.email || 'No especificado';
 
-        // === CONTACTO DE EMERGENCIA ===
         const contactoEmergencia = datos.contactoEmergencia || {};
         const nombreEmergencia = `${contactoEmergencia.nombre || ''} ${contactoEmergencia.primerApellido || ''} ${contactoEmergencia.segundoApellido || ''}`.trim() || 'No especificado';
-        const ladaEmergencia = contactoEmergencia.lada || 'No especificado';
-        const telFijoEmergencia = contactoEmergencia.telFijo || 'No especificado';
-        const extEmergencia = contactoEmergencia.ext || '';
-        const telMovilEmergencia = contactoEmergencia.telMovil || 'No especificado';
-        const parentesco = contactoEmergencia.parentesco || 'No especificado';
 
-        // === ESTUDIOS PREVIOS ===
         const estudiosPrevios = datos.estudiosPrevios || {};
-        const institucion = estudiosPrevios.institucion || 'No especificada';
-        const gradoAcademico = estudiosPrevios.gradoAcademico || 'No especificado';
-        const anioGrado = estudiosPrevios.anioGrado || 'No especificado';
-        const promedio = estudiosPrevios.promedio || 'No especificado';
-        const tipoTitulacion = estudiosPrevios.tipoTitulacion || 'No especificado';
-
-        // === DOMINIO INGLÉS ===
-        const dominioIngles = datos.dominioIngles || {};
-        const expresionEscrita = dominioIngles.expresionEscrita || 'No especificado';
-        const expresionOral = dominioIngles.expresionOral || 'No especificado';
-        const comprensionLectora = dominioIngles.comprensionLectora || 'No especificado';
-        const comprensionAuditiva = dominioIngles.comprensionAuditiva || 'No especificado';
-
-        // === MOTIVACIÓN ===
         const motivacion = datos.motivacion || {};
-        const razon = motivacion.razon || 'No especificada';
-        const medio = motivacion.medio || 'No especificado';
 
-        // === EXPERIENCIA LABORAL ===
-        const experienciaLaboral = datos.experienciaLaboral || [];
-
-        // === PUBLICACIONES ===
-        const publicaciones = datos.publicaciones || [];
-
-        // ============================================
-        // CONSTRUIR HTML DEL RESUMEN
-        // ============================================
         let html = `
-            <!-- ========================================== -->
-            <!-- DATOS PERSONALES -->
-            <!-- ========================================== -->
             <div class="section-title">📋 Datos personales</div>
             <ul>
                 <li><strong>Nacionalidad:</strong> ${this.texto(datos.nacionalidad)}</li>
@@ -353,55 +614,30 @@ class AdmisionView {
                 <li><strong>Lugar de nacimiento:</strong> ${this.texto(datos.lugarNacimiento)}</li>
             </ul>
 
-            <!-- ========================================== -->
-            <!-- CONTACTO -->
-            <!-- ========================================== -->
             <div class="section-title">📞 Contacto</div>
             <ul>
-                <li><strong>Lada internacional:</strong> ${this.texto(lada)}</li>
-                <li><strong>Teléfono fijo:</strong> ${this.texto(telFijo)} ${ext ? `(Ext: ${this.texto(ext)})` : ''}</li>
-                <li><strong>Teléfono móvil:</strong> ${this.texto(telMovil)}</li>
+                <li><strong>Teléfono móvil:</strong> ${this.texto(contacto.telMovil)}</li>
                 <li><strong>Correo electrónico:</strong> ${this.texto(email)}</li>
             </ul>
 
-            <!-- ========================================== -->
-            <!-- DOMICILIO -->
-            <!-- ========================================== -->
             <div class="section-title">🏠 Domicilio</div>
             <ul>
-                <li><strong>Código Postal:</strong> ${this.texto(domicilio.cp)}</li>
-                <li><strong>Estado:</strong> ${this.texto(domicilio.estado)}</li>
-                <li><strong>Municipio o Alcaldía:</strong> ${this.texto(domicilio.municipio)}</li>
-                <li><strong>Localidad:</strong> ${this.texto(domicilio.localidad)}</li>
-                <li><strong>Colonia:</strong> ${this.texto(domicilio.colonia)}</li>
-                <li><strong>Tipo de calle:</strong> ${this.texto(domicilio.tipoCalle)}</li>
-                <li><strong>Calle:</strong> ${this.texto(domicilio.calle)}</li>
-                <li><strong>Número exterior:</strong> ${this.texto(domicilio.numExt)}</li>
-                <li><strong>Número interior:</strong> ${this.texto(domicilio.numInt || 'N/A')}</li>
+                <li><strong>Dirección:</strong> ${this.texto(direccion)}</li>
                 <li><strong>País:</strong> ${this.texto(domicilio.pais)}</li>
             </ul>
 
-            <!-- ========================================== -->
-            <!-- CONTACTO DE EMERGENCIA -->
-            <!-- ========================================== -->
             <div class="section-title">🚨 Contacto de emergencia</div>
             <ul>
-                <li><strong>Nombre completo:</strong> ${this.texto(nombreEmergencia)}</li>
-                <li><strong>Lada internacional:</strong> ${this.texto(ladaEmergencia)}</li>
-                <li><strong>Teléfono fijo:</strong> ${this.texto(telFijoEmergencia)} ${extEmergencia ? `(Ext: ${this.texto(extEmergencia)})` : ''}</li>
-                <li><strong>Teléfono móvil:</strong> ${this.texto(telMovilEmergencia)}</li>
-                <li><strong>Parentesco:</strong> ${this.texto(parentesco)}</li>
+                <li><strong>Nombre:</strong> ${this.texto(nombreEmergencia)}</li>
+                <li><strong>Parentesco:</strong> ${this.texto(contactoEmergencia.parentesco)}</li>
             </ul>
 
-            <!-- ========================================== -->
-            <!-- DATOS ACADÉMICOS -->
-            <!-- ========================================== -->
             <div class="section-title">🎓 Datos académicos</div>
             <ul>
-                <li><strong>Posgrado seleccionado:</strong> ${this.texto(posgradoDetalle)}</li>
+                <li><strong>Posgrado:</strong> ${this.texto(posgradoDetalle)}</li>
                 <li><strong>Año de ingreso:</strong> ${this.texto(anioIngreso)}</li>
-                <li><strong>Periodo:</strong> ${this.texto(periodo)}`
-        ;
+                <li><strong>Periodo:</strong> ${this.texto(periodo)}</li>
+        `;
 
         if (formaEvaluacion) {
             html += `<li><strong>Forma de Evaluación:</strong> ${this.texto(formaEvaluacion)}</li>`;
@@ -410,103 +646,25 @@ class AdmisionView {
         html += `
             </ul>
 
-            <!-- ========================================== -->
-            <!-- ESTUDIOS PREVIOS -->
-            <!-- ========================================== -->
             <div class="section-title">📚 Estudios previos</div>
             <ul>
-                <li><strong>Institución educativa:</strong> ${this.texto(institucion)}</li>
-                <li><strong>Grado académico:</strong> ${this.texto(gradoAcademico)}</li>
-                <li><strong>Año de obtención:</strong> ${this.texto(anioGrado)}</li>
-                <li><strong>Promedio:</strong> ${this.texto(promedio)}</li>
-                <li><strong>Tipo de titulación:</strong> ${this.texto(tipoTitulacion)}</li>
+                <li><strong>Institución:</strong> ${this.texto(estudiosPrevios.institucion)}</li>
+                <li><strong>Grado:</strong> ${this.texto(estudiosPrevios.gradoAcademico)}</li>
+                <li><strong>Promedio:</strong> ${this.texto(estudiosPrevios.promedio)}</li>
             </ul>
 
-            <!-- ========================================== -->
-            <!-- DOMINIO DEL INGLÉS -->
-            <!-- ========================================== -->
-            <div class="section-title">🌐 Dominio del inglés</div>
-            <ul>
-                <li><strong>Expresión escrita:</strong> ${this.texto(expresionEscrita)}</li>
-                <li><strong>Expresión oral:</strong> ${this.texto(expresionOral)}</li>
-                <li><strong>Comprensión lectora:</strong> ${this.texto(comprensionLectora)}</li>
-                <li><strong>Comprensión auditiva:</strong> ${this.texto(comprensionAuditiva)}</li>
-            </ul>
-
-            <!-- ========================================== -->
-            <!-- EXPERIENCIA LABORAL -->
-            <!-- ========================================== -->
-            <div class="section-title">💼 Experiencia laboral</div>
-            <ul>`;
-
-        if (experienciaLaboral.length > 0) {
-            const expValida = experienciaLaboral.filter(exp => 
-                exp.institucion && exp.institucion !== 'No especificado' && exp.institucion !== ''
-            );
-            if (expValida.length > 0) {
-                expValida.forEach(exp => {
-                    html += `
-                        <li>
-                            <strong>${this.texto(exp.institucion)}</strong> - 
-                            ${this.texto(exp.tipoExperiencia)} - 
-                            ${this.texto(exp.puesto)} 
-                            (${this.texto(exp.tiempoLaborado)})
-                        </li>
-                    `;
-                });
-            } else {
-                html += `<li>No se registró experiencia laboral</li>`;
-            }
-        } else {
-            html += `<li>No se registró experiencia laboral</li>`;
-        }
-
-        html += `
-            </ul>
-
-            <!-- ========================================== -->
-            <!-- PUBLICACIONES CIENTÍFICAS -->
-            <!-- ========================================== -->
-            <div class="section-title">📄 Publicaciones científicas</div>
-            <ul>`;
-
-        if (publicaciones.length > 0) {
-            const pubValida = publicaciones.filter(pub => 
-                pub.titulo && pub.titulo !== 'No especificado' && pub.titulo !== ''
-            );
-            if (pubValida.length > 0) {
-                pubValida.forEach(pub => {
-                    html += `
-                        <li>
-                            <strong>${this.texto(pub.titulo)}</strong> - 
-                            ${this.texto(pub.tipoPublicacion)}
-                            ${pub.doi && pub.doi !== 'No especificado' && pub.doi !== '' ? `(DOI: ${this.texto(pub.doi)})` : ''}
-                        </li>
-                    `;
-                });
-            } else {
-                html += `<li>No se registraron publicaciones</li>`;
-            }
-        } else {
-            html += `<li>No se registraron publicaciones</li>`;
-        }
-
-        html += `
-            </ul>
-
-            <!-- ========================================== -->
-            <!-- MOTIVACIÓN -->
-            <!-- ========================================== -->
             <div class="section-title">💡 Motivación</div>
             <ul>
-                <li><strong>Razón para estudiar en INAOE:</strong> ${this.texto(razon)}</li>
-                <li><strong>Medio por el que se enteró:</strong> ${this.texto(medio)}</li>
+                <li><strong>Razón:</strong> ${this.texto(motivacion.razon)}</li>
             </ul>
         `;
 
         return html;
     }
 
+    // ==========================================
+    // MOSTRAR/OCULTAR RESUMEN
+    // ==========================================
     mostrarResumen(html) {
         if (this.contenidoResumen) {
             this.contenidoResumen.innerHTML = html || '<p>No hay datos para mostrar</p>';
@@ -537,4 +695,41 @@ class AdmisionView {
             this.modalResumen.style.display = 'none';
         }
     }
+
+    // ==========================================
+    // CONFIRMAR ENVÍO
+    // ==========================================
+    async confirmarEnvio() {
+        try {
+            this.ocultarResumen();
+            
+            const btn = this.btnConfirmarEnvio;
+            const textoOriginal = btn.textContent;
+            btn.textContent = '⏳ Enviando...';
+            btn.disabled = true;
+
+            // Disparar evento para que el Controller maneje el envío
+            const evento = new CustomEvent('confirmarEnvio', {
+                detail: { btn, textoOriginal }
+            });
+            document.dispatchEvent(evento);
+            
+        } catch (error) {
+            console.error('❌ Error:', error);
+            if (this.btnConfirmarEnvio) {
+                this.btnConfirmarEnvio.disabled = false;
+                this.btnConfirmarEnvio.textContent = 'Confirmar envío';
+            }
+            alert('❌ Ocurrió un error al enviar la solicitud');
+        }
+    }
 }
+
+// ==========================================
+// EXPORTAR CLASE PARA USO GLOBAL
+// ==========================================
+if (typeof window !== 'undefined') {
+    window.AdmisionView = AdmisionView;
+}
+
+console.log('📦 Clase AdmisionView cargada correctamente');

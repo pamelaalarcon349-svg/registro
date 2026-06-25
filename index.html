@@ -15,11 +15,67 @@
     <link rel="stylesheet" href="vendor/bootstrap/css/responsive.css">
     <link rel="stylesheet" href="vendor/bootstrap/css/style.css">
 
-    <!-- MVC -->
-    <script src="./models/ValidacionModel.js"></script>
-    <script src="./models/Model.js"></script>
-    <script src="./views/View.js"></script> <!--ni va aqui /view-->
-    <script src="./controllers/Controller.js"></script>
+    <style>
+        .section-title {
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            border-bottom: 2px solid #e30613;
+            padding-bottom: 5px;
+            color: #333;
+        }
+        .input-error {
+            border-color: #d9534f !important;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(217, 83, 79, .6) !important;
+        }
+        .error-mensaje {
+            color: #d9534f;
+            font-size: 12px;
+            display: block;
+            margin-top: 5px;
+        }
+        .deshabilitado-total {
+            pointer-events: none;
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .alerta-numeros {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f0ad4e;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 9999;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            animation: fadeOut 2.5s forwards;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        .modal-lg {
+            max-width: 800px;
+        }
+        #modalResumen ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        #modalResumen ul li {
+            padding: 3px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+        #modalResumen ul li:last-child {
+            border-bottom: none;
+        }
+        .periodo-mensaje {
+            color: #666;
+            font-style: italic;
+            padding: 10px 0;
+        }
+    </style>
 
 </head>
 
@@ -27,7 +83,7 @@
     <div class="container">
         <div class="col">
             <div id="app">
-                <nav-researcher></nav-researcher> <!-- Aquí insertas el componente NavBar -->
+                <nav-researcher></nav-researcher>
             </div>
             <hr>
 
@@ -320,39 +376,38 @@
                                 <small class="text-danger error-mensaje"></small>
                             </div>
 
-             <div class="form-group col-12 col-md-4">
-        <label>Parentesco*:</label>
-        <select class="form-control mayus-auto" id="parentesco" required>
-            <option value="" selected>SELECCIONA</option>
-            <option>MADRE</option>
-            <option>PADRE</option>
-            <option>HERMANO</option>
-            <option>HERMANA</option>
-            <option>TIO</option>
-            <option>TIA</option>
-            <option>ABUELO</option>
-            <option>ABUELA</option>
-            <option>PRIMO</option>
-            <option>PRIMA</option>
-            <option>HIJO</option>
-            <option>HIJA</option>
-            <option value="OTRO">OTRO</option>
-        </select>
-        <small class="text-danger error-mensaje"></small>
-    </div>
+                            <div class="form-group col-12 col-md-4">
+                                <label>Parentesco*:</label>
+                                <select class="form-control mayus-auto" id="parentesco" required>
+                                    <option value="" selected>SELECCIONA</option>
+                                    <option>MADRE</option>
+                                    <option>PADRE</option>
+                                    <option>HERMANO</option>
+                                    <option>HERMANA</option>
+                                    <option>TIO</option>
+                                    <option>TIA</option>
+                                    <option>ABUELO</option>
+                                    <option>ABUELA</option>
+                                    <option>PRIMO</option>
+                                    <option>PRIMA</option>
+                                    <option>HIJO</option>
+                                    <option>HIJA</option>
+                                    <option value="OTRO">OTRO</option>
+                                </select>
+                                <small class="text-danger error-mensaje"></small>
+                            </div>
 
-    <div class="form-group col-12 col-md-4"
-         id="especificarParentescoContainer"
-         style="display:none;">
-        <label>Especificar*:</label>
-        <input type="text"
-               class="form-control mayus-auto"
-               id="especificarParentesco"
-               placeholder="OTRO PARENTESCO">
-        <small class="text-danger error-mensaje"></small>
-    </div>
-
-</div>
+                            <div class="form-group col-12 col-md-4"
+                                id="especificarParentescoContainer"
+                                style="display:none;">
+                                <label>Especificar*:</label>
+                                <input type="text"
+                                    class="form-control mayus-auto"
+                                    id="especificarParentesco"
+                                    placeholder="OTRO PARENTESCO">
+                                <small class="text-danger error-mensaje"></small>
+                            </div>
+                        </div>
 
                         <!-- ============================================ -->
                         <!-- DATOS ACADÉMICOS DEL ASPIRANTE -->
@@ -392,8 +447,6 @@
                                             <option value="Ciencias en el Área de Ciencias Computacionales">CIENCIAS EN EL ÁREA DE CIENCIAS COMPUTACIONALES</option>
                                             <option value="Ciencias en el Área de Ciencia y Tecnología del Espacio">CIENCIAS EN EL ÁREA DE CIENCIA Y TECNOLOGÍA DEL ESPACIO</option>
                                             <option value="Ciencias y Tecnologías Biomédicas">CIENCIAS Y TECNOLOGÍAS BIOMÉDICAS</option>
-                                            <option value="Ciencias y Tecnologías de Seguridad">CIENCIAS Y TECNOLOGÍAS DE SEGURIDAD</option>
-                                            <option value="Enseñanza de Ciencias Exactas">ENSEÑANZA DE CIENCIAS EXACTAS</option>
                                         </select>
                                     </div>
                                 </div>
@@ -415,25 +468,15 @@
                             </div>
                         </div>
 
+                        <!-- ============================================ -->
+                        <!-- EVALUACIONES - CORREGIDO -->
+                        <!-- ============================================ -->
                         <div id="evaluacionContainer" style="display: none;">
                             <div class="row g-3">
                                 <div class="form-group col-12 col-md-8">
                                     <label>Forma de Evaluación de Ingreso:</label>
-                                    <div class="evaluacion-container">
-                                        <div class="radio"><label><input type="radio" name="formaEvaluacion"
-                                                    value="Exámen de Admisión en Mayo"> Exámen de Admisión en
-                                                Mayo</label></div>
-                                        <div class="radio"><label><input type="radio" name="formaEvaluacion"
-                                                    value="Exámen de Admisión en Julio"> Exámen de Admisión en
-                                                Julio</label>
-                                        </div>
-                                        <div class="radio"><label><input type="radio" name="formaEvaluacion"
-                                                    value="Cursos Propedéuticos de Mayo a Julio"> Cursos Propedéuticos
-                                                de Mayo a
-                                                Julio</label></div>
-                                        <div class="radio"><label><input type="radio" name="formaEvaluacion"
-                                                    value="Ingreso por Desempeño Académico"> Ingreso por Desempeño
-                                                Académico</label></div>
+                                    <div id="evaluacionOpciones">
+                                        <!-- Se llena dinámicamente desde JavaScript -->
                                     </div>
                                 </div>
                             </div>
@@ -811,6 +854,12 @@
             <script src="controllers/validation/Tools.js"></script>
             <script src="views/Components/nav/navRegister.js"></script>
 
+            <!-- MVC -->
+            <script src="./models/ValidacionModel.js"></script>
+            <script src="./models/Model.js"></script>
+            <script src="./views/View.js"></script>
+            <script src="./controllers/Controller.js"></script>
+
             <!-- Modal Resumen -->
             <div class="modal fade" id="modalResumen" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-lg" role="document">
@@ -841,96 +890,88 @@
 
         </div>
     </div>
+
     <script>
-// ============================================
-// FUNCIÓN PARA ENVIAR DATOS AL BACKEND
-// ============================================
-async function enviarDatosAlServidor(datos) {
-    try {
-        // URL del backend (cambia el puerto si es necesario)
-const url = 'http://localhost/registro/backend/api/registro.php';
-        
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(datos)
-        });
+    // ============================================
+    // FUNCIÓN PARA ENVIAR DATOS AL BACKEND
+    // ============================================
+    async function enviarDatosAlServidor(datos) {
+        try {
+            const url = 'http://localhost/registro/backend/api/registro.php';
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(datos)
+            });
 
-        const resultado = await response.json();
+            const resultado = await response.json();
 
-        if (resultado.success) {
-            return { 
-                success: true, 
-                message: resultado.message,
-                idAspirante: resultado.idAspirante
-            };
-        } else {
+            if (resultado.success) {
+                return { 
+                    success: true, 
+                    message: resultado.message,
+                    idAspirante: resultado.idAspirante
+                };
+            } else {
+                return { 
+                    success: false, 
+                    message: resultado.message || 'Error al enviar la solicitud' 
+                };
+            }
+        } catch (error) {
+            console.error('❌ Error de conexión:', error);
             return { 
                 success: false, 
-                message: resultado.message || 'Error al enviar la solicitud' 
+                message: 'Error de conexión con el servidor. ¿Está el backend corriendo?' 
             };
         }
-    } catch (error) {
-        console.error('❌ Error de conexión:', error);
-        return { 
-            success: false, 
-            message: 'Error de conexión con el servidor. ¿Está el backend corriendo?' 
-        };
     }
-}
 
-// ============================================
-// MODIFICAR EL EVENTO DE CONFIRMACIÓN
-// ============================================
-document.addEventListener('DOMContentLoaded', function() {
-    // Buscar el botón de confirmar envío
-    const btnConfirmar = document.getElementById('confirmarEnvio');
-    
-    if (btnConfirmar) {
-        btnConfirmar.addEventListener('click', async function(e) {
-            try {
-                // Ocultar el modal
-                const modal = document.getElementById('modalResumen');
-                if (modal && window.jQuery) {
-                    window.jQuery(modal).modal('hide');
+    // ============================================
+    // MODIFICAR EL EVENTO DE CONFIRMACIÓN
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+        const btnConfirmar = document.getElementById('confirmarEnvio');
+        
+        if (btnConfirmar) {
+            btnConfirmar.addEventListener('click', async function(e) {
+                try {
+                    const modal = document.getElementById('modalResumen');
+                    if (modal && window.jQuery) {
+                        window.jQuery(modal).modal('hide');
+                    }
+                    
+                    const textoOriginal = this.textContent;
+                    this.textContent = '⏳ Enviando...';
+                    this.disabled = true;
+                    
+                    const form = document.getElementById('formAdmision');
+                    const model = new AdmisionModel();
+                    const datos = model.mapearDatosFormulario(form);
+                    
+                    const resultado = await enviarDatosAlServidor(datos);
+                    
+                    this.textContent = textoOriginal;
+                    this.disabled = false;
+                    
+                    if (resultado.success) {
+                        alert('✅ ' + resultado.message + '\nID de registro: ' + resultado.idAspirante);
+                    } else {
+                        alert('❌ ' + resultado.message);
+                    }
+                } catch (error) {
+                    console.error('❌ Error:', error);
+                    alert('❌ Ocurrió un error al procesar la solicitud.');
+                    this.disabled = false;
+                    this.textContent = 'Confirmar envío';
                 }
-                
-                // Cambiar texto del botón
-                const textoOriginal = this.textContent;
-                this.textContent = '⏳ Enviando...';
-                this.disabled = true;
-                
-                // Obtener datos del formulario
-                const form = document.getElementById('formAdmision');
-                const model = new AdmisionModel();
-                const datos = model.mapearDatosFormulario(form);
-                
-                // Enviar al servidor
-                const resultado = await enviarDatosAlServidor(datos);
-                
-                // Restaurar botón
-                this.textContent = textoOriginal;
-                this.disabled = false;
-                
-                if (resultado.success) {
-                    alert('✅ ' + resultado.message + '\nID de registro: ' + resultado.idAspirante);
-                    // Opcional: limpiar formulario
-                    // form.reset();
-                } else {
-                    alert('❌ ' + resultado.message);
-                }
-            } catch (error) {
-                console.error('❌ Error:', error);
-                alert('❌ Ocurrió un error al procesar la solicitud.');
-                this.disabled = false;
-                this.textContent = 'Confirmar envío';
-            }
-        });
-    }
-});
-</script>
+            });
+        }
+    });
+    </script>
 </body>
 
 </html>

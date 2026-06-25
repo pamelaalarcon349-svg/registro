@@ -1,3 +1,5 @@
+// controllers/Controller.js - CORREGIDO
+
 class AdmisionController {
     constructor(modelo, vista) {
         this.model = modelo;
@@ -11,96 +13,48 @@ class AdmisionController {
         this.vincularEventos();
         this.actualizarCurp();
         this.actualizarTitulacion();
-        this.actualizarPosgrado();
         
         if (this.view.selectParentesco) {
-        this.view.selectParentesco.dispatchEvent(new Event('change'));
+            this.view.selectParentesco.dispatchEvent(new Event('change'));
+        }
     }
-}
+    
     vincularEventos() {
-        this.view.form.addEventListener('submit', evento => {
-            evento.preventDefault();
-            this.validarYMostrarResumen();
-        });
+        // ==========================================
+        // IMPORTANTE: Los eventos de posgrado ya están
+        // en la View, NO los dupliques aquí
+        // ==========================================
 
+        // Evento para nacionalidad
         document.querySelectorAll('input[name="nacionalidad"]').forEach(radio => {
             radio.addEventListener('change', () => this.actualizarCurp());
         });
 
+        // Evento para titulación
         document.querySelectorAll('input[name="titulacion"]').forEach(radio => {
             radio.addEventListener('change', () => this.actualizarTitulacion());
         });
 
-        document.querySelectorAll('input[name="posgrado"]').forEach(radio => {
-            radio.addEventListener('change', () => this.actualizarPosgrado());
-        });
-
+        // Evento para inputs numéricos
         document.addEventListener('input', evento => {
             if (evento.target.classList.contains('solo-numeros')) {
                 this.view.limpiarCampoNumerico(evento.target);
             }
-
-            if (evento.target.matches('#formAdmision [required]')) {
-                this.limpiarErrorSiTieneValor(evento.target);
-            }
         });
 
-        document.addEventListener('paste', evento => {
-            if (evento.target.classList.contains('solo-numeros')) {
-                setTimeout(() => this.view.limpiarCampoNumerico(evento.target), 10);
-            }
-        });
-
-        document.addEventListener('change', evento => {
-            if (evento.target.matches('#formAdmision [required]')) {
-                if (evento.target.type === 'radio') {
-                    this.view.limpiarErrorGrupoRadio(evento.target);
-                    return;
-                }
-
-                this.limpiarErrorSiTieneValor(evento.target);
-            }
-
-            if (evento.target.name === 'periodo') {
-                this.view.limpiarErrorPeriodo();
-            }
-        });
-
-        [this.view.selectMaestria, this.view.selectDoctorado].forEach(select => {
-            select?.addEventListener('change', () => this.view.limpiarErrorCampo(select));
-        });
-
-        document.querySelectorAll('#formAdmision [required]').forEach(campo => {
-            campo.addEventListener('blur', () => this.validarCampoObligatorio(campo));
-        });
-
-        document.getElementById('btnEnviarModal')?.addEventListener('click', evento => {
+        // Evento para el botón enviar
+        document.getElementById('btnEnviarModal')?.addEventListener('click', (evento) => {
             evento.preventDefault();
             this.validarYMostrarResumen();
         });
 
+        // Evento para confirmar envío
         document.getElementById('confirmarEnvio')?.addEventListener('click', () => {
             this.view.ocultarResumen();
-            alert('Solicitud enviada con éxito. Pronto recibirás respuesta del INAOE.');
+            this.enviarDatos();
         });
-          if (this.view.selectParentesco) {
-    this.view.selectParentesco.addEventListener('change', () => {
-
-        const esOtro = this.view.selectParentesco.value === 'OTRO';
-
-        this.view.mostrarElemento(
-            this.view.especificarParentescoContainer,
-            esOtro,
-            false
-        );
-
-        if (!esOtro && this.view.especificarParentesco) {
-            this.view.especificarParentesco.value = '';
-            this.view.limpiarErrorCampo(this.view.especificarParentesco);
-        }
-    });
-}
     }
+
     actualizarCurp() {
         const nacionalidad = this.view.form.querySelector('input[name="nacionalidad"]:checked')?.value;
         this.view.actualizarCurp(nacionalidad === 'Otra (Extranjera)');
@@ -111,32 +65,54 @@ class AdmisionController {
         this.view.actualizarTitulacion(titulacion === 'Otro');
     }
 
-    actualizarPosgrado() {
-        const posgrado = this.view.form.querySelector('input[name="posgrado"]:checked')?.value || '';
-        this.view.actualizarPosgrado(posgrado);
-        this.view.renderizarPeriodos(posgrado);
-    }
+    // ==========================================
+    // ENVIAR DATOS
+    // ==========================================
+    async enviarDatos() {
+        try {
+            const btn = document.getElementById('confirmarEnvio');
+            const textoOriginal = btn.textContent;
+            btn.textContent = '⏳ Enviando...';
+            btn.disabled = true;
 
-    limpiarErrorSiTieneValor(campo) {
-        if (campo.disabled || campo.type === 'radio') return;
-
-        if (!ValidacionModel.esSeleccionInvalida(campo.value)) {
-            this.view.limpiarErrorCampo(campo);
+            const datos = this.model.mapearDatosFormulario(this.view.form);
+            
+            // Simular envío - reemplazar con tu fetch real
+            console.log('📤 Datos a enviar:', datos);
+            
+            // Si tienes un endpoint real, descomenta esto:
+            /*
+            const response = await fetch('tu-endpoint', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+            const resultado = await response.json();
+            */
+            
+            // Simular delay
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            btn.textContent = textoOriginal;
+            btn.disabled = false;
+            
+            this.view.mostrarBanner('exito');
+            alert('✅ Solicitud enviada con éxito. Pronto recibirás respuesta del INAOE.');
+            
+        } catch (error) {
+            console.error('❌ Error al enviar:', error);
+            const btn = document.getElementById('confirmarEnvio');
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Confirmar envío';
+            }
+            alert('❌ Error al enviar la solicitud. Por favor intenta de nuevo.');
         }
     }
 
-    validarCampoObligatorio(campo) {
-        if (campo.disabled || campo.type === 'radio') return true;
-
-        if (ValidacionModel.esSeleccionInvalida(campo.value)) {
-            this.view.mostrarErrorCampo(campo, 'Este campo es obligatorio');
-            return false;
-        }
-
-        this.view.limpiarErrorCampo(campo);
-        return true;
-    }
-
+    // ==========================================
+    // VALIDACIONES
+    // ==========================================
     validarCamposRequeridos() {
         let esValido = true;
         const radiosRevisados = new Set();
@@ -164,185 +140,111 @@ class AdmisionController {
         return esValido;
     }
 
-    validarSelectPosgrado() {
-        const posgrado = this.view.form.querySelector('input[name="posgrado"]:checked')?.value;
+    validarCampoObligatorio(campo) {
+        if (campo.disabled) return true;
 
-        if (posgrado === 'Maestría' && ValidacionModel.esSeleccionInvalida(this.view.selectMaestria.value)) {
-            this.view.mostrarErrorCampo(this.view.selectMaestria, 'Este campo es obligatorio');
+        const valor = campo.value ? campo.value.trim() : '';
+        if (valor === '' || valor === 'SELECCIONA') {
+            this.view.mostrarErrorCampo(campo, 'Este campo es obligatorio');
             return false;
         }
 
-        if (posgrado === 'Doctorado' && ValidacionModel.esSeleccionInvalida(this.view.selectDoctorado.value)) {
-            this.view.mostrarErrorCampo(this.view.selectDoctorado, 'Este campo es obligatorio');
-            return false;
+        this.view.limpiarErrorCampo(campo);
+        return true;
+    }
+
+    validarSelectPosgrado() {
+        const posgrado = this.view.form.querySelector('input[name="posgrado"]:checked')?.value;
+
+        if (posgrado === 'Maestría' && this.view.selectMaestria) {
+            const valor = this.view.selectMaestria.value;
+            if (!valor || valor === 'SELECCIONA') {
+                this.view.mostrarErrorCampo(this.view.selectMaestria, 'Selecciona una maestría');
+                return false;
+            }
+        }
+
+        if (posgrado === 'Doctorado' && this.view.selectDoctorado) {
+            const valor = this.view.selectDoctorado.value;
+            if (!valor || valor === 'SELECCIONA') {
+                this.view.mostrarErrorCampo(this.view.selectDoctorado, 'Selecciona un doctorado');
+                return false;
+            }
         }
 
         return true;
     }
 
     validarPeriodo() {
-        if (this.view.form.querySelector('input[name="periodo"]:checked')) {
-            this.view.limpiarErrorPeriodo();
-            return true;
+        const periodoSeleccionado = document.querySelector('input[name="periodo"]:checked');
+        const tieneOpciones = this.view.opcionesPeriodo?.querySelectorAll('input[name="periodo"]').length > 0;
+        
+        if (!periodoSeleccionado && tieneOpciones) {
+            this.view.mostrarErrorPeriodo('Selecciona un periodo de ingreso');
+            return false;
         }
 
-        this.view.mostrarErrorPeriodo('Este campo es obligatorio');
-        return false;
+        this.view.limpiarErrorPeriodo();
+        return true;
     }
 
-  validarYMostrarResumen() {
-    this.view.limpiarValidaciones();
+    validarParentesco() {
+        return this.view.validarParentesco();
+    }
 
-    const requeridosValidos = this.validarCamposRequeridos();
-    const posgradoValido = this.validarSelectPosgrado();
-    const periodoValido = this.validarPeriodo();
-    const parentescoValido = this.view.validarParentesco();
+    validarYMostrarResumen() {
+        this.view.limpiarValidaciones();
 
-    const esValido =
-        requeridosValidos &&
-        posgradoValido &&
-        periodoValido &&
-        parentescoValido;
+        const requeridosValidos = this.validarCamposRequeridos();
+        const posgradoValido = this.validarSelectPosgrado();
+        const periodoValido = this.validarPeriodo();
+        const parentescoValido = this.validarParentesco();
 
-    if (!esValido) {
-        this.view.mostrarBanner('error');
-        this.view.desplazarPrimerError();
+        const esValido = requeridosValidos && posgradoValido && periodoValido && parentescoValido;
+
+        if (!esValido) {
+            this.view.mostrarBanner('error');
+            this.view.desplazarPrimerError();
+            return;
+        }
+
+        // Obtener datos y mostrar resumen
+        const datos = this.model.mapearDatosFormulario(this.view.form);
+        const html = this.view.construirResumen(datos);
+        this.view.mostrarResumen(html);
+    }
+}
+
+// ==========================================
+// INICIALIZACIÓN
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Inicializando aplicación...');
+    
+    // Verificar que las clases existen
+    if (typeof AdmisionModel === 'undefined') {
+        console.error('❌ AdmisionModel no está definida');
         return;
     }
-
-    const datos = this.model.mapearDatosFormulario(this.view.form);
-    this.model.enviarDatos();
-    this.view.mostrarBanner('exito');
-    this.view.mostrarResumen(this.view.construirResumen(datos));
-}
-}
-document.addEventListener('DOMContentLoaded', () => {
-    new AdmisionController(new AdmisionModel(), new AdmisionView());
+    if (typeof AdmisionView === 'undefined') {
+        console.error('❌ AdmisionView no está definida');
+        return;
+    }
+    
+    try {
+        // Crear instancias
+        const model = new AdmisionModel();
+        const view = new AdmisionView();
+        const controller = new AdmisionController(model, view);
+        
+        // Exponer para debugging
+        window.controller = controller;
+        window.view = view;
+        
+        console.log('✅ Aplicación inicializada correctamente');
+        console.log('📋 Para depurar, usa window.controller y window.view');
+        
+    } catch (error) {
+        console.error('❌ Error al inicializar:', error);
+    }
 });
-
-            // ===== VALIDACIÓN AL ENVIAR =====
-            $('#btnEnviarModal').on('click', function(e) {
-                e.preventDefault();
-                let esValido = true;
-                $('#alertaExito').fadeOut();
-                $('#alertaError').fadeOut();
-                
-                $('#formAdmision [required]').each(function() {
-                    let $el = $(this);
-                    if ($el.prop('disabled')) return;
-                    let valor = $el.val() ? $el.val().trim() : "";
-                    let $contenedorError = $el.siblings('.error-mensaje');
-                    
-                    if ($el.attr('type') === 'radio') {
-                        let name = $el.attr('name');
-                        if ($(`input[name="${name}"]:checked`).length === 0) {
-                            esValido = false;
-                            let $radioGroup = $el.closest('.form-group');
-                            $radioGroup.find('.error-mensaje').first().text('Este campo es obligatorio');
-                        }
-                        return;
-                    }
-                    
-                    if (valor === "" || valor === "SELECCIONA") {
-                        esValido = false;
-                        $el.addClass('input-error');
-                        $contenedorError.text('Este campo es obligatorio');
-                    }
-                });
-                
-                let posgradoSeleccionado = $('input[name="posgrado"]:checked').val();
-                if (posgradoSeleccionado === "Maestría") {
-                    let maestriaVal = $('#maestriaSelect').val();
-                    if (!maestriaVal || maestriaVal === "SELECCIONA") {
-                        esValido = false;
-                        $('#maestriaSelect').addClass('input-error');
-                    }
-                } else if (posgradoSeleccionado === "Doctorado") {
-                    let doctoradoVal = $('#doctoradoSelect').val();
-                    if (!doctoradoVal || doctoradoVal === "SELECCIONA") {
-                        esValido = false;
-                        $('#doctoradoSelect').addClass('input-error');
-                    }
-                }
-                
-                if ($('input[name="periodo"]:checked').length === 0) {
-                    esValido = false;
-                    $('#errorPeriodo').text('Este campo es obligatorio');
-                } else {
-                    $('#errorPeriodo').text('');
-                }
-                
-                if (esValido) {
-                    $('#alertaExito').fadeIn();
-                    mostrarResumen();
-                } else {
-                    $('#alertaError').fadeIn();
-                    $('html, body').animate({ scrollTop: $('.input-error').first().offset().top - 100 }, 500);
-                }
-            });
-
-            function getPosgradoDetalle() {
-                let tipo = $('input[name="posgrado"]:checked').val();
-                if (tipo === "Maestría") {
-                    let especialidad = $("#maestriaSelect option:selected").text();
-                    return especialidad && especialidad !== "SELECCIONA" ? `Maestría en ${especialidad}` : "Maestría";
-                } else if (tipo === "Doctorado") {
-                    let especialidad = $("#doctoradoSelect option:selected").text();
-                    return especialidad && especialidad !== "SELECCIONA" ? `Doctorado en ${especialidad}` : "Doctorado";
-                }
-                return "No seleccionado";
-            }
-
-            function getNivelIngles(name) {
-                let val = $(`input[name="${name}"]:checked`).val();
-                return val ? val : "No especificado";
-            }
-
-            function mostrarResumen() {
-                let tipoTitulacion = $('input[name="titulacion"]:checked').val() || "No seleccionado";
-                if (tipoTitulacion === "Otro") {
-                    tipoTitulacion += ` - ${$("#especificarTitulacion").val() || "No especificado"}`;
-                }
-                
-                let formaEval = $('input[name="formaEvaluacion"]:checked').val();
-                let evalHtml = formaEval ? `<li><strong>Forma de Evaluación:</strong> ${formaEval}</li>` : '';
-                
-                let html = '<div class="section-title"> Datos personales</div><ul>';
-                html += `<li><strong>Posgrado seleccionado:</strong> ${getPosgradoDetalle()}</li>`;
-                html += `<li><strong>Año de ingreso:</strong> ${$("#anioIngreso").val() || "No especificado"}</li>`;
-                html += `<li><strong>Periodo:</strong> ${$('input[name="periodo"]:checked').val() || "No seleccionado"}</li>`;
-                html += evalHtml;
-                html += `<li><strong>Nacionalidad:</strong> ${$('input[name="nacionalidad"]:checked').val() || "No especificado"}</li>`;
-                html += `<li><strong>CURP:</strong> ${$("#curp").val() || "No especificado"}</li>`;
-                html += `<li><strong>Nombre completo:</strong> ${$("#nombre").val() || ""} ${$("#primerApellido").val() || ""} ${$("#segundoApellido").val() || ""}</li>`;
-                html += `<li><strong>Sexo:</strong> ${$("#sexo").val() || "No especificado"}</li>`;
-                html += `<li><strong>Fecha de nacimiento:</strong> ${$("#fecha_nacimiento").val() || "No especificada"}</li>`;
-                html += `<li><strong>Lugar de nacimiento:</strong> ${$("#lugarNacimiento").val() || "No especificado"}</li>`;
-                html += `<li><strong>Teléfono móvil:</strong> ${$("#telMovil").val() || "No especificado"}</li>`;
-                html += `<li><strong>Correo electrónico:</strong> ${$("#email").val() || "No especificado"}</li>`;
-                html += `<li><strong>Dirección completa:</strong> ${$("#calle").val() || ""} ${$("#numExt").val() || ""}, ${$("#colonia").val() || ""}, CP ${$("#cp").val() || ""}, ${$("#municipio").val() || ""}, ${$("#estado").val() || ""}</li>`;
-                html += `</ul><div class="section-title">Datos académicos</div><ul>`;
-                html += `<li><strong>Institución de procedencia:</strong> ${$("#institucion").val() || "No especificada"}</li>`;
-                html += `<li><strong>Grado obtenido:</strong> ${$("#gradoAcademico").val() || "No especificado"}</li>`;
-                html += `<li><strong>Año de obtención:</strong> ${$("#anioGrado").val() || "No especificado"}</li>`;
-                html += `<li><strong>Promedio:</strong> ${$("#promedio").val() || "No especificado"}</li>`;
-                html += `<li><strong>Tipo de titulación:</strong> ${tipoTitulacion}</li>`;
-                html += `</ul><div class="section-title">Dominio del inglés</div><ul>`;
-                html += `<li><strong>Expresión escrita:</strong> ${getNivelIngles("ingles1")}</li>`;
-                html += `<li><strong>Expresión oral:</strong> ${getNivelIngles("ingles2")}</li>`;
-                html += `<li><strong>Comprensión lectora:</strong> ${getNivelIngles("ingles3")}</li>`;
-                html += `<li><strong>Comprensión auditiva:</strong> ${getNivelIngles("ingles4")}</li>`;
-                html += `</ul><div class="section-title"> Motivación</div><ul>`;
-                html += `<li><strong>Razón para estudiar en INAOE:</strong> ${$("#razon").val() || "No especificada"}</li>`;
-                html += `</ul>`;
-                
-                $("#contenidoResumen").html(html);
-                $("#modalResumen").modal("show");
-            }
-
-            $("#confirmarEnvio").on("click", function() {
-                $("#modalResumen").modal("hide");
-                alert("Solicitud enviada con éxito. Pronto recibirás respuesta del INAOE.");
-
-                
-            });
