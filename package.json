@@ -1,8 +1,19 @@
 {
+  "name": "inaoe-admision",
+  "version": "1.0.0",
+  "description": "Sistema de admisión INAOE",
+  "main": "index.html",
+  "scripts": {
+    "start": "php -S localhost:8000",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "dependencies": {
     "body-parser": "^2.3.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "mssql": "^12.6.0"
   }
+ 
+
+
 }

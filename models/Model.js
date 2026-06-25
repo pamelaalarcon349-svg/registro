@@ -194,8 +194,38 @@ class AdmisionModel {
         return this.datos;
     }
 
-    enviarDatos() {
-        console.log('Estructura JSON generada por el Modelo:', JSON.stringify(this.datos, null, 2));
-        return Promise.resolve({ codigo: 200, mensaje: 'Datos transferidos exitosamente al servidor.' });
-    }
-}
+   // En tu modelo AdmisionModel, actualiza el método enviarDatos()
+
+enviarDatos() {
+    console.log('📤 Enviando datos al servidor...');
+    
+    // Mostrar los datos que se van a enviar
+    console.log('Datos:', JSON.stringify(this.datos, null, 2));
+    
+    return fetch('guardar_aspirante.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.datos)
+    })
+    .then(response => {
+        console.log('📥 Respuesta recibida, status:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log('📦 Datos de respuesta:', data);
+        if (data.success) {
+            alert('✅ ¡Solicitud enviada con éxito!');
+            return data;
+        } else {
+            alert('❌ Error: ' + data.error);
+            throw new Error(data.error);
+        }
+    })
+    .catch(error => {
+        console.error('❌ Error en la petición:', error);
+        alert('❌ Error al enviar: ' + error.message);
+        throw error;
+    });
+}}

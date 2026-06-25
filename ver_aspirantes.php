@@ -1,9 +1,7 @@
 <?php
 // ============================================================
-// ÚNICO ARCHIVO: conexión + prueba en el mismo sitio
+// CLASE DE CONEXIÓN (IGUAL A LA QUE FUNCIONA)
 // ============================================================
-
-// 1. DEFINIMOS LA CLASE DE CONEXIÓN (sin namespace para simplificar)
 class DBConnectionModel
 {
     private $server;
@@ -15,18 +13,10 @@ class DBConnectionModel
 
     public function __construct()
     {
-        $this->server  = 'DESKTOP-I7L34OR\PAMEUWU';
+        $this->server   = 'DESKTOP-I7L34OR\PAMEUWU';
         $this->username = 'pame';
         $this->password = '12345';
         $this->database = 'pRegistro';
-
-
-
-        // Tus datos de conexión
-       /* $this->server   = 'DESKTOP-I7L34OR\PAMEUWU';
-        $this->username = 'pame';
-        $this->password = '12345';
-        $this->database = 'pRegistro';*/
     }
 
     public function createConnection(): bool
@@ -61,26 +51,27 @@ class DBConnectionModel
 }
 
 // ============================================================
-// 2. USAMOS LA CLASE
+// USAMOS LA CLASE (IGUAL QUE TU ARCHIVO DE PRUEBA)
 // ============================================================
 
 $db = new DBConnectionModel();
 
 if ($db->createConnection()) {
-    echo "✅ Conexión exitosa a la base de datos.<br>";
+    echo "✅ Conexión exitosa a la base de datos.<br><br>";
 
     $conn = $db->getConnection();
 
-    // --- (opcional) Prueba con una consulta real ---
-    // Cambia "algunaTabla" por una tabla que exista en tu base de datos
-    $query = "SELECT * FROM sga_cat_nacionalidad";
+    // --- CONSULTA PARA VER TODOS LOS ASPIRANTES ---
+    $query = "SELECT * FROM Aspirante ORDER BY id_Aspirante DESC";
     $stmt = sqlsrv_query($conn, $query);
 
     if ($stmt === false) {
         echo "Error en la consulta: " . print_r(sqlsrv_errors(), true);
     } else {
+        // Mostrar cada registro como Array igual que tu ejemplo
         while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
             print_r($row);
+            echo "<br>";
         }
         sqlsrv_free_stmt($stmt);
     }
