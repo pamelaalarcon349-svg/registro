@@ -1,4 +1,4 @@
-// controllers/Controller.js - CORREGIDO
+// controllers/Controller.js
 
 class AdmisionController {
     constructor(modelo, vista) {
@@ -13,18 +13,20 @@ class AdmisionController {
         this.vincularEventos();
         this.actualizarCurp();
         this.actualizarTitulacion();
+        this.inicializarLada();
+        this.inicializarAnioIngreso();
+        this.inicializarValidacionEmail();
         
         if (this.view.selectParentesco) {
             this.view.selectParentesco.dispatchEvent(new Event('change'));
         }
+
+        if (this.view.selectTipoCalle) {
+            this.view.selectTipoCalle.dispatchEvent(new Event('change'));
+        }
     }
     
     vincularEventos() {
-        // ==========================================
-        // IMPORTANTE: Los eventos de posgrado ya están
-        // en la View, NO los dupliques aquí
-        // ==========================================
-
         // Evento para nacionalidad
         document.querySelectorAll('input[name="nacionalidad"]').forEach(radio => {
             radio.addEventListener('change', () => this.actualizarCurp());
@@ -35,10 +37,17 @@ class AdmisionController {
             radio.addEventListener('change', () => this.actualizarTitulacion());
         });
 
-        // Evento para inputs numéricos
+        // Evento para campos numéricos y domicilios
         document.addEventListener('input', evento => {
+            // Campos que solo aceptan números
             if (evento.target.classList.contains('solo-numeros')) {
                 this.view.limpiarCampoNumerico(evento.target);
+            }
+            // Número exterior e interior
+            if (evento.target.classList.contains('numero-domicilio')) {
+                evento.target.value = evento.target.value
+                    .toUpperCase()
+                    .replace(/[^A-Z0-9\-\/ ]/g, '');
             }
         });
 
@@ -53,6 +62,174 @@ class AdmisionController {
             this.view.ocultarResumen();
             this.enviarDatos();
         });
+
+        // Escuchar eventos personalizados
+        document.addEventListener('validarEnvio', () => {
+            this.validarYMostrarResumen();
+        });
+
+        document.addEventListener('confirmarEnvio', (e) => {
+            this.view.ocultarResumen();
+            this.enviarDatos();
+        });
+    }
+
+    // ==========================================
+    // INICIALIZAR LADA CON "+"
+    // ==========================================
+    inicializarLada() {
+        ['lada', 'ladaEmergencia'].forEach(id => {
+            const input = document.getElementById(id);
+            if (!input) return;
+            input.value = '+';
+            input.addEventListener('focus', () => {
+                if (input.value === '') {
+                    input.value = '+';
+                }
+            });
+            input.addEventListener('input', () => {
+                let numeros = input.value.replace(/\D/g, '');
+                numeros = numeros.substring(0, 4);
+                input.value = '+' + numeros;
+            });
+            input.addEventListener('keydown', (e) => {
+                if (
+                    (e.key === 'Backspace' || e.key === 'Delete') &&
+                    input.selectionStart <= 1
+                ) {
+                    e.preventDefault();
+                }
+                if (e.key === 'Home') {
+                    e.preventDefault();
+                    input.setSelectionRange(1, 1);
+                }
+            });
+            input.addEventListener('click', () => {
+                if (input.selectionStart === 0) {
+                    input.setSelectionRange(1, 1);
+                }
+            });
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const texto = (e.clipboardData || window.clipboardData)
+                    .getData('text')
+                    .replace(/\D/g, '')
+                    .substring(0, 4);
+                input.value = '+' + texto;
+            });
+        });
+    }
+
+    // ==========================================
+    // INICIALIZAR AÑO DE INGRESO FIJO EN 2026
+    // ==========================================
+    inicializarAnioIngreso() {
+        const input = document.getElementById('anioIngreso');
+        if (!input) return;
+        input.value = '2026';
+        input.addEventListener('focus', () => {
+            if (input.value === '') {
+                input.value = '2026';
+            }
+        });
+        input.addEventListener('input', () => {
+            let numeros = input.value.replace(/\D/g, '');
+            if (!numeros.startsWith('2026')) {
+                numeros = '2026';
+            }
+            input.value = numeros.substring(0, 4);
+        });
+        input.addEventListener('keydown', (e) => {
+            if (
+                (e.key === 'Backspace' || e.key === 'Delete') &&
+                input.selectionStart <= 4
+            ) {
+                e.preventDefault();
+            }
+            if (e.key === 'Home') {
+                e.preventDefault();
+                input.setSelectionRange(4, 4);
+            }
+        });
+        input.addEventListener('click', () => {
+            if (input.selectionStart < 4) {
+                input.setSelectionRange(4, 4);
+            }
+        });
+        input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            input.value = '2026';
+        });
+    }
+
+    // ==========================================
+    // INICIALIZAR VALIDACIÓN DE EMAIL
+    // ==========================================
+    inicializarValidacionEmail() {
+        const emailInput = document.getElementById('email');
+        if (!emailInput) return;
+
+        emailInput.addEventListener('input', () => {
+            this.validarEmailEnTiempoReal();
+        });
+        emailInput.addEventListener('blur', () => {
+            this.validarEmailEnTiempoReal();
+        });
+        emailInput.addEventListener('paste', () => {
+            setTimeout(() => {
+                this.validarEmailEnTiempoReal();
+            }, 100);
+        });
+
+        console.log('Validación de email inicializada');
+    }
+
+    validarEmailEnTiempoReal() {
+        const emailInput = document.getElementById('email');
+        if (!emailInput) return;
+
+        const email = emailInput.value.trim();
+        const resultado = this.model.validarEmail(email);
+
+        if (email === '') {
+            emailInput.classList.remove('is-valid', 'is-invalid');
+            emailInput.setCustomValidity('');
+            this.view.limpiarErrorCampo(emailInput);
+        } else if (resultado.valido) {
+            emailInput.classList.remove('is-invalid');
+            emailInput.classList.add('is-valid');
+            emailInput.setCustomValidity('');
+            this.view.limpiarErrorCampo(emailInput);
+        } else {
+            emailInput.classList.add('is-invalid');
+            emailInput.classList.remove('is-valid');
+            emailInput.setCustomValidity(resultado.mensaje);
+            this.view.mostrarErrorCampo(emailInput, resultado.mensaje);
+        }
+    }
+
+    validarEmailParaEnvio() {
+        const emailInput = document.getElementById('email');
+        const email = emailInput ? emailInput.value.trim() : '';
+        
+        if (!email) {
+            this.view.mostrarErrorCampo(emailInput, 'El correo electrónico es obligatorio');
+            return false;
+        }
+
+        if (!email.includes('@')) {
+            this.view.mostrarErrorCampo(emailInput, 'El correo electrónico debe contener "@"');
+            return false;
+        }
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            this.view.mostrarErrorCampo(emailInput, 'Formato de correo electrónico inválido');
+            return false;
+        }
+
+        this.view.limpiarErrorCampo(emailInput);
+        return true;
     }
 
     actualizarCurp() {
@@ -66,47 +243,58 @@ class AdmisionController {
     }
 
     // ==========================================
-    // ENVIAR DATOS
+    // ENVIAR DATOS CON VALIDACIÓN DE EMAIL
     // ==========================================
     async enviarDatos() {
         try {
+            if (!this.validarEmailParaEnvio()) {
+                const emailInput = document.getElementById('email');
+                if (emailInput) {
+                    emailInput.focus();
+                    emailInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                this.view.mostrarBanner('error');
+                return;
+            }
+
             const btn = document.getElementById('confirmarEnvio');
             const textoOriginal = btn.textContent;
-            btn.textContent = '⏳ Enviando...';
+            btn.textContent = 'Enviando...';
             btn.disabled = true;
 
             const datos = this.model.mapearDatosFormulario(this.view.form);
             
-            // Simular envío - reemplazar con tu fetch real
+            console.log('Email validado:', datos.contacto.email);
             console.log('Datos a enviar:', datos);
             
-            // Si tienes un endpoint real, descomenta esto:
-            /*
-            const response = await fetch('tu-endpoint', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datos)
-            });
-            const resultado = await response.json();
-            */
-            
-            // Simular delay
             await new Promise(resolve => setTimeout(resolve, 1500));
             
             btn.textContent = textoOriginal;
             btn.disabled = false;
             
             this.view.mostrarBanner('exito');
-            alert('✅ Solicitud enviada con éxito. Pronto recibirás respuesta del INAOE.');
+            alert('Solicitud enviada con éxito. Pronto recibirás respuesta del INAOE.');
             
         } catch (error) {
-            console.error('❌ Error al enviar:', error);
+            console.error('Error al enviar:', error);
+            
+            if (error.message && error.message.includes('correo')) {
+                const emailInput = document.getElementById('email');
+                if (emailInput) {
+                    emailInput.classList.add('is-invalid');
+                    this.view.mostrarErrorCampo(emailInput, error.message);
+                    emailInput.focus();
+                }
+                this.view.mostrarBanner('error');
+            } else {
+                alert('Error al enviar la solicitud. Por favor intenta de nuevo.');
+            }
+            
             const btn = document.getElementById('confirmarEnvio');
             if (btn) {
                 btn.disabled = false;
                 btn.textContent = 'Confirmar envío';
             }
-            alert('❌ Error al enviar la solicitud. Por favor intenta de nuevo.');
         }
     }
 
@@ -119,6 +307,10 @@ class AdmisionController {
 
         this.view.form.querySelectorAll('[required]').forEach(campo => {
             if (campo.disabled) return;
+
+            if (campo.id === 'curp' && this.view.esNacionalidadExtranjera()) {
+                return;
+            }
 
             if (campo.type === 'radio') {
                 if (radiosRevisados.has(campo.name)) return;
@@ -172,6 +364,14 @@ class AdmisionController {
             }
         }
 
+        if (posgrado === 'Especialidad' && this.view.selectEspecialidad) {
+            const valor = this.view.selectEspecialidad.value;
+            if (!valor || valor === 'SELECCIONA') {
+                this.view.mostrarErrorCampo(this.view.selectEspecialidad, 'Selecciona una especialidad');
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -192,36 +392,60 @@ class AdmisionController {
         return this.view.validarParentesco();
     }
 
+    validarTipoCalle() {
+        return this.view.validarTipoCalle();
+    }
+
+    validarPais() {
+        return this.view.validarPais();
+    }
+
     // ==========================================
-    // 👇 NUEVO: VALIDAR Y MOSTRAR RESUMEN
+    // VALIDAR Y MOSTRAR RESUMEN
     // ==========================================
     validarYMostrarResumen() {
         this.view.limpiarValidaciones();
 
+        const emailValido = this.validarEmailParaEnvio();
         const requeridosValidos = this.validarCamposRequeridos();
         const posgradoValido = this.validarSelectPosgrado();
         const periodoValido = this.validarPeriodo();
         const parentescoValido = this.validarParentesco();
-        
-        // 👇 NUEVO: Validar nacionalidad extranjera
+        const tipoCalleValido = this.validarTipoCalle();
+        const paisValido = this.validarPais();
         const nacionalidadExtranjeraValida = this.view.validarNacionalidadExtranjera();
 
-        const esValido = requeridosValidos && 
+        const esValido = emailValido &&
+                         requeridosValidos && 
                          posgradoValido && 
                          periodoValido && 
                          parentescoValido && 
+                         tipoCalleValido && 
+                         paisValido &&
                          nacionalidadExtranjeraValida;
 
         if (!esValido) {
             this.view.mostrarBanner('error');
             this.view.desplazarPrimerError();
+            
+            if (!emailValido) {
+                const emailInput = document.getElementById('email');
+                if (emailInput) {
+                    emailInput.focus();
+                }
+            }
             return;
         }
 
-        // Obtener datos y mostrar resumen
-        const datos = this.model.mapearDatosFormulario(this.view.form);
-        const html = this.view.construirResumen(datos);
-        this.view.mostrarResumen(html);
+        try {
+            const datos = this.model.mapearDatosFormulario(this.view.form);
+            const html = this.view.construirResumen(datos);
+            this.view.mostrarResumen(html);
+        } catch (error) {
+            console.error('Error al mapear datos:', error);
+            this.view.mostrarBanner('error');
+            alert(error.message);
+        }
     }
 }
 
@@ -229,32 +453,28 @@ class AdmisionController {
 // INICIALIZACIÓN
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Inicializando aplicación...');
+    console.log('Inicializando aplicación...');
     
-    // Verificar que las clases existen
     if (typeof AdmisionModel === 'undefined') {
-        console.error('❌ AdmisionModel no está definida');
+        console.error('AdmisionModel no está definida');
         return;
     }
     if (typeof AdmisionView === 'undefined') {
-        console.error('❌ AdmisionView no está definida');
+        console.error('AdmisionView no está definida');
         return;
     }
-    
     try {
-        // Crear instancias
         const model = new AdmisionModel();
         const view = new AdmisionView();
         const controller = new AdmisionController(model, view);
         
-        // Exponer para debugging
         window.controller = controller;
         window.view = view;
         
-        console.log('✅ Aplicación inicializada correctamente');
-        console.log('📋 Para depurar, usa window.controller y window.view');
+        console.log('Aplicación inicializada correctamente');
+        console.log('');
         
     } catch (error) {
-        console.error('❌ Error al inicializar:', error);
+        console.error(' Error al inicializar:', error);
     }
 });

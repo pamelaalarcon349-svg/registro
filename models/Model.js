@@ -5,11 +5,58 @@ class AdmisionModel {
         this.datos = {};
     }
 
+    // ==========================================
+    // VALIDACIÓN DE EMAIL
+    // ==========================================
+    validarEmail(email) {
+        // Verificar que tenga @
+        if (!email || !email.includes('@')) {
+            return { valido: false, mensaje: 'El correo debe contener @' };
+        }
+        
+        // Verificar formato completo con regex
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            return { valido: false, mensaje: 'Formato de correo electrónico inválido' };
+        }
+        
+        return { valido: true, mensaje: 'Correo válido' };
+    }
+
+    // ==========================================
+    // VALIDACIÓN DE EMAIL EN FRONTEND
+    // ==========================================
+    validarEmailFrontend() {
+        const emailInput = document.getElementById('email');
+        const email = emailInput ? emailInput.value.trim() : '';
+        const resultado = this.validarEmail(email);
+        
+        if (emailInput) {
+            if (resultado.valido) {
+                emailInput.classList.remove('is-invalid');
+                emailInput.classList.add('is-valid');
+                emailInput.setCustomValidity('');
+            } else {
+                emailInput.classList.add('is-invalid');
+                emailInput.classList.remove('is-valid');
+                emailInput.setCustomValidity(resultado.mensaje);
+            }
+        }
+        
+        return resultado;
+    }
+
+    // ==========================================
+    // OBTENER VALOR DE INPUT
+    // ==========================================
     obtenerValor(id) {
         const elemento = document.getElementById(id);
         return elemento ? elemento.value.trim() : '';
     }
 
+    // ==========================================
+    // OBTENER TEXTO DE SELECT
+    // ==========================================
     obtenerTextoSelect(id) {
         const select = document.getElementById(id);
         if (!select || select.selectedIndex < 0) return '';
@@ -17,7 +64,19 @@ class AdmisionModel {
     }
 
     // ==========================================
-    // 👇 MODIFICADO: Obtener parentesco
+    // OBTENER RADIO BUTTON
+    // ==========================================
+    obtenerRadio(formulario, nombre) {
+        return formulario.querySelector(`input[name="${nombre}"]:checked`)?.value || '';
+    }
+
+    obtenerRadioExacto(nombre) {
+        const radio = document.querySelector(`input[name="${nombre}"]:checked`);
+        return radio ? radio.value : '';
+    }
+
+    // ==========================================
+    // OBTENER PARENTESCO
     // ==========================================
     obtenerParentesco() {
         const parentesco = this.obtenerValor('parentesco');
@@ -28,20 +87,29 @@ class AdmisionModel {
     }
 
     // ==========================================
-    // 👇 NUEVO: Obtener nacionalidad completa
+    // OBTENER TIPO DE CALLE
+    // ==========================================
+    obtenerTipoCalle() {
+        const tipoCalle = this.obtenerValor('tipoCalle');
+        if (tipoCalle === 'OTRO') {
+            const especificacion = this.obtenerValor('especificarCalle');
+            return especificacion || 'OTRO';
+        }
+        return tipoCalle;
+    }
+
+    // ==========================================
+    // OBTENER NACIONALIDAD COMPLETA
     // ==========================================
     obtenerNacionalidadCompleta(formulario) {
         const nacionalidadBase = this.obtenerRadio(formulario, 'nacionalidad');
         
-        // Si es mexicana, devolver directamente
         if (nacionalidadBase === 'Mexicana') {
             return 'Mexicana';
         }
         
-        // Si es extranjera, obtener la nacionalidad seleccionada del select
         const nacionalidadExtranjera = this.obtenerValor('nacionalidadExtranjera');
         
-        // Si no seleccionó ninguna, devolver el valor base
         if (!nacionalidadExtranjera || nacionalidadExtranjera === 'SELECCIONA') {
             return 'Extranjera';
         }
@@ -49,15 +117,9 @@ class AdmisionModel {
         return nacionalidadExtranjera;
     }
 
-    obtenerRadio(formulario, nombre) {
-        return formulario.querySelector(`input[name="${nombre}"]:checked`)?.value || '';
-    }
-
-    obtenerRadioExacto(nombre) {
-        const radio = document.querySelector(`input[name="${nombre}"]:checked`);
-        return radio ? radio.value : '';
-    }
-
+    // ==========================================
+    // OBTENER DETALLE DE POSGRADO (con Especialidad)
+    // ==========================================
     obtenerPosgradoDetalle(formulario) {
         const tipo = this.obtenerRadio(formulario, 'posgrado');
 
@@ -75,18 +137,31 @@ class AdmisionModel {
                 : 'Doctorado';
         }
 
+        if (tipo === 'Especialidad') {
+            const especialidad = this.obtenerTextoSelect('especialidadSelect');
+            return especialidad && especialidad !== 'SELECCIONA'
+                ? `Especialidad en ${especialidad}`
+                : 'Especialidad';
+        }
+
         return 'No seleccionado';
     }
 
+    // ==========================================
+    // OBTENER TIPO DE TITULACIÓN
+    // ==========================================
     obtenerTipoTitulacion(formulario) {
         const tipo = this.obtenerRadio(formulario, 'titulacion') || 'No seleccionado';
         if (tipo !== 'Otro') return tipo;
         return `${tipo} - ${this.obtenerValor('especificarTitulacion') || 'No especificado'}`;
     }
 
+    // ==========================================
+    // OBTENER EXPERIENCIA LABORAL
+    // ==========================================
     obtenerExperienciaLaboral() {
         const experiencias = [];
-        const filas = document.querySelectorAll('#formAdmision .table-responsive table tbody tr');
+        const filas = document.querySelectorAll('#tablaExperiencia tbody tr');
         
         filas.forEach(fila => {
             const inputs = fila.querySelectorAll('input');
@@ -112,6 +187,9 @@ class AdmisionModel {
         return experiencias;
     }
 
+    // ==========================================
+    // OBTENER PUBLICACIONES
+    // ==========================================
     obtenerPublicaciones() {
         const publicaciones = [];
         const contenedores = document.querySelectorAll('#formAdmision .row.g-3.mb-3');
@@ -136,6 +214,9 @@ class AdmisionModel {
         return publicaciones;
     }
 
+    // ==========================================
+    // OBTENER DOMINIO DE INGLÉS
+    // ==========================================
     obtenerDominioIngles() {
         return {
             expresionEscrita: this.obtenerRadioExacto('ingles.ingles1') || 'No especificado',
@@ -149,8 +230,15 @@ class AdmisionModel {
     // MAPEAR DATOS DEL FORMULARIO
     // ==========================================
     mapearDatosFormulario(formulario) {
+        const email = this.obtenerValor('email');
+        
+        // Validar email antes de continuar
+        const validacionEmail = this.validarEmail(email);
+        if (!validacionEmail.valido) {
+            throw new Error(validacionEmail.mensaje);
+        }
+        
         this.datos = {
-            // 👇 MODIFICADO: Usar el nuevo método
             nacionalidad: this.obtenerNacionalidadCompleta(formulario),
             curp: this.obtenerValor('curp'),
             nombre: this.obtenerValor('nombre'),
@@ -165,7 +253,7 @@ class AdmisionModel {
                 telFijo: this.obtenerValor('telFijo'),
                 ext: this.obtenerValor('ext'),
                 telMovil: this.obtenerValor('telMovil'),
-                email: this.obtenerValor('email')
+                email: email
             },
             
             domicilio: {
@@ -174,7 +262,7 @@ class AdmisionModel {
                 municipio: this.obtenerValor('municipio'),
                 localidad: this.obtenerValor('localidad'),
                 colonia: this.obtenerValor('colonia'),
-                tipoCalle: this.obtenerValor('tipoCalle'),
+                tipoCalle: this.obtenerTipoCalle(),
                 calle: this.obtenerValor('calle'),
                 numExt: this.obtenerValor('numExt'),
                 numInt: this.obtenerValor('numInt'),
@@ -197,6 +285,7 @@ class AdmisionModel {
                 posgradoDetalle: this.obtenerPosgradoDetalle(formulario),
                 maestria: this.obtenerValor('maestriaSelect'),
                 doctorado: this.obtenerValor('doctoradoSelect'),
+                especialidad: this.obtenerValor('especialidadSelect'),
                 anioIngreso: this.obtenerValor('anioIngreso'),
                 periodo: this.obtenerRadio(formulario, 'periodo'),
                 formaEvaluacion: this.obtenerRadio(formulario, 'formaEvaluacion')
@@ -225,9 +314,33 @@ class AdmisionModel {
         return this.datos;
     }
 
+    // ==========================================
+    // ENVIAR DATOS CON VALIDACIÓN DE EMAIL
+    // ==========================================
     enviarDatos() {
+        if (!this.datos || !this.datos.contacto || !this.datos.contacto.email) {
+            return Promise.reject({
+                codigo: 400,
+                mensaje: 'Datos incompletos: El correo electrónico es obligatorio'
+            });
+        }
+
+        const validacionEmail = this.validarEmail(this.datos.contacto.email);
+        if (!validacionEmail.valido) {
+            return Promise.reject({
+                codigo: 400,
+                mensaje: validacionEmail.mensaje
+            });
+        }
+
+        console.log('Email validado correctamente:', this.datos.contacto.email);
         console.log('Estructura JSON generada por el Modelo:', JSON.stringify(this.datos, null, 2));
-        return Promise.resolve({ codigo: 200, mensaje: 'Datos transferidos exitosamente al servidor.' });
+        
+        return Promise.resolve({ 
+            codigo: 200, 
+            mensaje: 'Datos transferidos exitosamente al servidor.',
+            email: this.datos.contacto.email
+        });
     }
 }
 
@@ -238,4 +351,4 @@ if (typeof window !== 'undefined') {
     window.AdmisionModel = AdmisionModel;
 }
 
-console.log('📦 Clase AdmisionModel cargada correctamente');
+console.log('Clase AdmisionModel cargada correctamente con validación de email');
