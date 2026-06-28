@@ -1,3 +1,5 @@
+// controllers/Controller.js
+
 class AdmisionController {
     constructor(modelo, vista) {
         this.model = modelo;
@@ -11,96 +13,225 @@ class AdmisionController {
         this.vincularEventos();
         this.actualizarCurp();
         this.actualizarTitulacion();
-        this.actualizarPosgrado();
+        this.inicializarLada();
+        this.inicializarAnioIngreso();
+        this.inicializarValidacionEmail();
         
         if (this.view.selectParentesco) {
-        this.view.selectParentesco.dispatchEvent(new Event('change'));
-    }
-}
-    vincularEventos() {
-        this.view.form.addEventListener('submit', evento => {
-            evento.preventDefault();
-            this.validarYMostrarResumen();
-        });
+            this.view.selectParentesco.dispatchEvent(new Event('change'));
+        }
 
+        if (this.view.selectTipoCalle) {
+            this.view.selectTipoCalle.dispatchEvent(new Event('change'));
+        }
+    }
+    
+    vincularEventos() {
+        // Evento para nacionalidad
         document.querySelectorAll('input[name="nacionalidad"]').forEach(radio => {
             radio.addEventListener('change', () => this.actualizarCurp());
         });
 
+        // Evento para titulación
         document.querySelectorAll('input[name="titulacion"]').forEach(radio => {
             radio.addEventListener('change', () => this.actualizarTitulacion());
         });
 
-        document.querySelectorAll('input[name="posgrado"]').forEach(radio => {
-            radio.addEventListener('change', () => this.actualizarPosgrado());
-        });
-
+        // Evento para campos numéricos y domicilios
         document.addEventListener('input', evento => {
+            // Campos que solo aceptan números
             if (evento.target.classList.contains('solo-numeros')) {
                 this.view.limpiarCampoNumerico(evento.target);
             }
-
-            if (evento.target.matches('#formAdmision [required]')) {
-                this.limpiarErrorSiTieneValor(evento.target);
+            // Número exterior e interior
+            if (evento.target.classList.contains('numero-domicilio')) {
+                evento.target.value = evento.target.value
+                    .toUpperCase()
+                    .replace(/[^A-Z0-9\-\/ ]/g, '');
             }
         });
 
-        document.addEventListener('paste', evento => {
-            if (evento.target.classList.contains('solo-numeros')) {
-                setTimeout(() => this.view.limpiarCampoNumerico(evento.target), 10);
-            }
-        });
-
-        document.addEventListener('change', evento => {
-            if (evento.target.matches('#formAdmision [required]')) {
-                if (evento.target.type === 'radio') {
-                    this.view.limpiarErrorGrupoRadio(evento.target);
-                    return;
-                }
-
-                this.limpiarErrorSiTieneValor(evento.target);
-            }
-
-            if (evento.target.name === 'periodo') {
-                this.view.limpiarErrorPeriodo();
-            }
-        });
-
-        [this.view.selectMaestria, this.view.selectDoctorado].forEach(select => {
-            select?.addEventListener('change', () => this.view.limpiarErrorCampo(select));
-        });
-
-        document.querySelectorAll('#formAdmision [required]').forEach(campo => {
-            campo.addEventListener('blur', () => this.validarCampoObligatorio(campo));
-        });
-
-        document.getElementById('btnEnviarModal')?.addEventListener('click', evento => {
+        // Evento para el botón enviar
+        document.getElementById('btnEnviarModal')?.addEventListener('click', (evento) => {
             evento.preventDefault();
             this.validarYMostrarResumen();
         });
 
+        // Evento para confirmar envío
         document.getElementById('confirmarEnvio')?.addEventListener('click', () => {
             this.view.ocultarResumen();
-            alert('Solicitud enviada con éxito. Pronto recibirás respuesta del INAOE.');
+            this.enviarDatos();
         });
-          if (this.view.selectParentesco) {
-    this.view.selectParentesco.addEventListener('change', () => {
 
-        const esOtro = this.view.selectParentesco.value === 'OTRO';
+        // Escuchar eventos personalizados
+        document.addEventListener('validarEnvio', () => {
+            this.validarYMostrarResumen();
+        });
 
-        this.view.mostrarElemento(
-            this.view.especificarParentescoContainer,
-            esOtro,
-            false
-        );
-
-        if (!esOtro && this.view.especificarParentesco) {
-            this.view.especificarParentesco.value = '';
-            this.view.limpiarErrorCampo(this.view.especificarParentesco);
-        }
-    });
-}
+        document.addEventListener('confirmarEnvio', (e) => {
+            this.view.ocultarResumen();
+            this.enviarDatos();
+        });
     }
+
+    // ==========================================
+    // INICIALIZAR LADA CON "+"
+    // ==========================================
+    inicializarLada() {
+        ['lada', 'ladaEmergencia'].forEach(id => {
+            const input = document.getElementById(id);
+            if (!input) return;
+            input.value = '+';
+            input.addEventListener('focus', () => {
+                if (input.value === '') {
+                    input.value = '+';
+                }
+            });
+            input.addEventListener('input', () => {
+                let numeros = input.value.replace(/\D/g, '');
+                numeros = numeros.substring(0, 4);
+                input.value = '+' + numeros;
+            });
+            input.addEventListener('keydown', (e) => {
+                if (
+                    (e.key === 'Backspace' || e.key === 'Delete') &&
+                    input.selectionStart <= 1
+                ) {
+                    e.preventDefault();
+                }
+                if (e.key === 'Home') {
+                    e.preventDefault();
+                    input.setSelectionRange(1, 1);
+                }
+            });
+            input.addEventListener('click', () => {
+                if (input.selectionStart === 0) {
+                    input.setSelectionRange(1, 1);
+                }
+            });
+            input.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const texto = (e.clipboardData || window.clipboardData)
+                    .getData('text')
+                    .replace(/\D/g, '')
+                    .substring(0, 4);
+                input.value = '+' + texto;
+            });
+        });
+    }
+
+    // ==========================================
+    // INICIALIZAR AÑO DE INGRESO FIJO EN 2026
+    // ==========================================
+    inicializarAnioIngreso() {
+        const input = document.getElementById('anioIngreso');
+        if (!input) return;
+        input.value = '2026';
+        input.addEventListener('focus', () => {
+            if (input.value === '') {
+                input.value = '2026';
+            }
+        });
+        input.addEventListener('input', () => {
+            let numeros = input.value.replace(/\D/g, '');
+            if (!numeros.startsWith('2026')) {
+                numeros = '2026';
+            }
+            input.value = numeros.substring(0, 4);
+        });
+        input.addEventListener('keydown', (e) => {
+            if (
+                (e.key === 'Backspace' || e.key === 'Delete') &&
+                input.selectionStart <= 4
+            ) {
+                e.preventDefault();
+            }
+            if (e.key === 'Home') {
+                e.preventDefault();
+                input.setSelectionRange(4, 4);
+            }
+        });
+        input.addEventListener('click', () => {
+            if (input.selectionStart < 4) {
+                input.setSelectionRange(4, 4);
+            }
+        });
+        input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            input.value = '2026';
+        });
+    }
+
+    // ==========================================
+    // INICIALIZAR VALIDACIÓN DE EMAIL
+    // ==========================================
+    inicializarValidacionEmail() {
+        const emailInput = document.getElementById('email');
+        if (!emailInput) return;
+
+        emailInput.addEventListener('input', () => {
+            this.validarEmailEnTiempoReal();
+        });
+        emailInput.addEventListener('blur', () => {
+            this.validarEmailEnTiempoReal();
+        });
+        emailInput.addEventListener('paste', () => {
+            setTimeout(() => {
+                this.validarEmailEnTiempoReal();
+            }, 100);
+        });
+
+        console.log('Validación de email inicializada');
+    }
+
+    validarEmailEnTiempoReal() {
+        const emailInput = document.getElementById('email');
+        if (!emailInput) return;
+
+        const email = emailInput.value.trim();
+        const resultado = this.model.validarEmail(email);
+
+        if (email === '') {
+            emailInput.classList.remove('is-valid', 'is-invalid');
+            emailInput.setCustomValidity('');
+            this.view.limpiarErrorCampo(emailInput);
+        } else if (resultado.valido) {
+            emailInput.classList.remove('is-invalid');
+            emailInput.classList.add('is-valid');
+            emailInput.setCustomValidity('');
+            this.view.limpiarErrorCampo(emailInput);
+        } else {
+            emailInput.classList.add('is-invalid');
+            emailInput.classList.remove('is-valid');
+            emailInput.setCustomValidity(resultado.mensaje);
+            this.view.mostrarErrorCampo(emailInput, resultado.mensaje);
+        }
+    }
+
+    validarEmailParaEnvio() {
+        const emailInput = document.getElementById('email');
+        const email = emailInput ? emailInput.value.trim() : '';
+        
+        if (!email) {
+            this.view.mostrarErrorCampo(emailInput, 'El correo electrónico es obligatorio');
+            return false;
+        }
+
+        if (!email.includes('@')) {
+            this.view.mostrarErrorCampo(emailInput, 'El correo electrónico debe contener "@"');
+            return false;
+        }
+
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            this.view.mostrarErrorCampo(emailInput, 'Formato de correo electrónico inválido');
+            return false;
+        }
+
+        this.view.limpiarErrorCampo(emailInput);
+        return true;
+    }
+
     actualizarCurp() {
         const nacionalidad = this.view.form.querySelector('input[name="nacionalidad"]:checked')?.value;
         this.view.actualizarCurp(nacionalidad === 'Otra (Extranjera)');
@@ -111,38 +242,75 @@ class AdmisionController {
         this.view.actualizarTitulacion(titulacion === 'Otro');
     }
 
-    actualizarPosgrado() {
-        const posgrado = this.view.form.querySelector('input[name="posgrado"]:checked')?.value || '';
-        this.view.actualizarPosgrado(posgrado);
-        this.view.renderizarPeriodos(posgrado);
-    }
+    // ==========================================
+    // ENVIAR DATOS CON VALIDACIÓN DE EMAIL
+    // ==========================================
+    async enviarDatos() {
+        try {
+            if (!this.validarEmailParaEnvio()) {
+                const emailInput = document.getElementById('email');
+                if (emailInput) {
+                    emailInput.focus();
+                    emailInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                this.view.mostrarBanner('error');
+                return;
+            }
 
-    limpiarErrorSiTieneValor(campo) {
-        if (campo.disabled || campo.type === 'radio') return;
+            const btn = document.getElementById('confirmarEnvio');
+            const textoOriginal = btn.textContent;
+            btn.textContent = 'Enviando...';
+            btn.disabled = true;
 
-        if (!ValidacionModel.esSeleccionInvalida(campo.value)) {
-            this.view.limpiarErrorCampo(campo);
+            const datos = this.model.mapearDatosFormulario(this.view.form);
+            
+            console.log('Email validado:', datos.contacto.email);
+            console.log('Datos a enviar:', datos);
+            
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            btn.textContent = textoOriginal;
+            btn.disabled = false;
+            
+            this.view.mostrarBanner('exito');
+            alert('Solicitud enviada con éxito. Pronto recibirás respuesta del INAOE.');
+            
+        } catch (error) {
+            console.error('Error al enviar:', error);
+            
+            if (error.message && error.message.includes('correo')) {
+                const emailInput = document.getElementById('email');
+                if (emailInput) {
+                    emailInput.classList.add('is-invalid');
+                    this.view.mostrarErrorCampo(emailInput, error.message);
+                    emailInput.focus();
+                }
+                this.view.mostrarBanner('error');
+            } else {
+                alert('Error al enviar la solicitud. Por favor intenta de nuevo.');
+            }
+            
+            const btn = document.getElementById('confirmarEnvio');
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Confirmar envío';
+            }
         }
     }
 
-    validarCampoObligatorio(campo) {
-        if (campo.disabled || campo.type === 'radio') return true;
-
-        if (ValidacionModel.esSeleccionInvalida(campo.value)) {
-            this.view.mostrarErrorCampo(campo, 'Este campo es obligatorio');
-            return false;
-        }
-
-        this.view.limpiarErrorCampo(campo);
-        return true;
-    }
-
+    // ==========================================
+    // VALIDACIONES
+    // ==========================================
     validarCamposRequeridos() {
         let esValido = true;
         const radiosRevisados = new Set();
 
         this.view.form.querySelectorAll('[required]').forEach(campo => {
             if (campo.disabled) return;
+
+            if (campo.id === 'curp' && this.view.esNacionalidadExtranjera()) {
+                return;
+            }
 
             if (campo.type === 'radio') {
                 if (radiosRevisados.has(campo.name)) return;
@@ -164,185 +332,149 @@ class AdmisionController {
         return esValido;
     }
 
-    validarSelectPosgrado() {
-        const posgrado = this.view.form.querySelector('input[name="posgrado"]:checked')?.value;
+    validarCampoObligatorio(campo) {
+        if (campo.disabled) return true;
 
-        if (posgrado === 'Maestría' && ValidacionModel.esSeleccionInvalida(this.view.selectMaestria.value)) {
-            this.view.mostrarErrorCampo(this.view.selectMaestria, 'Este campo es obligatorio');
+        const valor = campo.value ? campo.value.trim() : '';
+        if (valor === '' || valor === 'SELECCIONA') {
+            this.view.mostrarErrorCampo(campo, 'Este campo es obligatorio');
             return false;
         }
 
-        if (posgrado === 'Doctorado' && ValidacionModel.esSeleccionInvalida(this.view.selectDoctorado.value)) {
-            this.view.mostrarErrorCampo(this.view.selectDoctorado, 'Este campo es obligatorio');
-            return false;
+        this.view.limpiarErrorCampo(campo);
+        return true;
+    }
+
+    validarSelectPosgrado() {
+        const posgrado = this.view.form.querySelector('input[name="posgrado"]:checked')?.value;
+
+        if (posgrado === 'Maestría' && this.view.selectMaestria) {
+            const valor = this.view.selectMaestria.value;
+            if (!valor || valor === 'SELECCIONA') {
+                this.view.mostrarErrorCampo(this.view.selectMaestria, 'Selecciona una maestría');
+                return false;
+            }
+        }
+
+        if (posgrado === 'Doctorado' && this.view.selectDoctorado) {
+            const valor = this.view.selectDoctorado.value;
+            if (!valor || valor === 'SELECCIONA') {
+                this.view.mostrarErrorCampo(this.view.selectDoctorado, 'Selecciona un doctorado');
+                return false;
+            }
+        }
+
+        if (posgrado === 'Especialidad' && this.view.selectEspecialidad) {
+            const valor = this.view.selectEspecialidad.value;
+            if (!valor || valor === 'SELECCIONA') {
+                this.view.mostrarErrorCampo(this.view.selectEspecialidad, 'Selecciona una especialidad');
+                return false;
+            }
         }
 
         return true;
     }
 
     validarPeriodo() {
-        if (this.view.form.querySelector('input[name="periodo"]:checked')) {
-            this.view.limpiarErrorPeriodo();
-            return true;
+        const periodoSeleccionado = document.querySelector('input[name="periodo"]:checked');
+        const tieneOpciones = this.view.opcionesPeriodo?.querySelectorAll('input[name="periodo"]').length > 0;
+        
+        if (!periodoSeleccionado && tieneOpciones) {
+            this.view.mostrarErrorPeriodo('Selecciona un periodo de ingreso');
+            return false;
         }
 
-        this.view.mostrarErrorPeriodo('Este campo es obligatorio');
-        return false;
+        this.view.limpiarErrorPeriodo();
+        return true;
     }
 
-  validarYMostrarResumen() {
-    this.view.limpiarValidaciones();
+    validarParentesco() {
+        return this.view.validarParentesco();
+    }
 
-    const requeridosValidos = this.validarCamposRequeridos();
-    const posgradoValido = this.validarSelectPosgrado();
-    const periodoValido = this.validarPeriodo();
-    const parentescoValido = this.view.validarParentesco();
+    validarTipoCalle() {
+        return this.view.validarTipoCalle();
+    }
 
-    const esValido =
-        requeridosValidos &&
-        posgradoValido &&
-        periodoValido &&
-        parentescoValido;
+    validarPais() {
+        return this.view.validarPais();
+    }
 
-    if (!esValido) {
-        this.view.mostrarBanner('error');
-        this.view.desplazarPrimerError();
+    // ==========================================
+    // VALIDAR Y MOSTRAR RESUMEN
+    // ==========================================
+    validarYMostrarResumen() {
+        this.view.limpiarValidaciones();
+
+        const emailValido = this.validarEmailParaEnvio();
+        const requeridosValidos = this.validarCamposRequeridos();
+        const posgradoValido = this.validarSelectPosgrado();
+        const periodoValido = this.validarPeriodo();
+        const parentescoValido = this.validarParentesco();
+        const tipoCalleValido = this.validarTipoCalle();
+        const paisValido = this.validarPais();
+        const nacionalidadExtranjeraValida = this.view.validarNacionalidadExtranjera();
+
+        const esValido = emailValido &&
+                         requeridosValidos && 
+                         posgradoValido && 
+                         periodoValido && 
+                         parentescoValido && 
+                         tipoCalleValido && 
+                         paisValido &&
+                         nacionalidadExtranjeraValida;
+
+        if (!esValido) {
+            this.view.mostrarBanner('error');
+            this.view.desplazarPrimerError();
+            
+            if (!emailValido) {
+                const emailInput = document.getElementById('email');
+                if (emailInput) {
+                    emailInput.focus();
+                }
+            }
+            return;
+        }
+
+        try {
+            const datos = this.model.mapearDatosFormulario(this.view.form);
+            const html = this.view.construirResumen(datos);
+            this.view.mostrarResumen(html);
+        } catch (error) {
+            console.error('Error al mapear datos:', error);
+            this.view.mostrarBanner('error');
+            alert(error.message);
+        }
+    }
+}
+
+// ==========================================
+// INICIALIZACIÓN
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Inicializando aplicación...');
+    
+    if (typeof AdmisionModel === 'undefined') {
+        console.error('AdmisionModel no está definida');
         return;
     }
-
-    const datos = this.model.mapearDatosFormulario(this.view.form);
-    this.model.enviarDatos();
-    this.view.mostrarBanner('exito');
-    this.view.mostrarResumen(this.view.construirResumen(datos));
-}
-}
-document.addEventListener('DOMContentLoaded', () => {
-    new AdmisionController(new AdmisionModel(), new AdmisionView());
+    if (typeof AdmisionView === 'undefined') {
+        console.error('AdmisionView no está definida');
+        return;
+    }
+    try {
+        const model = new AdmisionModel();
+        const view = new AdmisionView();
+        const controller = new AdmisionController(model, view);
+        
+        window.controller = controller;
+        window.view = view;
+        
+        console.log('Aplicación inicializada correctamente');
+        console.log('');
+        
+    } catch (error) {
+        console.error(' Error al inicializar:', error);
+    }
 });
-
-            // ===== VALIDACIÓN AL ENVIAR =====
-            $('#btnEnviarModal').on('click', function(e) {
-                e.preventDefault();
-                let esValido = true;
-                $('#alertaExito').fadeOut();
-                $('#alertaError').fadeOut();
-                
-                $('#formAdmision [required]').each(function() {
-                    let $el = $(this);
-                    if ($el.prop('disabled')) return;
-                    let valor = $el.val() ? $el.val().trim() : "";
-                    let $contenedorError = $el.siblings('.error-mensaje');
-                    
-                    if ($el.attr('type') === 'radio') {
-                        let name = $el.attr('name');
-                        if ($(`input[name="${name}"]:checked`).length === 0) {
-                            esValido = false;
-                            let $radioGroup = $el.closest('.form-group');
-                            $radioGroup.find('.error-mensaje').first().text('Este campo es obligatorio');
-                        }
-                        return;
-                    }
-                    
-                    if (valor === "" || valor === "SELECCIONA") {
-                        esValido = false;
-                        $el.addClass('input-error');
-                        $contenedorError.text('Este campo es obligatorio');
-                    }
-                });
-                
-                let posgradoSeleccionado = $('input[name="posgrado"]:checked').val();
-                if (posgradoSeleccionado === "Maestría") {
-                    let maestriaVal = $('#maestriaSelect').val();
-                    if (!maestriaVal || maestriaVal === "SELECCIONA") {
-                        esValido = false;
-                        $('#maestriaSelect').addClass('input-error');
-                    }
-                } else if (posgradoSeleccionado === "Doctorado") {
-                    let doctoradoVal = $('#doctoradoSelect').val();
-                    if (!doctoradoVal || doctoradoVal === "SELECCIONA") {
-                        esValido = false;
-                        $('#doctoradoSelect').addClass('input-error');
-                    }
-                }
-                
-                if ($('input[name="periodo"]:checked').length === 0) {
-                    esValido = false;
-                    $('#errorPeriodo').text('Este campo es obligatorio');
-                } else {
-                    $('#errorPeriodo').text('');
-                }
-                
-                if (esValido) {
-                    $('#alertaExito').fadeIn();
-                    mostrarResumen();
-                } else {
-                    $('#alertaError').fadeIn();
-                    $('html, body').animate({ scrollTop: $('.input-error').first().offset().top - 100 }, 500);
-                }
-            });
-
-            function getPosgradoDetalle() {
-                let tipo = $('input[name="posgrado"]:checked').val();
-                if (tipo === "Maestría") {
-                    let especialidad = $("#maestriaSelect option:selected").text();
-                    return especialidad && especialidad !== "SELECCIONA" ? `Maestría en ${especialidad}` : "Maestría";
-                } else if (tipo === "Doctorado") {
-                    let especialidad = $("#doctoradoSelect option:selected").text();
-                    return especialidad && especialidad !== "SELECCIONA" ? `Doctorado en ${especialidad}` : "Doctorado";
-                }
-                return "No seleccionado";
-            }
-
-            function getNivelIngles(name) {
-                let val = $(`input[name="${name}"]:checked`).val();
-                return val ? val : "No especificado";
-            }
-
-            function mostrarResumen() {
-                let tipoTitulacion = $('input[name="titulacion"]:checked').val() || "No seleccionado";
-                if (tipoTitulacion === "Otro") {
-                    tipoTitulacion += ` - ${$("#especificarTitulacion").val() || "No especificado"}`;
-                }
-                
-                let formaEval = $('input[name="formaEvaluacion"]:checked').val();
-                let evalHtml = formaEval ? `<li><strong>Forma de Evaluación:</strong> ${formaEval}</li>` : '';
-                
-                let html = '<div class="section-title"> Datos personales</div><ul>';
-                html += `<li><strong>Posgrado seleccionado:</strong> ${getPosgradoDetalle()}</li>`;
-                html += `<li><strong>Año de ingreso:</strong> ${$("#anioIngreso").val() || "No especificado"}</li>`;
-                html += `<li><strong>Periodo:</strong> ${$('input[name="periodo"]:checked').val() || "No seleccionado"}</li>`;
-                html += evalHtml;
-                html += `<li><strong>Nacionalidad:</strong> ${$('input[name="nacionalidad"]:checked').val() || "No especificado"}</li>`;
-                html += `<li><strong>CURP:</strong> ${$("#curp").val() || "No especificado"}</li>`;
-                html += `<li><strong>Nombre completo:</strong> ${$("#nombre").val() || ""} ${$("#primerApellido").val() || ""} ${$("#segundoApellido").val() || ""}</li>`;
-                html += `<li><strong>Sexo:</strong> ${$("#sexo").val() || "No especificado"}</li>`;
-                html += `<li><strong>Fecha de nacimiento:</strong> ${$("#fecha_nacimiento").val() || "No especificada"}</li>`;
-                html += `<li><strong>Lugar de nacimiento:</strong> ${$("#lugarNacimiento").val() || "No especificado"}</li>`;
-                html += `<li><strong>Teléfono móvil:</strong> ${$("#telMovil").val() || "No especificado"}</li>`;
-                html += `<li><strong>Correo electrónico:</strong> ${$("#email").val() || "No especificado"}</li>`;
-                html += `<li><strong>Dirección completa:</strong> ${$("#calle").val() || ""} ${$("#numExt").val() || ""}, ${$("#colonia").val() || ""}, CP ${$("#cp").val() || ""}, ${$("#municipio").val() || ""}, ${$("#estado").val() || ""}</li>`;
-                html += `</ul><div class="section-title">Datos académicos</div><ul>`;
-                html += `<li><strong>Institución de procedencia:</strong> ${$("#institucion").val() || "No especificada"}</li>`;
-                html += `<li><strong>Grado obtenido:</strong> ${$("#gradoAcademico").val() || "No especificado"}</li>`;
-                html += `<li><strong>Año de obtención:</strong> ${$("#anioGrado").val() || "No especificado"}</li>`;
-                html += `<li><strong>Promedio:</strong> ${$("#promedio").val() || "No especificado"}</li>`;
-                html += `<li><strong>Tipo de titulación:</strong> ${tipoTitulacion}</li>`;
-                html += `</ul><div class="section-title">Dominio del inglés</div><ul>`;
-                html += `<li><strong>Expresión escrita:</strong> ${getNivelIngles("ingles1")}</li>`;
-                html += `<li><strong>Expresión oral:</strong> ${getNivelIngles("ingles2")}</li>`;
-                html += `<li><strong>Comprensión lectora:</strong> ${getNivelIngles("ingles3")}</li>`;
-                html += `<li><strong>Comprensión auditiva:</strong> ${getNivelIngles("ingles4")}</li>`;
-                html += `</ul><div class="section-title"> Motivación</div><ul>`;
-                html += `<li><strong>Razón para estudiar en INAOE:</strong> ${$("#razon").val() || "No especificada"}</li>`;
-                html += `</ul>`;
-                
-                $("#contenidoResumen").html(html);
-                $("#modalResumen").modal("show");
-            }
-
-            $("#confirmarEnvio").on("click", function() {
-                $("#modalResumen").modal("hide");
-                alert("Solicitud enviada con éxito. Pronto recibirás respuesta del INAOE.");
-
-                
-            });
