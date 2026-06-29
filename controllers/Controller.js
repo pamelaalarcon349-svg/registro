@@ -4,10 +4,12 @@ class AdmisionController {
     constructor(modelo, vista) {
         this.model = modelo;
         this.view = vista;
+        console.log('🔧 Controller inicializado');
         this.inicializar();
     }
 
     inicializar() {
+        console.log('🔧 Inicializando controlador...');
         this.view.inicializarCalendario();
         this.view.ocultarElementosIniciales();
         this.vincularEventos();
@@ -24,9 +26,13 @@ class AdmisionController {
         if (this.view.selectTipoCalle) {
             this.view.selectTipoCalle.dispatchEvent(new Event('change'));
         }
+        
+        console.log('✅ Controller inicializado correctamente');
     }
     
     vincularEventos() {
+        console.log('🔗 Vinculando eventos...');
+        
         // Evento para nacionalidad
         document.querySelectorAll('input[name="nacionalidad"]').forEach(radio => {
             radio.addEventListener('change', () => this.actualizarCurp());
@@ -39,11 +45,9 @@ class AdmisionController {
 
         // Evento para campos numéricos y domicilios
         document.addEventListener('input', evento => {
-            // Campos que solo aceptan números
             if (evento.target.classList.contains('solo-numeros')) {
                 this.view.limpiarCampoNumerico(evento.target);
             }
-            // Número exterior e interior
             if (evento.target.classList.contains('numero-domicilio')) {
                 evento.target.value = evento.target.value
                     .toUpperCase()
@@ -51,27 +55,45 @@ class AdmisionController {
             }
         });
 
-        // Evento para el botón enviar
-        document.getElementById('btnEnviarModal')?.addEventListener('click', (evento) => {
-            evento.preventDefault();
-            this.validarYMostrarResumen();
-        });
+        // Evento para el botón enviar - Usar evento directo
+        const btnEnviarModal = document.getElementById('btnEnviarModal');
+        if (btnEnviarModal) {
+            console.log('✅ Botón "Enviar solicitud" vinculado desde Controller');
+            btnEnviarModal.addEventListener('click', (evento) => {
+                evento.preventDefault();
+                console.log('🖱️ Click en "Enviar solicitud" desde Controller');
+                this.validarYMostrarResumen();
+            });
+        } else {
+            console.warn('⚠️ Botón "btnEnviarModal" no encontrado en Controller');
+        }
 
-        // Evento para confirmar envío
-        document.getElementById('confirmarEnvio')?.addEventListener('click', () => {
-            this.view.ocultarResumen();
-            this.enviarDatos();
-        });
+        // Evento para confirmar envío - Usar evento directo
+        const btnConfirmar = document.getElementById('confirmarEnvio');
+        if (btnConfirmar) {
+            console.log('✅ Botón "Confirmar envío" vinculado desde Controller');
+            btnConfirmar.addEventListener('click', () => {
+                console.log('🖱️ Click en "Confirmar envío" desde Controller');
+                this.view.ocultarResumen();
+                this.enviarDatos();
+            });
+        } else {
+            console.warn('⚠️ Botón "confirmarEnvio" no encontrado en Controller');
+        }
 
-        // Escuchar eventos personalizados
+        // Escuchar eventos personalizados (respaldo)
         document.addEventListener('validarEnvio', () => {
+            console.log('📡 Evento "validarEnvio" recibido');
             this.validarYMostrarResumen();
         });
 
         document.addEventListener('confirmarEnvio', (e) => {
+            console.log('📡 Evento "confirmarEnvio" recibido');
             this.view.ocultarResumen();
             this.enviarDatos();
         });
+        
+        console.log('✅ Eventos vinculados correctamente');
     }
 
     // ==========================================
@@ -181,7 +203,7 @@ class AdmisionController {
             }, 100);
         });
 
-        console.log('Validación de email inicializada');
+        console.log('✅ Validación de email inicializada');
     }
 
     validarEmailEnTiempoReal() {
@@ -243,72 +265,23 @@ class AdmisionController {
     }
 
     // ==========================================
-    // ENVIAR DATOS CON VALIDACIÓN DE EMAIL
-    // ==========================================
-    async enviarDatos() {
-        try {
-            if (!this.validarEmailParaEnvio()) {
-                const emailInput = document.getElementById('email');
-                if (emailInput) {
-                    emailInput.focus();
-                    emailInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-                this.view.mostrarBanner('error');
-                return;
-            }
-
-            const btn = document.getElementById('confirmarEnvio');
-            const textoOriginal = btn.textContent;
-            btn.textContent = 'Enviando...';
-            btn.disabled = true;
-
-            const datos = this.model.mapearDatosFormulario(this.view.form);
-            
-            console.log('Email validado:', datos.contacto.email);
-            console.log('Datos a enviar:', datos);
-            
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            btn.textContent = textoOriginal;
-            btn.disabled = false;
-            
-            this.view.mostrarBanner('exito');
-            alert('Solicitud enviada con éxito. Pronto recibirás respuesta del INAOE.');
-            
-        } catch (error) {
-            console.error('Error al enviar:', error);
-            
-            if (error.message && error.message.includes('correo')) {
-                const emailInput = document.getElementById('email');
-                if (emailInput) {
-                    emailInput.classList.add('is-invalid');
-                    this.view.mostrarErrorCampo(emailInput, error.message);
-                    emailInput.focus();
-                }
-                this.view.mostrarBanner('error');
-            } else {
-                alert('Error al enviar la solicitud. Por favor intenta de nuevo.');
-            }
-            
-            const btn = document.getElementById('confirmarEnvio');
-            if (btn) {
-                btn.disabled = false;
-                btn.textContent = 'Confirmar envío';
-            }
-        }
-    }
-
-    // ==========================================
-    // VALIDACIONES
+    // VALIDACIONES CORREGIDAS
     // ==========================================
     validarCamposRequeridos() {
         let esValido = true;
         const radiosRevisados = new Set();
 
-        this.view.form.querySelectorAll('[required]').forEach(campo => {
-            if (campo.disabled) return;
+        const camposRequeridos = this.view.form.querySelectorAll('[required]');
+        console.log('🔍 Validando', camposRequeridos.length, 'campos requeridos');
+        
+        camposRequeridos.forEach(campo => {
+            if (campo.disabled) {
+                return;
+            }
 
+            // Saltar CURP si es extranjero
             if (campo.id === 'curp' && this.view.esNacionalidadExtranjera()) {
+                console.log('⏭️ CURP omitido (extranjero)');
                 return;
             }
 
@@ -404,6 +377,7 @@ class AdmisionController {
     // VALIDAR Y MOSTRAR RESUMEN
     // ==========================================
     validarYMostrarResumen() {
+        console.log('📋 Iniciando validación...');
         this.view.limpiarValidaciones();
 
         const emailValido = this.validarEmailParaEnvio();
@@ -424,6 +398,8 @@ class AdmisionController {
                          paisValido &&
                          nacionalidadExtranjeraValida;
 
+        console.log('📊 Validación completa:', esValido ? '✅ Válida' : '❌ Inválida');
+
         if (!esValido) {
             this.view.mostrarBanner('error');
             this.view.desplazarPrimerError();
@@ -442,9 +418,59 @@ class AdmisionController {
             const html = this.view.construirResumen(datos);
             this.view.mostrarResumen(html);
         } catch (error) {
-            console.error('Error al mapear datos:', error);
+            console.error('❌ Error al mapear datos:', error);
             this.view.mostrarBanner('error');
             alert(error.message);
+        }
+    }
+
+    // ==========================================
+    // ENVIAR DATOS CON VALIDACIÓN DE EMAIL
+    // ==========================================
+    async enviarDatos() {
+        try {
+            if (!this.validarEmailParaEnvio()) {
+                const emailInput = document.getElementById('email');
+                if (emailInput) {
+                    emailInput.focus();
+                    emailInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                this.view.mostrarBanner('error');
+                return;
+            }
+
+            const btn = document.getElementById('confirmarEnvio');
+            if (btn) {
+                const textoOriginal = btn.textContent;
+                btn.textContent = 'Enviando...';
+                btn.disabled = true;
+
+                const datos = this.model.mapearDatosFormulario(this.view.form);
+                
+                console.log('📤 Enviando datos:', datos);
+                
+                // Aquí iría la llamada al backend
+                // const resultado = await enviarDatosAlServidor(datos);
+                
+                // Simulación de envío exitoso
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                btn.textContent = textoOriginal;
+                btn.disabled = false;
+                
+                this.view.mostrarBanner('exito');
+                alert('✅ Solicitud enviada con éxito. Pronto recibirás respuesta del INAOE.');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error al enviar:', error);
+            alert('Error al enviar la solicitud. Por favor intenta de nuevo.');
+            
+            const btn = document.getElementById('confirmarEnvio');
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Confirmar envío';
+            }
         }
     }
 }
@@ -453,16 +479,17 @@ class AdmisionController {
 // INICIALIZACIÓN
 // ==========================================
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('Inicializando aplicación...');
+    console.log('🚀 Inicializando aplicación...');
     
     if (typeof AdmisionModel === 'undefined') {
-        console.error('AdmisionModel no está definida');
+        console.error('❌ AdmisionModel no está definida');
         return;
     }
     if (typeof AdmisionView === 'undefined') {
-        console.error('AdmisionView no está definida');
+        console.error('❌ AdmisionView no está definida');
         return;
     }
+    
     try {
         const model = new AdmisionModel();
         const view = new AdmisionView();
@@ -471,10 +498,8 @@ document.addEventListener('DOMContentLoaded', () => {
         window.controller = controller;
         window.view = view;
         
-        console.log('Aplicación inicializada correctamente');
-        console.log('');
-        
+        console.log('✅ Aplicación inicializada correctamente');
     } catch (error) {
-        console.error(' Error al inicializar:', error);
+        console.error('❌ Error al inicializar:', error);
     }
 });

@@ -18,7 +18,7 @@ class DBConnectionModel
         $this->server  = 'DESKTOP-I7L34OR\PAMEUWU';
         $this->username = 'pame';
         $this->password = '12345';
-        $this->database = 'pRegistro';
+        $this->database = 'pRegistro1';
 
 
 
