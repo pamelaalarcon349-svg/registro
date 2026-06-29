@@ -996,6 +996,36 @@ class AdmisionView {
         return true;
     }
 
+    // ==========================================
+    // ** FUNCIÓN FALTANTE - AGREGADA AQUÍ **
+    // ==========================================
+    /**
+     * Verifica si la nacionalidad seleccionada es extranjera
+     */
+    esNacionalidadExtranjera() {
+        // Método 1: Verificar el contenedor visible
+        if (this.nacionalidadExtranjeraContainer) {
+            const display = window.getComputedStyle(this.nacionalidadExtranjeraContainer).display;
+            if (display !== 'none') {
+                return true;
+            }
+        }
+        
+        // Método 2: Verificar el radio button directamente
+        const radioExtranjero = document.querySelector('input[name="nacionalidad"][value="Otra (Extranjera)"]');
+        if (radioExtranjero) {
+            return radioExtranjero.checked;
+        }
+        
+        // Método 3: Verificar el valor del radio seleccionado
+        const radioSeleccionado = document.querySelector('input[name="nacionalidad"]:checked');
+        if (radioSeleccionado) {
+            return radioSeleccionado.value === 'Otra (Extranjera)';
+        }
+        
+        return false;
+    }
+
     limpiarValidaciones() {
         document.querySelectorAll('.input-error').forEach(campo => campo.classList.remove('input-error'));
         
@@ -1060,7 +1090,7 @@ class AdmisionView {
     }
 
     // ==========================================
-    // CONSTRUIR RESUMEN (con todas las secciones y títulos en mayúsculas)
+    // CONSTRUIR RESUMEN
     // ==========================================
     construirResumen(datos) {
         if (!datos) {
@@ -1080,28 +1110,21 @@ class AdmisionView {
 
         const nombreCompleto = `${datos.nombre || ''} ${datos.primerApellido || ''} ${datos.segundoApellido || ''}`.trim() || 'No especificado';
         const domicilio = datos.domicilio || {};
-        const direccion = `${domicilio.calle || ''} ${domicilio.numExt || ''}${domicilio.numInt ? ' Int. '+domicilio.numInt : ''}, ${domicilio.colonia || ''}, CP ${domicilio.cp || ''}, ${domicilio.municipio || ''}, ${domicilio.estado || ''}`.trim() || 'No especificada';
-
         const datosAcademicos = datos.datosAcademicos || {};
         const posgradoDetalle = datosAcademicos.posgradoDetalle || 'No seleccionado';
         const anioIngreso = datosAcademicos.anioIngreso || 'No especificado';
         const periodo = datosAcademicos.periodo || 'No seleccionado';
         const formaEvaluacion = datosAcademicos.formaEvaluacion || '';
-
         const contacto = datos.contacto || {};
         const email = contacto.email || 'No especificado';
-
         const contactoEmergencia = datos.contactoEmergencia || {};
         const nombreEmergencia = `${contactoEmergencia.nombre || ''} ${contactoEmergencia.primerApellido || ''} ${contactoEmergencia.segundoApellido || ''}`.trim() || 'No especificado';
-
         const estudiosPrevios = datos.estudiosPrevios || {};
         const motivacion = datos.motivacion || {};
-
         const dominioIngles = datos.dominioIngles || {};
         const experiencia = datos.experienciaLaboral || [];
         const publicaciones = datos.publicaciones || [];
 
-        // Email con validación
         const emailDisplay = email !== 'No especificado' 
             ? `<span style="color: #198754; font-weight: bold;">✓ ${this.texto(email)}</span>`
             : this.texto(email);
