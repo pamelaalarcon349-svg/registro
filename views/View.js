@@ -22,38 +22,31 @@ class AdmisionView {
         this.modalResumen = document.getElementById('modalResumen');
         this.contenidoResumen = document.getElementById('contenidoResumen');
         
-        // Elementos de parentesco
         this.selectParentesco = document.getElementById('parentesco');
         this.especificarParentescoContainer = document.getElementById('especificarParentescoContainer');
         this.especificarParentesco = document.getElementById('especificarParentesco');
         
-        // Elementos de tipo de calle
         this.selectTipoCalle = document.getElementById('tipoCalle');
         this.especificarCalleContainer = document.getElementById('especificarCalleContainer');
         this.especificarCalle = document.getElementById('especificarCalle');
         
-        // Elemento de país
         this.selectPais = document.getElementById('pais');
         
         this.btnEnviarModal = document.getElementById('btnEnviarModal');
         this.btnConfirmarEnvio = document.getElementById('confirmarEnvio');
 
-        // Elementos de nacionalidad extranjera
         this.nacionalidadExtranjeraContainer = document.getElementById('nacionalidadExtranjeraContainer');
         this.selectNacionalidadExtranjera = document.getElementById('nacionalidadExtranjera');
 
-        // Elementos de email
         this.emailInput = document.getElementById('email');
 
-        // Radio buttons de posgrado
         this.radiosPosgrado = document.querySelectorAll('input[name="posgrado"]');
 
-        // Inicializar eventos
         this.inicializarEventos();
     }
 
     // ==========================================
-    // REGLAS DE POSGRADO (con Especialidad)
+    // REGLAS DE POSGRADO
     // ==========================================
     obtenerReglasPosgrado(tipoPosgrado, programa) {
         if (tipoPosgrado === 'Especialidad') {
@@ -151,7 +144,7 @@ class AdmisionView {
     // INICIALIZAR EVENTOS
     // ==========================================
     inicializarEventos() {
-        // Evento para radios de posgrado
+        // Eventos de posgrado
         this.radiosPosgrado.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 const tipo = e.target.value;
@@ -160,7 +153,6 @@ class AdmisionView {
             });
         });
 
-        // Evento para cambio en select de Maestría
         if (this.selectMaestria) {
             this.selectMaestria.addEventListener('change', () => {
                 const tipoPosgrado = this.obtenerTipoPosgradoSeleccionado();
@@ -170,7 +162,6 @@ class AdmisionView {
             });
         }
 
-        // Evento para cambio en select de Doctorado
         if (this.selectDoctorado) {
             this.selectDoctorado.addEventListener('change', () => {
                 const tipoPosgrado = this.obtenerTipoPosgradoSeleccionado();
@@ -180,7 +171,6 @@ class AdmisionView {
             });
         }
 
-        // Evento para cambio en select de Especialidad
         if (this.selectEspecialidad) {
             this.selectEspecialidad.addEventListener('change', () => {
                 const tipoPosgrado = this.obtenerTipoPosgradoSeleccionado();
@@ -190,7 +180,7 @@ class AdmisionView {
             });
         }
 
-        // Evento para parentesco
+        // Parentesco
         if (this.selectParentesco) {
             this.selectParentesco.addEventListener('change', () => {
                 const valor = this.selectParentesco.value;
@@ -210,7 +200,7 @@ class AdmisionView {
             });
         }
 
-        // Evento para tipo de calle
+        // Tipo de calle
         if (this.selectTipoCalle) {
             this.selectTipoCalle.addEventListener('change', () => {
                 const valor = this.selectTipoCalle.value;
@@ -230,7 +220,7 @@ class AdmisionView {
             });
         }
 
-        // Evento para nacionalidad
+        // Nacionalidad
         document.querySelectorAll('input[name="nacionalidad"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 const esExtranjero = e.target.value === 'Otra (Extranjera)';
@@ -238,14 +228,14 @@ class AdmisionView {
             });
         });
 
-        // Evento para titulación
+        // Titulación
         document.querySelectorAll('input[name="titulacion"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 this.actualizarTitulacion(e.target.value === 'Otro');
             });
         });
 
-        // Eventos para validación de email
+        // Email
         if (this.emailInput) {
             this.emailInput.addEventListener('input', () => {
                 this.validarEmailTiempoReal();
@@ -260,20 +250,20 @@ class AdmisionView {
             });
         }
 
-        // Evento para botón enviar
+        // Botones
         if (this.btnEnviarModal) {
             this.btnEnviarModal.addEventListener('click', () => {
                 this.manejarEnvio();
             });
         }
 
-        // Evento para confirmar envío
         if (this.btnConfirmarEnvio) {
             this.btnConfirmarEnvio.addEventListener('click', () => {
                 this.confirmarEnvio();
             });
         }
 
+        // Cargar datos
         this.cargarNacionalidadesExtranjeras();
         this.cargarPaises();
         this.ocultarElementosIniciales();
@@ -282,8 +272,511 @@ class AdmisionView {
         this.inicializarValidacionNumeros();
     }
 
+  // views/View.js - SOLO LA PARTE DE NACIONALIDADES
+
+// views/View.js - SOLO ESTE MÉTODO
+
+cargarNacionalidadesExtranjeras() {
+    const select = document.getElementById('nacionalidadExtranjera');
+    if (!select) {
+        console.error('❌ No se encontró el select de nacionalidad extranjera');
+        return;
+    }
+
+    console.log('🔍 Cargando nacionalidades extranjeras...');
+
+    
+    const nacionalidades = [
+        { id: 2, nombre: 'AFGANO', pais: 'AFGANISTÁN' },
+        { id: 3, nombre: 'ALBANÉS', pais: 'ALBANIA' },
+        { id: 4, nombre: 'ALEMÁN', pais: 'ALEMANIA' },
+        { id: 5, nombre: 'ANDORRANO', pais: 'ANDORRA' },
+        { id: 6, nombre: 'ANGOLEÑO', pais: 'ANGOLA' },
+        { id: 7, nombre: 'ANTIGUANO', pais: 'ANTIGUA Y BARBUDA' },
+        { id: 8, nombre: 'SAUDÍ', pais: 'ARABIA SAUDITA' },
+        { id: 9, nombre: 'ARGELINO', pais: 'ARGELIA' },
+        { id: 10, nombre: 'ARGENTINO', pais: 'ARGENTINA' },
+        { id: 11, nombre: 'ARMENIO', pais: 'ARMENIA' },
+        { id: 12, nombre: 'AUSTRALIANO', pais: 'AUSTRALIA' },
+        { id: 13, nombre: 'AUSTRIACO', pais: 'AUSTRIA' },
+        { id: 14, nombre: 'AZERBAIYANO', pais: 'AZERBAIYÁN' },
+        { id: 15, nombre: 'BAHAMEÑO', pais: 'BAHAMAS' },
+        { id: 16, nombre: 'BANGLADESÍ', pais: 'BANGLADÉS' },
+        { id: 17, nombre: 'BARBADENSE', pais: 'BARBADOS' },
+        { id: 18, nombre: 'BAREINÍ', pais: 'BARÉIN' },
+        { id: 19, nombre: 'BELGA', pais: 'BÉLGICA' },
+        { id: 20, nombre: 'BELICEÑO', pais: 'BELICE' },
+        { id: 21, nombre: 'BENINÉS', pais: 'BENÍN' },
+        { id: 22, nombre: 'BIELORRUSO', pais: 'BIELORRUSIA' },
+        { id: 23, nombre: 'BIRMANO', pais: 'BIRMANIA' },
+        { id: 24, nombre: 'BOLIVIANO', pais: 'BOLIVIA' },
+        { id: 25, nombre: 'BOSNIOHERZEGOVINO', pais: 'BOSNIA Y HERZEGOVINA' },
+        { id: 26, nombre: 'BOTSUANO', pais: 'BOTSUANA' },
+        { id: 27, nombre: 'BRASILEÑO', pais: 'BRASIL' },
+        { id: 28, nombre: 'BRUNEANO', pais: 'BRUNÉI' },
+        { id: 29, nombre: 'BÚLGARO', pais: 'BULGARIA' },
+        { id: 30, nombre: 'BURKINÉS', pais: 'BURKINA FASO' },
+        { id: 31, nombre: 'BURUNDÉS', pais: 'BURUNDI' },
+        { id: 32, nombre: 'BUTANÉS', pais: 'BUTÁN' },
+        { id: 33, nombre: 'CABOVERDIANO', pais: 'CABO VERDE' },
+        { id: 34, nombre: 'CAMBOYANO', pais: 'CAMBOYA' },
+        { id: 35, nombre: 'CAMERUNÉS', pais: 'CAMERÚN' },
+        { id: 36, nombre: 'CANADIENSE', pais: 'CANADÁ' },
+        { id: 37, nombre: 'CHADIANO', pais: 'CHAD' },
+        { id: 38, nombre: 'CATARÍ', pais: 'CATAR' },
+        { id: 39, nombre: 'CHILENO', pais: 'CHILE' },
+        { id: 40, nombre: 'CHINO', pais: 'CHINA' },
+        { id: 41, nombre: 'CHIPRIOTA', pais: 'CHIPRE' },
+        { id: 42, nombre: 'COLOMBIANO', pais: 'COLOMBIA' },
+        { id: 43, nombre: 'COMORENSE', pais: 'COMORAS' },
+        { id: 44, nombre: 'CONGOLEÑO', pais: 'CONGO' },
+        { id: 45, nombre: 'NORCOREANO', pais: 'COREA DEL NORTE' },
+        { id: 46, nombre: 'SURCOREANO', pais: 'COREA DEL SUR' },
+        { id: 47, nombre: 'COSTAMARFILEÑO', pais: 'COSTA DE MARFIL' },
+        { id: 48, nombre: 'COSTARRICENSE', pais: 'COSTA RICA' },
+        { id: 49, nombre: 'CROATA', pais: 'CROACIA' },
+        { id: 50, nombre: 'CUBANO', pais: 'CUBA' },
+        { id: 51, nombre: 'DANÉS', pais: 'DINAMARCA' },
+        { id: 52, nombre: 'DOMINIQUÉS', pais: 'DOMINICA' },
+        { id: 53, nombre: 'ECUATORIANO', pais: 'ECUADOR' },
+        { id: 54, nombre: 'EGIPCIO', pais: 'EGIPTO' },
+        { id: 55, nombre: 'SALVADOREÑO', pais: 'EL SALVADOR' },
+        { id: 56, nombre: 'EMIRATÍ', pais: 'EMIRATOS ÁRABES UNIDOS' },
+        { id: 57, nombre: 'ERITREO', pais: 'ERITREA' },
+        { id: 58, nombre: 'ESLOVACO', pais: 'ESLOVAQUIA' },
+        { id: 59, nombre: 'ESLOVENO', pais: 'ESLOVENIA' },
+        { id: 60, nombre: 'ESPAÑOL', pais: 'ESPAÑA' },
+        { id: 61, nombre: 'ESTADOUNIDENSE', pais: 'ESTADOS UNIDOS' },
+        { id: 62, nombre: 'ESTONIO', pais: 'ESTONIA' },
+        { id: 63, nombre: 'ESUATINÍ', pais: 'ESUATINI' },
+        { id: 64, nombre: 'ETÍOPE', pais: 'ETIOPÍA' },
+        { id: 65, nombre: 'FILIPINO', pais: 'FILIPINAS' },
+        { id: 66, nombre: 'FINLANDÉS', pais: 'FINLANDIA' },
+        { id: 67, nombre: 'FIYIANO', pais: 'FIYI' },
+        { id: 68, nombre: 'FRANCÉS', pais: 'FRANCIA' },
+        { id: 69, nombre: 'GABONÉS', pais: 'GABÓN' },
+        { id: 70, nombre: 'GAMBIANO', pais: 'GAMBIA' },
+        { id: 71, nombre: 'GEORGIANO', pais: 'GEORGIA' },
+        { id: 72, nombre: 'GHANÉS', pais: 'GHANA' },
+        { id: 73, nombre: 'GRANADINO', pais: 'GRANADA' },
+        { id: 74, nombre: 'GRIEGO', pais: 'GRECIA' },
+        { id: 75, nombre: 'GUATEMALTECO', pais: 'GUATEMALA' },
+        { id: 76, nombre: 'GUINEANO', pais: 'GUINEA' },
+        { id: 77, nombre: 'ECUATOGUINEANO', pais: 'GUINEA ECUATORIAL' },
+        { id: 78, nombre: 'GUYANÉS', pais: 'GUYANA' },
+        { id: 79, nombre: 'HAITIANO', pais: 'HAITÍ' },
+        { id: 80, nombre: 'HONDUREÑO', pais: 'HONDURAS' },
+        { id: 81, nombre: 'HÚNGARO', pais: 'HUNGRÍA' },
+        { id: 82, nombre: 'INDIO', pais: 'INDIA' },
+        { id: 83, nombre: 'INDONESIO', pais: 'INDONESIA' },
+        { id: 84, nombre: 'IRAQUÍ', pais: 'IRAK' },
+        { id: 85, nombre: 'IRANÍ', pais: 'IRÁN' },
+        { id: 86, nombre: 'IRLANDÉS', pais: 'IRLANDA' },
+        { id: 87, nombre: 'ISLANDÉS', pais: 'ISLANDIA' },
+        { id: 88, nombre: 'MARSHALÉS', pais: 'ISLAS MARSHALL' },
+        { id: 89, nombre: 'SALOMONENSE', pais: 'ISLAS SALOMÓN' },
+        { id: 90, nombre: 'ISRAELÍ', pais: 'ISRAEL' },
+        { id: 91, nombre: 'ITALIANO', pais: 'ITALIA' },
+        { id: 92, nombre: 'JAMAICANO', pais: 'JAMAICA' },
+        { id: 93, nombre: 'JAPONÉS', pais: 'JAPÓN' },
+        { id: 94, nombre: 'JORDANO', pais: 'JORDANIA' },
+        { id: 95, nombre: 'KAZAJO', pais: 'KAZAJISTÁN' },
+        { id: 96, nombre: 'KENIANO', pais: 'KENIA' },
+        { id: 97, nombre: 'KIRGUÍS', pais: 'KIRGUISTÁN' },
+        { id: 98, nombre: 'KIRIBATIANO', pais: 'KIRIBATI' },
+        { id: 99, nombre: 'KOSOVAR', pais: 'KOSOVO' },
+        { id: 100, nombre: 'KUWAITÍ', pais: 'KUWAIT' },
+        { id: 101, nombre: 'LAOSIANO', pais: 'LAOS' },
+        { id: 102, nombre: 'LESOTENSE', pais: 'LESOTO' },
+        { id: 103, nombre: 'LETÓN', pais: 'LETONIA' },
+        { id: 104, nombre: 'LIBANÉS', pais: 'LÍBANO' },
+        { id: 105, nombre: 'LIBERIANO', pais: 'LIBERIA' },
+        { id: 106, nombre: 'LIBIO', pais: 'LIBIA' },
+        { id: 107, nombre: 'LIECHTENSTEINIANO', pais: 'LIECHTENSTEIN' },
+        { id: 108, nombre: 'LITUANO', pais: 'LITUANIA' },
+        { id: 109, nombre: 'LUXEMBURGUÉS', pais: 'LUXEMBURGO' },
+        { id: 110, nombre: 'MACEDONIO', pais: 'MACEDONIA DEL NORTE' },
+        { id: 111, nombre: 'MALGACHE', pais: 'MADAGASCAR' },
+        { id: 112, nombre: 'MALASIO', pais: 'MALASIA' },
+        { id: 113, nombre: 'MALAUÍ', pais: 'MALAUI' },
+        { id: 114, nombre: 'MALDIVO', pais: 'MALDIVAS' },
+        { id: 115, nombre: 'MALÍ', pais: 'MALI' },
+        { id: 116, nombre: 'MALTÉS', pais: 'MALTA' },
+        { id: 117, nombre: 'MARROQUÍ', pais: 'MARRUECOS' },
+        { id: 118, nombre: 'MAURICIANO', pais: 'MAURICIO' },
+        { id: 119, nombre: 'MAURITANO', pais: 'MAURITANIA' },
+        // ⚠️ ID 120 es MÉXICO - NO INCLUIR AQUÍ
+        { id: 121, nombre: 'MICRONESIO', pais: 'MICRONESIA' },
+        { id: 122, nombre: 'MOLDAVO', pais: 'MOLDAVIA' },
+        { id: 123, nombre: 'MONEGASCO', pais: 'MÓNACO' },
+        { id: 124, nombre: 'MONGOL', pais: 'MONGOLIA' },
+        { id: 125, nombre: 'MONTENEGRINO', pais: 'MONTENEGRO' },
+        { id: 126, nombre: 'MOZAMBIQUEÑO', pais: 'MOZAMBIQUE' },
+        { id: 127, nombre: 'NAMIBIO', pais: 'NAMIBIA' },
+        { id: 128, nombre: 'NAURUANO', pais: 'NAURU' },
+        { id: 129, nombre: 'NEPALÉS', pais: 'NEPAL' },
+        { id: 130, nombre: 'NICARAGÜENSE', pais: 'NICARAGUA' },
+        { id: 131, nombre: 'NIGERINO', pais: 'NÍGER' },
+        { id: 132, nombre: 'NIGERIANO', pais: 'NIGERIA' },
+        { id: 133, nombre: 'NORUEGO', pais: 'NORUEGA' },
+        { id: 134, nombre: 'NEOZELANDÉS', pais: 'NUEVA ZELANDA' },
+        { id: 135, nombre: 'OMANÍ', pais: 'OMÁN' },
+        { id: 136, nombre: 'NEERLANDÉS', pais: 'PAÍSES BAJOS' },
+        { id: 137, nombre: 'PAKISTANÍ', pais: 'PAKISTÁN' },
+        { id: 138, nombre: 'PALAUANO', pais: 'PALAOS' },
+        { id: 139, nombre: 'PALESTINO', pais: 'PALESTINA' },
+        { id: 140, nombre: 'PANAMEÑO', pais: 'PANAMÁ' },
+        { id: 141, nombre: 'PAPÚ', pais: 'PAPÚA NUEVA GUINEA' },
+        { id: 142, nombre: 'PARAGUAYO', pais: 'PARAGUAY' },
+        { id: 143, nombre: 'PERUANO', pais: 'PERÚ' },
+        { id: 144, nombre: 'POLACO', pais: 'POLONIA' },
+        { id: 145, nombre: 'PORTUGUÉS', pais: 'PORTUGAL' },
+        { id: 146, nombre: 'PUERTORRIQUEÑO', pais: 'PUERTO RICO' },
+        { id: 147, nombre: 'BRITÁNICO', pais: 'REINO UNIDO' },
+        { id: 148, nombre: 'CENTROAFRICANO', pais: 'REPÚBLICA CENTROAFRICANA' },
+        { id: 149, nombre: 'CHECO', pais: 'REPÚBLICA CHECA' },
+        { id: 150, nombre: 'CONGOLEÑO', pais: 'REPÚBLICA DEMOCRÁTICA DEL CONGO' },
+        { id: 151, nombre: 'DOMINICANO', pais: 'REPÚBLICA DOMINICANA' },
+        { id: 152, nombre: 'RUANDÉS', pais: 'RUANDA' },
+        { id: 153, nombre: 'RUMANO', pais: 'RUMANÍA' },
+        { id: 154, nombre: 'RUSO', pais: 'RUSIA' },
+        { id: 155, nombre: 'SAMOANO', pais: 'SAMOA' },
+        { id: 156, nombre: 'SANCRISTOBALEÑO', pais: 'SAN CRISTÓBAL Y NIEVES' },
+        { id: 157, nombre: 'SANMARINENSE', pais: 'SAN MARINO' },
+        { id: 158, nombre: 'SANVICENTINO', pais: 'SAN VICENTE Y LAS GRANADINAS' },
+        { id: 159, nombre: 'SANTALUCENSE', pais: 'SANTA LUCÍA' },
+        { id: 160, nombre: 'SANTOMENSE', pais: 'SANTO TOMÉ Y PRÍNCIPE' },
+        { id: 161, nombre: 'SENEGALÉS', pais: 'SENEGAL' },
+        { id: 162, nombre: 'SERBIO', pais: 'SERBIA' },
+        { id: 163, nombre: 'SEYCHELLENSE', pais: 'SEYCHELLES' },
+        { id: 164, nombre: 'SIERRALEONÉS', pais: 'SIERRA LEONA' },
+        { id: 165, nombre: 'SINGAPURENSE', pais: 'SINGAPUR' },
+        { id: 166, nombre: 'SIRIO', pais: 'SIRIA' },
+        { id: 167, nombre: 'SOMALÍ', pais: 'SOMALIA' },
+        { id: 168, nombre: 'ESRILANQUÉS', pais: 'SRI LANKA' },
+        { id: 169, nombre: 'SUDAFRICANO', pais: 'SUDÁFRICA' },
+        { id: 170, nombre: 'SUDANÉS', pais: 'SUDÁN' },
+        { id: 171, nombre: 'SURSUDANÉS', pais: 'SUDÁN DEL SUR' },
+        { id: 172, nombre: 'SUECO', pais: 'SUECIA' },
+        { id: 173, nombre: 'SUIZO', pais: 'SUIZA' },
+        { id: 174, nombre: 'SURINAMÉS', pais: 'SURINAM' },
+        { id: 175, nombre: 'TAILANDÉS', pais: 'TAILANDIA' },
+        { id: 176, nombre: 'TAIWANÉS', pais: 'TAIWÁN' },
+        { id: 177, nombre: 'TAYIKO', pais: 'TAYIKISTÁN' },
+        { id: 178, nombre: 'TANZANO', pais: 'TANZANIA' },
+        { id: 179, nombre: 'TIMORENSE', pais: 'TIMOR ORIENTAL' },
+        { id: 180, nombre: 'TOGOLÉS', pais: 'TOGO' },
+        { id: 181, nombre: 'TONGANO', pais: 'TONGA' },
+        { id: 182, nombre: 'TRINITENSE', pais: 'TRINIDAD Y TOBAGO' },
+        { id: 183, nombre: 'TUNECINO', pais: 'TÚNEZ' },
+        { id: 184, nombre: 'TURCOMANO', pais: 'TURKMENISTÁN' },
+        { id: 185, nombre: 'TURCO', pais: 'TURQUÍA' },
+        { id: 186, nombre: 'TUVALUANO', pais: 'TUVALU' },
+        { id: 187, nombre: 'UCRANIANO', pais: 'UCRANIA' },
+        { id: 188, nombre: 'UGANDÉS', pais: 'UGANDA' },
+        { id: 189, nombre: 'URUGUAYO', pais: 'URUGUAY' },
+        { id: 190, nombre: 'UZBEKO', pais: 'UZBEKISTÁN' },
+        { id: 191, nombre: 'VANUATUENSE', pais: 'VANUATU' },
+        { id: 192, nombre: 'VATICANO', pais: 'VATICANO' },
+        { id: 193, nombre: 'VENEZOLANO', pais: 'VENEZUELA' },
+        { id: 194, nombre: 'VIETNAMITA', pais: 'VIETNAM' },
+        { id: 195, nombre: 'YEMENÍ', pais: 'YEMEN' },
+        { id: 196, nombre: 'YIBUTIANO', pais: 'YIBUTI' },
+        { id: 197, nombre: 'ZAMBIANO', pais: 'ZAMBIA' },
+        { id: 198, nombre: 'ZIMBABUENSE', pais: 'ZIMBABUE' }
+    ];
+    
+    // Filtrar para excluir México (ID 1 o 120)
+    const filtradas = nacionalidades.filter(item => item.id !== 1 && item.id !== 120);
+    
+    // 🔥 LIMPIAR EL SELECT
+    select.innerHTML = '';
+    
+    // 🔥 AGREGAR LA OPCIÓN POR DEFECTO
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.textContent = 'SELECCIONA';
+    defaultOption.disabled = true;
+    defaultOption.selected = true;
+    select.appendChild(defaultOption);
+    
+    // 🔥 AGREGAR LAS OPCIONES CON EL PAÍS
+    filtradas.forEach(item => {
+        const option = document.createElement('option');
+        option.value = item.id;  // ← EL ID REAL
+        option.textContent = `${item.nombre} (${item.pais})`;  // ← "ALEMÁN (ALEMANIA)"
+        select.appendChild(option);
+    });
+
+    // 🔥 DEPURACIÓN
+    console.log('✅ Nacionalidades extranjeras cargadas:');
+    console.log('  Total de opciones:', select.options.length);
+
+    // 🔥 INICIALIZAR SELECT2
+    this.inicializarSelect2Nacionalidad(select);
+}
     // ==========================================
-    // VALIDACIÓN DE EMAIL EN TIEMPO REAL
+    // CARGAR PAÍSES
+    // ==========================================
+    cargarPaises() {
+        const select = document.getElementById('pais');
+        if (!select) return;
+
+        // Lista de países con sus IDs (México = 1)
+        const paises = [
+            { id: 1, nombre: 'MÉXICO', gentilicio: 'MEXICANO' },
+            { id: 2, nombre: 'AFGANISTÁN', gentilicio: 'AFGANO' },
+            { id: 3, nombre: 'ALBANIA', gentilicio: 'ALBANÉS' },
+            { id: 4, nombre: 'ALEMANIA', gentilicio: 'ALEMÁN' },
+            { id: 5, nombre: 'ANDORRA', gentilicio: 'ANDORRANO' },
+            { id: 6, nombre: 'ANGOLA', gentilicio: 'ANGOLEÑO' },
+            { id: 7, nombre: 'ANTIGUA Y BARBUDA', gentilicio: 'ANTIGUANO' },
+            { id: 8, nombre: 'ARABIA SAUDITA', gentilicio: 'SAUDÍ' },
+            { id: 9, nombre: 'ARGELIA', gentilicio: 'ARGELINO' },
+            { id: 10, nombre: 'ARGENTINA', gentilicio: 'ARGENTINO' },
+            { id: 11, nombre: 'ARMENIA', gentilicio: 'ARMENIO' },
+            { id: 12, nombre: 'AUSTRALIA', gentilicio: 'AUSTRALIANO' },
+            { id: 13, nombre: 'AUSTRIA', gentilicio: 'AUSTRIACO' },
+            { id: 14, nombre: 'AZERBAIYÁN', gentilicio: 'AZERBAIYANO' },
+            { id: 15, nombre: 'BAHAMAS', gentilicio: 'BAHAMEÑO' },
+            { id: 16, nombre: 'BANGLADÉS', gentilicio: 'BANGLADESÍ' },
+            { id: 17, nombre: 'BARBADOS', gentilicio: 'BARBADENSE' },
+            { id: 18, nombre: 'BARÉIN', gentilicio: 'BAREINÍ' },
+            { id: 19, nombre: 'BÉLGICA', gentilicio: 'BELGA' },
+            { id: 20, nombre: 'BELICE', gentilicio: 'BELICEÑO' },
+            { id: 21, nombre: 'BENÍN', gentilicio: 'BENINÉS' },
+            { id: 22, nombre: 'BIELORRUSIA', gentilicio: 'BIELORRUSO' },
+            { id: 23, nombre: 'BIRMANIA', gentilicio: 'BIRMANO' },
+            { id: 24, nombre: 'BOLIVIA', gentilicio: 'BOLIVIANO' },
+            { id: 25, nombre: 'BOSNIA Y HERZEGOVINA', gentilicio: 'BOSNIOHERZEGOVINO' },
+            { id: 26, nombre: 'BOTSUANA', gentilicio: 'BOTSUANO' },
+            { id: 27, nombre: 'BRASIL', gentilicio: 'BRASILEÑO' },
+            { id: 28, nombre: 'BRUNÉI', gentilicio: 'BRUNEANO' },
+            { id: 29, nombre: 'BULGARIA', gentilicio: 'BÚLGARO' },
+            { id: 30, nombre: 'BURKINA FASO', gentilicio: 'BURKINÉS' },
+            { id: 31, nombre: 'BURUNDI', gentilicio: 'BURUNDÉS' },
+            { id: 32, nombre: 'BUTÁN', gentilicio: 'BUTANÉS' },
+            { id: 33, nombre: 'CABO VERDE', gentilicio: 'CABOVERDIANO' },
+            { id: 34, nombre: 'CAMBOYA', gentilicio: 'CAMBOYANO' },
+            { id: 35, nombre: 'CAMERÚN', gentilicio: 'CAMERUNÉS' },
+            { id: 36, nombre: 'CANADÁ', gentilicio: 'CANADIENSE' },
+            { id: 37, nombre: 'CHAD', gentilicio: 'CHADIANO' },
+            { id: 38, nombre: 'CATAR', gentilicio: 'CATARÍ' },
+            { id: 39, nombre: 'CHILE', gentilicio: 'CHILENO' },
+            { id: 40, nombre: 'CHINA', gentilicio: 'CHINO' },
+            { id: 41, nombre: 'CHIPRE', gentilicio: 'CHIPRIOTA' },
+            { id: 42, nombre: 'COLOMBIA', gentilicio: 'COLOMBIANO' },
+            { id: 43, nombre: 'COMORAS', gentilicio: 'COMORENSE' },
+            { id: 44, nombre: 'CONGO', gentilicio: 'CONGOLEÑO' },
+            { id: 45, nombre: 'COREA DEL NORTE', gentilicio: 'NORCOREANO' },
+            { id: 46, nombre: 'COREA DEL SUR', gentilicio: 'SURCOREANO' },
+            { id: 47, nombre: 'COSTA DE MARFIL', gentilicio: 'COSTAMARFILEÑO' },
+            { id: 48, nombre: 'COSTA RICA', gentilicio: 'COSTARRICENSE' },
+            { id: 49, nombre: 'CROACIA', gentilicio: 'CROATA' },
+            { id: 50, nombre: 'CUBA', gentilicio: 'CUBANO' },
+            { id: 51, nombre: 'DINAMARCA', gentilicio: 'DANÉS' },
+            { id: 52, nombre: 'DOMINICA', gentilicio: 'DOMINIQUÉS' },
+            { id: 53, nombre: 'ECUADOR', gentilicio: 'ECUATORIANO' },
+            { id: 54, nombre: 'EGIPTO', gentilicio: 'EGIPCIO' },
+            { id: 55, nombre: 'EL SALVADOR', gentilicio: 'SALVADOREÑO' },
+            { id: 56, nombre: 'EMIRATOS ÁRABES UNIDOS', gentilicio: 'EMIRATÍ' },
+            { id: 57, nombre: 'ERITREA', gentilicio: 'ERITREO' },
+            { id: 58, nombre: 'ESLOVAQUIA', gentilicio: 'ESLOVACO' },
+            { id: 59, nombre: 'ESLOVENIA', gentilicio: 'ESLOVENO' },
+            { id: 60, nombre: 'ESPAÑA', gentilicio: 'ESPAÑOL' },
+            { id: 61, nombre: 'ESTADOS UNIDOS', gentilicio: 'ESTADOUNIDENSE' },
+            { id: 62, nombre: 'ESTONIA', gentilicio: 'ESTONIO' },
+            { id: 63, nombre: 'ESUATINI', gentilicio: 'ESUATINÍ' },
+            { id: 64, nombre: 'ETIOPÍA', gentilicio: 'ETÍOPE' },
+            { id: 65, nombre: 'FILIPINAS', gentilicio: 'FILIPINO' },
+            { id: 66, nombre: 'FINLANDIA', gentilicio: 'FINLANDÉS' },
+            { id: 67, nombre: 'FIYI', gentilicio: 'FIYIANO' },
+            { id: 68, nombre: 'FRANCIA', gentilicio: 'FRANCÉS' },
+            { id: 69, nombre: 'GABÓN', gentilicio: 'GABONÉS' },
+            { id: 70, nombre: 'GAMBIA', gentilicio: 'GAMBIANO' },
+            { id: 71, nombre: 'GEORGIA', gentilicio: 'GEORGIANO' },
+            { id: 72, nombre: 'GHANA', gentilicio: 'GHANÉS' },
+            { id: 73, nombre: 'GRANADA', gentilicio: 'GRANADINO' },
+            { id: 74, nombre: 'GRECIA', gentilicio: 'GRIEGO' },
+            { id: 75, nombre: 'GUATEMALA', gentilicio: 'GUATEMALTECO' },
+            { id: 76, nombre: 'GUINEA', gentilicio: 'GUINEANO' },
+            { id: 77, nombre: 'GUINEA ECUATORIAL', gentilicio: 'ECUATOGUINEANO' },
+            { id: 78, nombre: 'GUYANA', gentilicio: 'GUYANÉS' },
+            { id: 79, nombre: 'HAITÍ', gentilicio: 'HAITIANO' },
+            { id: 80, nombre: 'HONDURAS', gentilicio: 'HONDUREÑO' },
+            { id: 81, nombre: 'HUNGRÍA', gentilicio: 'HÚNGARO' },
+            { id: 82, nombre: 'INDIA', gentilicio: 'INDIO' },
+            { id: 83, nombre: 'INDONESIA', gentilicio: 'INDONESIO' },
+            { id: 84, nombre: 'IRAK', gentilicio: 'IRAQUÍ' },
+            { id: 85, nombre: 'IRÁN', gentilicio: 'IRANÍ' },
+            { id: 86, nombre: 'IRLANDA', gentilicio: 'IRLANDÉS' },
+            { id: 87, nombre: 'ISLANDIA', gentilicio: 'ISLANDÉS' },
+            { id: 88, nombre: 'ISLAS MARSHALL', gentilicio: 'MARSHALÉS' },
+            { id: 89, nombre: 'ISLAS SALOMÓN', gentilicio: 'SALOMONENSE' },
+            { id: 90, nombre: 'ISRAEL', gentilicio: 'ISRAELÍ' },
+            { id: 91, nombre: 'ITALIA', gentilicio: 'ITALIANO' },
+            { id: 92, nombre: 'JAMAICA', gentilicio: 'JAMAICANO' },
+            { id: 93, nombre: 'JAPÓN', gentilicio: 'JAPONÉS' },
+            { id: 94, nombre: 'JORDANIA', gentilicio: 'JORDANO' },
+            { id: 95, nombre: 'KAZAJISTÁN', gentilicio: 'KAZAJO' },
+            { id: 96, nombre: 'KENIA', gentilicio: 'KENIANO' },
+            { id: 97, nombre: 'KIRGUISTÁN', gentilicio: 'KIRGUÍS' },
+            { id: 98, nombre: 'KIRIBATI', gentilicio: 'KIRIBATIANO' },
+            { id: 99, nombre: 'KOSOVO', gentilicio: 'KOSOVAR' },
+            { id: 100, nombre: 'KUWAIT', gentilicio: 'KUWAITÍ' },
+            { id: 101, nombre: 'LAOS', gentilicio: 'LAOSIANO' },
+            { id: 102, nombre: 'LESOTO', gentilicio: 'LESOTENSE' },
+            { id: 103, nombre: 'LETONIA', gentilicio: 'LETÓN' },
+            { id: 104, nombre: 'LÍBANO', gentilicio: 'LIBANÉS' },
+            { id: 105, nombre: 'LIBERIA', gentilicio: 'LIBERIANO' },
+            { id: 106, nombre: 'LIBIA', gentilicio: 'LIBIO' },
+            { id: 107, nombre: 'LIECHTENSTEIN', gentilicio: 'LIECHTENSTEINIANO' },
+            { id: 108, nombre: 'LITUANIA', gentilicio: 'LITUANO' },
+            { id: 109, nombre: 'LUXEMBURGO', gentilicio: 'LUXEMBURGUÉS' },
+            { id: 110, nombre: 'MACEDONIA DEL NORTE', gentilicio: 'MACEDONIO' },
+            { id: 111, nombre: 'MADAGASCAR', gentilicio: 'MALGACHE' },
+            { id: 112, nombre: 'MALASIA', gentilicio: 'MALASIO' },
+            { id: 113, nombre: 'MALAUI', gentilicio: 'MALAUÍ' },
+            { id: 114, nombre: 'MALDIVAS', gentilicio: 'MALDIVO' },
+            { id: 115, nombre: 'MALI', gentilicio: 'MALÍ' },
+            { id: 116, nombre: 'MALTA', gentilicio: 'MALTÉS' },
+            { id: 117, nombre: 'MARRUECOS', gentilicio: 'MARROQUÍ' },
+            { id: 118, nombre: 'MAURICIO', gentilicio: 'MAURICIANO' },
+            { id: 119, nombre: 'MAURITANIA', gentilicio: 'MAURITANO' },
+            // ⚠️ ID 120 es MÉXICO en la tabla original, pero nosotros usamos 1
+            { id: 121, nombre: 'MICRONESIA', gentilicio: 'MICRONESIO' },
+            { id: 122, nombre: 'MOLDAVIA', gentilicio: 'MOLDAVO' },
+            { id: 123, nombre: 'MÓNACO', gentilicio: 'MONEGASCO' },
+            { id: 124, nombre: 'MONGOLIA', gentilicio: 'MONGOL' },
+            { id: 125, nombre: 'MONTENEGRO', gentilicio: 'MONTENEGRINO' },
+            { id: 126, nombre: 'MOZAMBIQUE', gentilicio: 'MOZAMBIQUEÑO' },
+            { id: 127, nombre: 'NAMIBIA', gentilicio: 'NAMIBIO' },
+            { id: 128, nombre: 'NAURU', gentilicio: 'NAURUANO' },
+            { id: 129, nombre: 'NEPAL', gentilicio: 'NEPALÉS' },
+            { id: 130, nombre: 'NICARAGUA', gentilicio: 'NICARAGÜENSE' },
+            { id: 131, nombre: 'NÍGER', gentilicio: 'NIGERINO' },
+            { id: 132, nombre: 'NIGERIA', gentilicio: 'NIGERIANO' },
+            { id: 133, nombre: 'NORUEGA', gentilicio: 'NORUEGO' },
+            { id: 134, nombre: 'NUEVA ZELANDA', gentilicio: 'NEOZELANDÉS' },
+            { id: 135, nombre: 'OMÁN', gentilicio: 'OMANÍ' },
+            { id: 136, nombre: 'PAÍSES BAJOS', gentilicio: 'NEERLANDÉS' },
+            { id: 137, nombre: 'PAKISTÁN', gentilicio: 'PAKISTANÍ' },
+            { id: 138, nombre: 'PALAOS', gentilicio: 'PALAUANO' },
+            { id: 139, nombre: 'PALESTINA', gentilicio: 'PALESTINO' },
+            { id: 140, nombre: 'PANAMÁ', gentilicio: 'PANAMEÑO' },
+            { id: 141, nombre: 'PAPÚA NUEVA GUINEA', gentilicio: 'PAPÚ' },
+            { id: 142, nombre: 'PARAGUAY', gentilicio: 'PARAGUAYO' },
+            { id: 143, nombre: 'PERÚ', gentilicio: 'PERUANO' },
+            { id: 144, nombre: 'POLONIA', gentilicio: 'POLACO' },
+            { id: 145, nombre: 'PORTUGAL', gentilicio: 'PORTUGUÉS' },
+            { id: 146, nombre: 'PUERTO RICO', gentilicio: 'PUERTORRIQUEÑO' },
+            { id: 147, nombre: 'REINO UNIDO', gentilicio: 'BRITÁNICO' },
+            { id: 148, nombre: 'REPÚBLICA CENTROAFRICANA', gentilicio: 'CENTROAFRICANO' },
+            { id: 149, nombre: 'REPÚBLICA CHECA', gentilicio: 'CHECO' },
+            { id: 150, nombre: 'REPÚBLICA DEMOCRÁTICA DEL CONGO', gentilicio: 'CONGOLEÑO' },
+            { id: 151, nombre: 'REPÚBLICA DOMINICANA', gentilicio: 'DOMINICANO' },
+            { id: 152, nombre: 'RUANDA', gentilicio: 'RUANDÉS' },
+            { id: 153, nombre: 'RUMANÍA', gentilicio: 'RUMANO' },
+            { id: 154, nombre: 'RUSIA', gentilicio: 'RUSO' },
+            { id: 155, nombre: 'SAMOA', gentilicio: 'SAMOANO' },
+            { id: 156, nombre: 'SAN CRISTÓBAL Y NIEVES', gentilicio: 'SANCRISTOBALEÑO' },
+            { id: 157, nombre: 'SAN MARINO', gentilicio: 'SANMARINENSE' },
+            { id: 158, nombre: 'SAN VICENTE Y LAS GRANADINAS', gentilicio: 'SANVICENTINO' },
+            { id: 159, nombre: 'SANTA LUCÍA', gentilicio: 'SANTALUCENSE' },
+            { id: 160, nombre: 'SANTO TOMÉ Y PRÍNCIPE', gentilicio: 'SANTOMENSE' },
+            { id: 161, nombre: 'SENEGAL', gentilicio: 'SENEGALÉS' },
+            { id: 162, nombre: 'SERBIA', gentilicio: 'SERBIO' },
+            { id: 163, nombre: 'SEYCHELLES', gentilicio: 'SEYCHELLENSE' },
+            { id: 164, nombre: 'SIERRA LEONA', gentilicio: 'SIERRALEONÉS' },
+            { id: 165, nombre: 'SINGAPUR', gentilicio: 'SINGAPURENSE' },
+            { id: 166, nombre: 'SIRIA', gentilicio: 'SIRIO' },
+            { id: 167, nombre: 'SOMALIA', gentilicio: 'SOMALÍ' },
+            { id: 168, nombre: 'SRI LANKA', gentilicio: 'ESRILANQUÉS' },
+            { id: 169, nombre: 'SUDÁFRICA', gentilicio: 'SUDAFRICANO' },
+            { id: 170, nombre: 'SUDÁN', gentilicio: 'SUDANÉS' },
+            { id: 171, nombre: 'SUDÁN DEL SUR', gentilicio: 'SURSUDANÉS' },
+            { id: 172, nombre: 'SUECIA', gentilicio: 'SUECO' },
+            { id: 173, nombre: 'SUIZA', gentilicio: 'SUIZO' },
+            { id: 174, nombre: 'SURINAM', gentilicio: 'SURINAMÉS' },
+            { id: 175, nombre: 'TAILANDIA', gentilicio: 'TAILANDÉS' },
+            { id: 176, nombre: 'TAIWÁN', gentilicio: 'TAIWANÉS' },
+            { id: 177, nombre: 'TAYIKISTÁN', gentilicio: 'TAYIKO' },
+            { id: 178, nombre: 'TANZANIA', gentilicio: 'TANZANO' },
+            { id: 179, nombre: 'TIMOR ORIENTAL', gentilicio: 'TIMORENSE' },
+            { id: 180, nombre: 'TOGO', gentilicio: 'TOGOLÉS' },
+            { id: 181, nombre: 'TONGA', gentilicio: 'TONGANO' },
+            { id: 182, nombre: 'TRINIDAD Y TOBAGO', gentilicio: 'TRINITENSE' },
+            { id: 183, nombre: 'TÚNEZ', gentilicio: 'TUNECINO' },
+            { id: 184, nombre: 'TURKMENISTÁN', gentilicio: 'TURCOMANO' },
+            { id: 185, nombre: 'TURQUÍA', gentilicio: 'TURCO' },
+            { id: 186, nombre: 'TUVALU', gentilicio: 'TUVALUANO' },
+            { id: 187, nombre: 'UCRANIA', gentilicio: 'UCRANIANO' },
+            { id: 188, nombre: 'UGANDA', gentilicio: 'UGANDÉS' },
+            { id: 189, nombre: 'URUGUAY', gentilicio: 'URUGUAYO' },
+            { id: 190, nombre: 'UZBEKISTÁN', gentilicio: 'UZBEKO' },
+            { id: 191, nombre: 'VANUATU', gentilicio: 'VANUATUENSE' },
+            { id: 192, nombre: 'VATICANO', gentilicio: 'VATICANO' },
+            { id: 193, nombre: 'VENEZUELA', gentilicio: 'VENEZOLANO' },
+            { id: 194, nombre: 'VIETNAM', gentilicio: 'VIETNAMITA' },
+            { id: 195, nombre: 'YEMEN', gentilicio: 'YEMENÍ' },
+            { id: 196, nombre: 'YIBUTI', gentilicio: 'YIBUTIANO' },
+            { id: 197, nombre: 'ZAMBIA', gentilicio: 'ZAMBIANO' },
+            { id: 198, nombre: 'ZIMBABUE', gentilicio: 'ZIMBABUENSE' }
+        ];
+        
+        // Limpiar el select
+        select.innerHTML = '<option value="" selected disabled>SELECCIONA</option>';
+        
+        // Agregar opciones
+        paises.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.id;
+            option.textContent = `${item.nombre} (${item.gentilicio})`;
+            select.appendChild(option);
+        });
+
+        console.log('✅ Países cargados:');
+        for (let i = 0; i < select.options.length; i++) {
+            console.log(`  Opción ${i}: value="${select.options[i].value}", text="${select.options[i].text}"`);
+        }
+
+        this.inicializarSelect2Pais(select);
+    }
+
+    // ==========================================
+    // INICIALIZAR SELECT2
+    // ==========================================
+    inicializarSelect2Nacionalidad(select) {
+        if (typeof $ !== 'undefined' && $.fn.select2) {
+            $(select).select2({
+                placeholder: 'BUSCA TU NACIONALIDAD',
+                allowClear: false,
+                width: '100%',
+                minimumInputLength: 1
+            });
+            
+            // Evento para cuando se selecciona una opción
+            $(select).on('change', function() {
+                const selectedValue = $(this).val();
+                const selectedText = $(this).find('option:selected').text();
+                console.log('🔍 SELECT2 CAMBIÓ: value=' + selectedValue + ', text=' + selectedText);
+            });
+        }
+    }
+
+    inicializarSelect2Pais(select) {
+        if (typeof $ !== 'undefined' && $.fn.select2) {
+            $(select).select2({
+                placeholder: 'BUSCA TU PAÍS',
+                allowClear: false,
+                width: '100%',
+                minimumInputLength: 1
+            });
+        }
+    }
+
+    // ==========================================
+    // VALIDACIÓN DE EMAIL
     // ==========================================
     validarEmailTiempoReal() {
         if (!this.emailInput) return;
@@ -319,9 +812,6 @@ class AdmisionView {
         this.limpiarErrorCampo(this.emailInput);
     }
 
-    // ==========================================
-    // VALIDACIÓN DE EMAIL PARA ENVÍO
-    // ==========================================
     validarEmailParaEnvio() {
         if (!this.emailInput) return true;
         const email = this.emailInput.value.trim();
@@ -352,246 +842,7 @@ class AdmisionView {
     }
 
     // ==========================================
-    // CARGAR NACIONALIDADES EXTRANJERAS CON SELECT2
-    // ==========================================
-    cargarNacionalidadesExtranjeras() {
-        const select = document.getElementById('nacionalidadExtranjera');
-        if (!select) return;
-        
-        const nacionalidades = [
-            'AFGANISTÁN (AFGANO)', 'ALBANIA (ALBANÉS)', 'ALEMANIA (ALEMÁN)', 
-            'ANDORRA (ANDORRANO)', 'ANGOLA (ANGOLEÑO)', 'ANTIGUA Y BARBUDA (ANTIGUANO)',
-            'ARABIA SAUDITA (SAUDÍ)', 'ARGELIA (ARGELINO)', 'ARGENTINA (ARGENTINO)',
-            'ARMENIA (ARMENIO)', 'AUSTRALIA (AUSTRALIANO)', 'AUSTRIA (AUSTRIACO)',
-            'AZERBAIYÁN (AZERBAIYANO)', 'BAHAMAS (BAHAMEÑO)', 'BANGLADÉS (BANGLADESÍ)',
-            'BARBADOS (BARBADENSE)', 'BARÉIN (BAREINÍ)', 'BÉLGICA (BELGA)',
-            'BELICE (BELICEÑO)', 'BENÍN (BENINÉS)', 'BIELORRUSIA (BIELORRUSO)',
-            'BIRMANIA (BIRMANO)', 'BOLIVIA (BOLIVIANO)', 'BOSNIA Y HERZEGOVINA (BOSNIOHERZEGOVINO)',
-            'BOTSUANA (BOTSUANO)', 'BRASIL (BRASILEÑO)', 'BRUNÉI (BRUNEANO)',
-            'BULGARIA (BÚLGARO)', 'BURKINA FASO (BURKINÉS)', 'BURUNDI (BURUNDÉS)',
-            'BUTÁN (BUTANÉS)', 'CABO VERDE (CABOVERDIANO)', 'CAMBOYA (CAMBOYANO)',
-            'CAMERÚN (CAMERUNÉS)', 'CANADÁ (CANADIENSE)', 'CHAD (CHADIANO)',
-            'CATAR (CATARÍ)', 'CHILE (CHILENO)', 'CHINA (CHINO)',
-            'CHIPRE (CHIPRIOTA)', 'COLOMBIA (COLOMBIANO)', 'COMORAS (COMORENSE)',
-            'CONGO (CONGOLEÑO)', 'COREA DEL NORTE (NORCOREANO)', 'COREA DEL SUR (SURCOREANO)',
-            'COSTA DE MARFIL (COSTAMARFILEÑO)', 'COSTA RICA (COSTARRICENSE)', 
-            'CROACIA (CROATA)', 'CUBA (CUBANO)', 'DINAMARCA (DANÉS)',
-            'DOMINICA (DOMINIQUÉS)', 'ECUADOR (ECUATORIANO)', 'EGIPTO (EGIPCIO)',
-            'EL SALVADOR (SALVADOREÑO)', 'EMIRATOS ÁRABES UNIDOS (EMIRATÍ)', 
-            'ERITREA (ERITREO)', 'ESLOVAQUIA (ESLOVACO)', 'ESLOVENIA (ESLOVENO)',
-            'ESPAÑA (ESPAÑOL)', 'ESTADOS UNIDOS (ESTADOUNIDENSE)', 'ESTONIA (ESTONIO)',
-            'ESUATINI (ESUATINÍ)', 'ETIOPÍA (ETÍOPE)', 'FILIPINAS (FILIPINO)',
-            'FINLANDIA (FINLANDÉS)', 'FIYI (FIYIANO)', 'FRANCIA (FRANCÉS)',
-            'GABÓN (GABONÉS)', 'GAMBIA (GAMBIANO)', 'GEORGIA (GEORGIANO)',
-            'GHANA (GHANÉS)', 'GRANADA (GRANADINO)', 'GRECIA (GRIEGO)',
-            'GUATEMALA (GUATEMALTECO)', 'GUINEA (GUINEANO)', 'GUINEA-BISÁU (GUINEANO)',
-            'GUINEA ECUATORIAL (ECUATOGUINEANO)', 'GUYANA (GUYANÉS)', 'HAITÍ (HAITIANO)',
-            'HONDURAS (HONDUREÑO)', 'HUNGRÍA (HÚNGARO)', 'INDIA (INDIO)',
-            'INDONESIA (INDONESIO)', 'IRAK (IRAQUÍ)', 'IRÁN (IRANÍ)',
-            'IRLANDA (IRLANDÉS)', 'ISLANDIA (ISLANDÉS)', 'ISLAS MARSHALL (MARSHALÉS)',
-            'ISLAS SALOMÓN (SALOMONENSE)', 'ISRAEL (ISRAELÍ)', 'ITALIA (ITALIANO)',
-            'JAMAICA (JAMAICANO)', 'JAPÓN (JAPONÉS)', 'JORDANIA (JORDANO)',
-            'KAZAJISTÁN (KAZAJO)', 'KENIA (KENIANO)', 'KIRGUISTÁN (KIRGUÍS)',
-            'KIRIBATI (KIRIBATIANO)', 'KOSOVO (KOSOVAR)', 'KUWAIT (KUWAITÍ)',
-            'LAOS (LAOSIANO)', 'LESOTO (LESOTENSE)', 'LETONIA (LETÓN)',
-            'LÍBANO (LIBANÉS)', 'LIBERIA (LIBERIANO)', 'LIBIA (LIBIO)',
-            'LIECHTENSTEIN (LIECHTENSTEINIANO)', 'LITUANIA (LITUANO)', 
-            'LUXEMBURGO (LUXEMBURGUÉS)', 'MACEDONIA DEL NORTE (MACEDONIO)',
-            'MADAGASCAR (MALGACHE)', 'MALASIA (MALASIO)', 'MALAUI (MALAUÍ)',
-            'MALDIVAS (MALDIVO)', 'MALI (MALÍ)', 'MALTA (MALTÉS)',
-            'MARRUECOS (MARROQUÍ)', 'MAURICIO (MAURICIANO)', 'MAURITANIA (MAURITANO)',
-            'MICRONESIA (MICRONESIO)', 'MOLDAVIA (MOLDAVO)', 'MÓNACO (MONEGASCO)',
-            'MONGOLIA (MONGOL)', 'MONTENEGRO (MONTENEGRINO)', 'MOZAMBIQUE (MOZAMBIQUEÑO)',
-            'NAMIBIA (NAMIBIO)', 'NAURU (NAURUANO)', 'NEPAL (NEPALÉS)',
-            'NICARAGUA (NICARAGÜENSE)', 'NÍGER (NIGERINO)', 'NIGERIA (NIGERIANO)',
-            'NORUEGA (NORUEGO)', 'NUEVA ZELANDA (NEOZELANDÉS)', 'OMÁN (OMANÍ)',
-            'PAÍSES BAJOS (NEERLANDÉS)', 'PAKISTÁN (PAKISTANÍ)', 'PALAOS (PALAUANO)',
-            'PALESTINA (PALESTINO)', 'PANAMÁ (PANAMEÑO)', 'PAPÚA NUEVA GUINEA (PAPÚ)',
-            'PARAGUAY (PARAGUAYO)', 'PERÚ (PERUANO)', 'POLONIA (POLACO)',
-            'PORTUGAL (PORTUGUÉS)','PUERTO RICO (PUERTORRIQUEÑO)', 'REINO UNIDO (BRITÁNICO)', 
-            'REPÚBLICA CENTROAFRICANA (CENTROAFRICANO)', 'REPÚBLICA CHECA (CHECO)',
-            'REPÚBLICA DEMOCRÁTICA DEL CONGO (CONGOLEÑO)', 
-            'REPÚBLICA DOMINICANA (DOMINICANO)', 'RUANDA (RUANDÉS)', 
-            'RUMANÍA (RUMANO)', 'RUSIA (RUSO)', 'SAMOA (SAMOANO)',
-            'SAN CRISTÓBAL Y NIEVES (SANCRISTOBALEÑO)', 'SAN MARINO (SANMARINENSE)',
-            'SAN VICENTE Y LAS GRANADINAS (SANVICENTINO)', 'SANTA LUCÍA (SANTALUCENSE)',
-            'SANTO TOMÉ Y PRÍNCIPE (SANTOMENSE)', 'SENEGAL (SENEGALÉS)',
-            'SERBIA (SERBIO)', 'SEYCHELLES (SEYCHELLENSE)', 'SIERRA LEONA (SIERRALEONÉS)',
-            'SINGAPUR (SINGAPURENSE)', 'SIRIA (SIRIO)', 'SOMALIA (SOMALÍ)',
-            'SRI LANKA (ESRILANQUÉS)', 'SUDÁFRICA (SUDAFRICANO)', 'SUDÁN (SUDANÉS)',
-            'SUDÁN DEL SUR (SURSUDANÉS)', 'SUECIA (SUECO)', 'SUIZA (SUIZO)',
-            'SURINAM (SURINAMÉS)', 'TAILANDIA (TAILANDÉS)', 'TAIWÁN (TAIWANÉS)',
-            'TAYIKISTÁN (TAYIKO)', 'TANZANIA (TANZANO)', 'TIMOR ORIENTAL (TIMORENSE)',
-            'TOGO (TOGOLÉS)', 'TONGA (TONGANO)', 'TRINIDAD Y TOBAGO (TRINITENSE)',
-            'TÚNEZ (TUNECINO)', 'TURKMENISTÁN (TURCOMANO)', 'TURQUÍA (TURCO)',
-            'TUVALU (TUVALUANO)', 'UCRANIA (UCRANIANO)', 'UGANDA (UGANDÉS)',
-            'URUGUAY (URUGUAYO)', 'UZBEKISTÁN (UZBEKO)', 'VANUATU (VANUATUENSE)',
-            'VATICANO (VATICANO)', 'VENEZUELA (VENEZOLANO)', 'VIETNAM (VIETNAMITA)',
-            'YEMEN (YEMENÍ)', 'YIBUTI (YIBUTIANO)', 'ZAMBIA (ZAMBIANO)',
-            'ZIMBABUE (ZIMBABUENSE)'
-        ];
-        
-        nacionalidades.sort((a, b) => a.localeCompare(b));
-        
-        nacionalidades.forEach(nacionalidad => {
-            const option = document.createElement('option');
-            option.value = nacionalidad;
-            option.textContent = nacionalidad;
-            select.appendChild(option);
-        });
-        
-        if (typeof $ !== 'undefined' && $.fn.select2) {
-            $(select).select2({
-                placeholder: 'BUSCA TU NACIONALIDAD',
-                allowClear: false,
-                width: '100%',
-                language: {
-                    searching: function() { return 'Buscando...'; },
-                    noResults: function() { return 'No se encontraron resultados'; },
-                    inputTooShort: function() {
-                        return 'Escribe para comenzar a buscar';
-                    }
-                },
-                minimumInputLength: 1,
-                matcher: function(params, data) {
-                    if (!params.term) return data;
-                    const term = params.term.toUpperCase();
-                    const text = data.text.toUpperCase();
-                    if (text.indexOf(term) > -1) {
-                        return data;
-                    }
-                    return null;
-                }
-            });
-            
-            $(select).on('select2:open', function() {
-                const searchField = document.querySelector('.select2-search__field');
-                if (searchField) {
-                    searchField.style.textTransform = 'uppercase';
-                    searchField.addEventListener('input', function() {
-                        const start = this.selectionStart;
-                        const end = this.selectionEnd;
-                        const value = this.value;
-                        const upperValue = value.toUpperCase();
-                        if (value !== upperValue) {
-                            this.value = upperValue;
-                            this.setSelectionRange(start, end);
-                        }
-                    });
-                }
-            });
-        }
-        
-        console.log('Nacionalidades cargadas correctamente con Select2');
-    }
-
-    // ==========================================
-    // CARGAR PAÍSES CON SELECT2
-    // ==========================================
-    cargarPaises() {
-        const select = document.getElementById('pais');
-        if (!select) return;
-        
-        const paises = [
-            'AFGANISTÁN', 'ALBANIA', 'ALEMANIA', 'ANDORRA', 'ANGOLA',
-            'ANTIGUA Y BARBUDA', 'ARABIA SAUDITA', 'ARGELIA', 'ARGENTINA', 'ARMENIA',
-            'AUSTRALIA', 'AUSTRIA', 'AZERBAIYÁN', 'BAHAMAS', 'BANGLADÉS',
-            'BARBADOS', 'BARÉIN', 'BÉLGICA', 'BELICE', 'BENÍN',
-            'BIELORRUSIA', 'BIRMANIA', 'BOLIVIA', 'BOSNIA Y HERZEGOVINA', 'BOTSUANA',
-            'BRASIL', 'BRUNÉI', 'BULGARIA', 'BURKINA FASO', 'BURUNDI',
-            'BUTÁN', 'CABO VERDE', 'CAMBOYA', 'CAMERÚN', 'CANADÁ',
-            'CHAD', 'CATAR', 'CHILE', 'CHINA', 'CHIPRE',
-            'COLOMBIA', 'COMORAS', 'CONGO', 'COREA DEL NORTE', 'COREA DEL SUR',
-            'COSTA DE MARFIL', 'COSTA RICA', 'CROACIA', 'CUBA', 'DINAMARCA',
-            'DOMINICA', 'ECUADOR', 'EGIPTO', 'EL SALVADOR', 'EMIRATOS ÁRABES UNIDOS',
-            'ERITREA', 'ESLOVAQUIA', 'ESLOVENIA', 'ESPAÑA', 'ESTADOS UNIDOS',
-            'ESTONIA', 'ESUATINI', 'ETIOPÍA', 'FILIPINAS', 'FINLANDIA',
-            'FIYI', 'FRANCIA', 'GABÓN', 'GAMBIA', 'GEORGIA',
-            'GHANA', 'GRANADA', 'GRECIA', 'GUATEMALA', 'GUINEA',
-            'GUINEA-BISÁU', 'GUINEA ECUATORIAL', 'GUYANA', 'HAITÍ', 'HONDURAS',
-            'HUNGRÍA', 'INDIA', 'INDONESIA', 'IRAK', 'IRÁN',
-            'IRLANDA', 'ISLANDIA', 'ISLAS MARSHALL', 'ISLAS SALOMÓN', 'ISRAEL',
-            'ITALIA', 'JAMAICA', 'JAPÓN', 'JORDANIA', 'KAZAJISTÁN',
-            'KENIA', 'KIRGUISTÁN', 'KIRIBATI', 'KOSOVO', 'KUWAIT',
-            'LAOS', 'LESOTO', 'LETONIA', 'LÍBANO', 'LIBERIA',
-            'LIBIA', 'LIECHTENSTEIN', 'LITUANIA', 'LUXEMBURGO', 'MACEDONIA DEL NORTE',
-            'MADAGASCAR', 'MALASIA', 'MALAUI', 'MALDIVAS', 'MALI',
-            'MALTA', 'MARRUECOS', 'MAURICIO', 'MAURITANIA', 'MÉXICO',
-            'MICRONESIA', 'MOLDAVIA', 'MÓNACO', 'MONGOLIA', 'MONTENEGRO',
-            'MOZAMBIQUE', 'NAMIBIA', 'NAURU', 'NEPAL', 'NICARAGUA',
-            'NÍGER', 'NIGERIA', 'NORUEGA', 'NUEVA ZELANDA', 'OMÁN',
-            'PAÍSES BAJOS', 'PAKISTÁN', 'PALAOS', 'PALESTINA', 'PANAMÁ',
-            'PAPÚA NUEVA GUINEA', 'PARAGUAY', 'PERÚ', 'POLONIA', 'PORTUGAL',
-            'PUERTO RICO', 'REINO UNIDO', 'REPÚBLICA CENTROAFRICANA', 'REPÚBLICA CHECA',
-            'REPÚBLICA DEMOCRÁTICA DEL CONGO', 'REPÚBLICA DOMINICANA', 'RUANDA', 'RUMANÍA',
-            'RUSIA', 'SAMOA', 'SAN CRISTÓBAL Y NIEVES', 'SAN MARINO',
-            'SAN VICENTE Y LAS GRANADINAS', 'SANTA LUCÍA', 'SANTO TOMÉ Y PRÍNCIPE',
-            'SENEGAL', 'SERBIA', 'SEYCHELLES', 'SIERRA LEONA', 'SINGAPUR',
-            'SIRIA', 'SOMALIA', 'SRI LANKA', 'SUDÁFRICA', 'SUDÁN',
-            'SUDÁN DEL SUR', 'SUECIA', 'SUIZA', 'SURINAM', 'TAILANDIA',
-            'TAIWÁN', 'TAYIKISTÁN', 'TANZANIA', 'TIMOR ORIENTAL', 'TOGO',
-            'TONGA', 'TRINIDAD Y TOBAGO', 'TÚNEZ', 'TURKMENISTÁN', 'TURQUÍA',
-            'TUVALU', 'UCRANIA', 'UGANDA', 'URUGUAY', 'UZBEKISTÁN',
-            'VANUATU', 'VATICANO', 'VENEZUELA', 'VIETNAM', 'YEMEN',
-            'YIBUTI', 'ZAMBIA', 'ZIMBABUE'
-        ];
-        
-        paises.sort((a, b) => a.localeCompare(b));
-        
-        paises.forEach(pais => {
-            const option = document.createElement('option');
-            option.value = pais;
-            option.textContent = pais;
-            select.appendChild(option);
-        });
-        
-        if (typeof $ !== 'undefined' && $.fn.select2) {
-            $(select).select2({
-                placeholder: 'BUSCA TU PAÍS',
-                allowClear: false,
-                width: '100%',
-                language: {
-                    searching: function() { return 'Buscando...'; },
-                    noResults: function() { return 'No se encontraron resultados'; },
-                    inputTooShort: function() {
-                        return 'Escribe para comenzar a buscar';
-                    }
-                },
-                minimumInputLength: 1,
-                matcher: function(params, data) {
-                    if (!params.term) return data;
-                    const term = params.term.toUpperCase();
-                    const text = data.text.toUpperCase();
-                    if (text.indexOf(term) > -1) {
-                        return data;
-                    }
-                    return null;
-                }
-            });
-            
-            $(select).on('select2:open', function() {
-                const searchField = document.querySelector('.select2-search__field');
-                if (searchField) {
-                    searchField.style.textTransform = 'uppercase';
-                    searchField.addEventListener('input', function() {
-                        const start = this.selectionStart;
-                        const end = this.selectionEnd;
-                        const value = this.value;
-                        const upperValue = value.toUpperCase();
-                        if (value !== upperValue) {
-                            this.value = upperValue;
-                            this.setSelectionRange(start, end);
-                        }
-                    });
-                }
-            });
-        }
-        
-        console.log('Países cargados correctamente con Select2');
-    }
-
-    // ==========================================
-    // INICIALIZAR VALIDACIÓN DE NÚMEROS
+    // UTILIDADES
     // ==========================================
     inicializarValidacionNumeros() {
         document.querySelectorAll('.solo-numeros').forEach(campo => {
@@ -604,17 +855,11 @@ class AdmisionView {
         });
     }
 
-    // ==========================================
-    // OBTENER TIPO DE POSGRADO SELECCIONADO
-    // ==========================================
     obtenerTipoPosgradoSeleccionado() {
         const radioSeleccionado = document.querySelector('input[name="posgrado"]:checked');
         return radioSeleccionado ? radioSeleccionado.value : null;
     }
 
-    // ==========================================
-    // ACTUALIZAR POSGRADO (con Especialidad)
-    // ==========================================
     actualizarPosgrado(tipoPosgrado) {
         const esMaestria = tipoPosgrado === 'Maestría';
         const esDoctorado = tipoPosgrado === 'Doctorado';
@@ -640,9 +885,6 @@ class AdmisionView {
         }
     }
 
-    // ==========================================
-    // RENDERIZAR PERIODOS Y EVALUACIONES (con Especialidad)
-    // ==========================================
     renderizarPeriodosYEvaluaciones(tipoPosgrado) {
         let programa = '';
 
@@ -672,9 +914,6 @@ class AdmisionView {
         }
     }
 
-    // ==========================================
-    // RENDERIZAR PERIODOS
-    // ==========================================
     renderizarPeriodos(periodos) {
         if (!this.opcionesPeriodo) return;
 
@@ -695,9 +934,6 @@ class AdmisionView {
         this.limpiarErrorPeriodo();
     }
 
-    // ==========================================
-    // RENDERIZAR FORMAS DE EVALUACIÓN
-    // ==========================================
     renderizarFormasEvaluacion(formasEvaluacion) {
         if (!this.evaluacionOpciones) return;
 
@@ -718,9 +954,6 @@ class AdmisionView {
         }).join('');
     }
 
-    // ==========================================
-    // MÉTODOS DE UTILIDAD
-    // ==========================================
     ocultarElementosIniciales() {
         this.mostrarElemento(this.divMaestrias, false, false);
         this.mostrarElemento(this.divDoctorados, false, false);
@@ -729,7 +962,6 @@ class AdmisionView {
         this.mostrarElemento(this.especificarTitulacionContainer, false, false);
         this.mostrarElemento(this.especificarParentescoContainer, false, false);
         this.mostrarElemento(this.especificarCalleContainer, false, false);
-        
         this.mostrarElemento(this.nacionalidadExtranjeraContainer, false, false);
         
         if (this.opcionesPeriodo) {
@@ -905,9 +1137,6 @@ class AdmisionView {
         if (this.errorPeriodo) this.errorPeriodo.textContent = mensaje;
     }
 
-    // ==========================================
-    // VALIDAR PARENTESCO
-    // ==========================================
     validarParentesco() {
         if (!this.selectParentesco) return true;
         
@@ -931,9 +1160,6 @@ class AdmisionView {
         return true;
     }
 
-    // ==========================================
-    // VALIDAR TIPO DE CALLE
-    // ==========================================
     validarTipoCalle() {
         if (!this.selectTipoCalle) return true;
         
@@ -957,9 +1183,6 @@ class AdmisionView {
         return true;
     }
 
-    // ==========================================
-    // VALIDAR PAÍS
-    // ==========================================
     validarPais() {
         if (!this.selectPais) return true;
         
@@ -974,9 +1197,6 @@ class AdmisionView {
         return true;
     }
 
-    // ==========================================
-    // VALIDAR NACIONALIDAD EXTRANJERA
-    // ==========================================
     validarNacionalidadExtranjera() {
         if (this.nacionalidadExtranjeraContainer.style.display === 'none') {
             return true;
@@ -994,36 +1214,6 @@ class AdmisionView {
         
         this.limpiarErrorCampo(select);
         return true;
-    }
-
-    // ==========================================
-    // ** FUNCIÓN FALTANTE - AGREGADA AQUÍ **
-    // ==========================================
-    /**
-     * Verifica si la nacionalidad seleccionada es extranjera
-     */
-    esNacionalidadExtranjera() {
-        // Método 1: Verificar el contenedor visible
-        if (this.nacionalidadExtranjeraContainer) {
-            const display = window.getComputedStyle(this.nacionalidadExtranjeraContainer).display;
-            if (display !== 'none') {
-                return true;
-            }
-        }
-        
-        // Método 2: Verificar el radio button directamente
-        const radioExtranjero = document.querySelector('input[name="nacionalidad"][value="Otra (Extranjera)"]');
-        if (radioExtranjero) {
-            return radioExtranjero.checked;
-        }
-        
-        // Método 3: Verificar el valor del radio seleccionado
-        const radioSeleccionado = document.querySelector('input[name="nacionalidad"]:checked');
-        if (radioSeleccionado) {
-            return radioSeleccionado.value === 'Otra (Extranjera)';
-        }
-        
-        return false;
     }
 
     limpiarValidaciones() {
@@ -1069,9 +1259,6 @@ class AdmisionView {
         window.scrollTo({ top, behavior: 'smooth' });
     }
 
-    // ==========================================
-    // MANEJAR ENVÍO
-    // ==========================================
     manejarEnvio() {
         this.limpiarValidaciones();
         
@@ -1110,17 +1297,23 @@ class AdmisionView {
 
         const nombreCompleto = `${datos.nombre || ''} ${datos.primerApellido || ''} ${datos.segundoApellido || ''}`.trim() || 'No especificado';
         const domicilio = datos.domicilio || {};
+        const direccion = `${domicilio.calle || ''} ${domicilio.numExt || ''}${domicilio.numInt ? ' Int. '+domicilio.numInt : ''}, ${domicilio.colonia || ''}, CP ${domicilio.cp || ''}, ${domicilio.municipio || ''}, ${domicilio.estado || ''}`.trim() || 'No especificada';
+
         const datosAcademicos = datos.datosAcademicos || {};
         const posgradoDetalle = datosAcademicos.posgradoDetalle || 'No seleccionado';
         const anioIngreso = datosAcademicos.anioIngreso || 'No especificado';
         const periodo = datosAcademicos.periodo || 'No seleccionado';
         const formaEvaluacion = datosAcademicos.formaEvaluacion || '';
+
         const contacto = datos.contacto || {};
         const email = contacto.email || 'No especificado';
+
         const contactoEmergencia = datos.contactoEmergencia || {};
         const nombreEmergencia = `${contactoEmergencia.nombre || ''} ${contactoEmergencia.primerApellido || ''} ${contactoEmergencia.segundoApellido || ''}`.trim() || 'No especificado';
+
         const estudiosPrevios = datos.estudiosPrevios || {};
         const motivacion = datos.motivacion || {};
+
         const dominioIngles = datos.dominioIngles || {};
         const experiencia = datos.experienciaLaboral || [];
         const publicaciones = datos.publicaciones || [];
@@ -1252,9 +1445,6 @@ class AdmisionView {
             .replace(/'/g, '&#039;');
     }
 
-    // ==========================================
-    // MOSTRAR/OCULTAR RESUMEN
-    // ==========================================
     mostrarResumen(html) {
         if (this.contenidoResumen) {
             this.contenidoResumen.innerHTML = html || '<p>No hay datos para mostrar</p>';
@@ -1285,9 +1475,6 @@ class AdmisionView {
         }
     }
 
-    // ==========================================
-    // CONFIRMAR ENVÍO
-    // ==========================================
     async confirmarEnvio() {
         try {
             if (!this.validarEmailParaEnvio()) {
@@ -1321,9 +1508,9 @@ class AdmisionView {
     }
 }
 
-
 if (typeof window !== 'undefined') {
     window.AdmisionView = AdmisionView;
 }
 
-console.log('Clase AdmisionView cargada correctamente con validación de email');
+console.log('✅ AdmisionView cargado correctamente');
+console.log('📌 MÉXICO = ID 1, MEXICANA = ID 1');

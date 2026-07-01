@@ -10,8 +10,10 @@ define('DB_SERVER', 'DESKTOP-I7L34OR\PAMEUWU');
 define('DB_USERNAME', 'pame');
 define('DB_PASSWORD', '12345');
 define('DB_DATABASE', 'pRegistro1');
-
-// ==========================================
+// MÉXICO SIEMPRE SERÁ ID 1
+define('MEXICO_ID', 1);
+// ==================
+// ========================
 // CONFIGURACIÓN DE LA APLICACIÓN
 // ==========================================
 define('APP_NAME', 'INAOE - Solicitud de Admisión');
