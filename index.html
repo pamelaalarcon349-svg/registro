@@ -162,7 +162,7 @@
                         <h2>Datos generales del aspirante</h2>
                         <hr class="red">
 
-                        <div class="row">
+                      <div class="row">
                             <div class="form-group col-12 col-md-8">
                                 <label>Nacionalidad:</label>
                                 <div class="radio">
@@ -184,7 +184,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <hr>
                         <div class="row">
                             <div class="form-group col-12 col-md-8">
@@ -956,143 +955,42 @@
 
         </div>
     </div>
+<!-- ========================================== -->
+<!-- SCRIPTS -->
+<!-- ========================================== -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://framework-gb.cdn.gob.mx/gobmx.js"></script>
+<script src="https://framework-gb.cdn.gob.mx/assets/scripts/jquery-ui-datepicker.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.js"></script>
 
-    <script>
-    // ============================================
-    // CONFIGURACIÓN DE LA URL DEL BACKEND
-    // ============================================
-    // Cambia esta URL según la ubicación de tu backend
-    const API_URL = 'http://localhost/registro/guardar_aspirante.php';
-    // Si estás en producción, usa:
-    // const API_URL = 'https://tudominio.com/registro/guardar_aspirante.php';
+<!-- SELECT2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-    // ============================================
-    // FUNCIÓN PARA ENVIAR DATOS AL BACKEND
-    // ============================================
-    async function enviarDatosAlServidor(datos) {
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(datos)
-            });
+<script src="controllers/validation/Tools.js"></script>
+<script src="views/Components/nav/navRegister.js"></script>
 
-            // Verificar si la respuesta es JSON
-            const contentType = response.headers.get('content-type');
-            if (!contentType || !contentType.includes('application/json')) {
-                const text = await response.text();
-                console.error('Respuesta no JSON:', text);
-                return { 
-                    success: false, 
-                    message: 'El servidor respondió con un formato inesperado. Verifica que el backend esté funcionando correctamente.'
-                };
-            }
+<!-- MVC -->
+<script src="./models/ValidacionModel.js"></script>
+<script src="./models/Model.js"></script>
+<script src="./views/View.js"></script>
+<script src="./controllers/Controller.js"></script>
 
-            const resultado = await response.json();
+<!-- Modal Resumen -->
+<div class="modal fade" id="modalResumen" tabindex="-1" role="dialog">
+    <!-- ... el modal ... -->
+</div>
 
-            if (resultado.success) {
-                return { 
-                    success: true, 
-                    message: resultado.message || 'Solicitud enviada exitosamente',
-                    idAspirante: resultado.idAspirante || 'N/A'
-                };
-            } else {
-                return { 
-                    success: false, 
-                    message: resultado.error || 'Error al enviar la solicitud' 
-                };
-            }
-        } catch (error) {
-            console.error('Error de conexión:', error);
-            return { 
-                success: false, 
-                message: 'Error de conexión con el servidor. Verifica que el backend esté corriendo en: ' + API_URL
-            };
-        }
-    }
+<!-- ========================================== -->
+<!-- CONFIGURACIÓN MÍNIMA - SOLO INICIALIZACIÓN -->
+<!-- ========================================== -->
+<script>
+// Solo inicializar la aplicación, nada más
+console.log('🚀 Aplicación cargada, esperando Controller...');
+</script>
 
-    // ============================================
-    // MODIFICAR EL EVENTO DE CONFIRMACIÓN
-    // ============================================
-    document.addEventListener('DOMContentLoaded', function() {
-        const btnConfirmar = document.getElementById('confirmarEnvio');
-        
-        if (btnConfirmar) {
-            btnConfirmar.addEventListener('click', async function(e) {
-                try {
-                    // Cerrar el modal
-                    const modal = document.getElementById('modalResumen');
-                    if (modal && window.jQuery) {
-                        window.jQuery(modal).modal('hide');
-                    }
-                    
-                    // Cambiar estado del botón
-                    const textoOriginal = this.textContent;
-                    this.textContent = '⏳ Enviando...';
-                    this.disabled = true;
-                    
-                    // Obtener los datos del formulario
-                    const form = document.getElementById('formAdmision');
-                    if (typeof AdmisionModel === 'undefined') {
-                        throw new Error('AdmisionModel no está definido');
-                    }
-                    const model = new AdmisionModel();
-                    const datos = model.mapearDatosFormulario(form);
-                    
-                    console.log('Datos a enviar:', datos);
-                    
-                    // Enviar al servidor
-                    const resultado = await enviarDatosAlServidor(datos);
-                    
-                    // Restaurar botón
-                    this.textContent = textoOriginal;
-                    this.disabled = false;
-                    
-                    if (resultado.success) {
-                        alert('✅ ' + resultado.message + '\nID de registro: ' + resultado.idAspirante);
-                        // Opcional: limpiar el formulario o redirigir
-                    } else {
-                        alert('❌ ' + resultado.message);
-                    }
-                } catch (error) {
-                    console.error('Error en confirmación:', error);
-                    alert('❌ Ocurrió un error al procesar la solicitud:\n' + error.message);
-                    this.disabled = false;
-                    this.textContent = 'Confirmar envío';
-                }
-            });
-        }
-
-        // ============================================
-        // PRUEBA DE CONEXIÓN CON EL BACKEND
-        // ============================================
-        async function probarConexion() {
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'OPTIONS',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                console.log('✅ Backend accesible en:', API_URL);
-                return true;
-            } catch (error) {
-                console.warn('⚠️ No se pudo conectar al backend en:', API_URL);
-                console.warn('Verifica que el servidor esté corriendo y la ruta sea correcta.');
-                return false;
-            }
-        }
-
-        // Probar conexión al cargar la página (opcional)
-        // probarConexion();
-
-        console.log('📝 Configuración de API:', API_URL);
-        console.log('✅ Aplicación inicializada correctamente');
-    });
-    </script>
+</body>
+</html>
+    
 </body>
 
 </html>

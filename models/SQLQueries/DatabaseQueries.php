@@ -113,7 +113,8 @@ class DatabaseQueries
         if ($errors) {
             $messages = [];
             foreach ($errors as $error) {
-                $messages[] = $error['message'] ?? 'Error SQL Server';
+                $message = $error['message'] ?? 'Error SQL Server';
+                $messages[] = $message;
             }
             return implode(' | ', $messages);
         }

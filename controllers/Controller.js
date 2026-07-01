@@ -33,17 +33,14 @@ class AdmisionController {
     vincularEventos() {
         console.log('🔗 Vinculando eventos...');
         
-        // Evento para nacionalidad
         document.querySelectorAll('input[name="nacionalidad"]').forEach(radio => {
             radio.addEventListener('change', () => this.actualizarCurp());
         });
 
-        // Evento para titulación
         document.querySelectorAll('input[name="titulacion"]').forEach(radio => {
             radio.addEventListener('change', () => this.actualizarTitulacion());
         });
 
-        // Evento para campos numéricos y domicilios
         document.addEventListener('input', evento => {
             if (evento.target.classList.contains('solo-numeros')) {
                 this.view.limpiarCampoNumerico(evento.target);
@@ -55,7 +52,6 @@ class AdmisionController {
             }
         });
 
-        // Evento para el botón enviar - Usar evento directo
         const btnEnviarModal = document.getElementById('btnEnviarModal');
         if (btnEnviarModal) {
             console.log('✅ Botón "Enviar solicitud" vinculado desde Controller');
@@ -68,7 +64,6 @@ class AdmisionController {
             console.warn('⚠️ Botón "btnEnviarModal" no encontrado en Controller');
         }
 
-        // Evento para confirmar envío - Usar evento directo
         const btnConfirmar = document.getElementById('confirmarEnvio');
         if (btnConfirmar) {
             console.log('✅ Botón "Confirmar envío" vinculado desde Controller');
@@ -81,7 +76,6 @@ class AdmisionController {
             console.warn('⚠️ Botón "confirmarEnvio" no encontrado en Controller');
         }
 
-        // Escuchar eventos personalizados (respaldo)
         document.addEventListener('validarEnvio', () => {
             console.log('📡 Evento "validarEnvio" recibido');
             this.validarYMostrarResumen();
@@ -96,9 +90,6 @@ class AdmisionController {
         console.log('✅ Eventos vinculados correctamente');
     }
 
-    // ==========================================
-    // INICIALIZAR LADA CON "+"
-    // ==========================================
     inicializarLada() {
         ['lada', 'ladaEmergencia'].forEach(id => {
             const input = document.getElementById(id);
@@ -142,9 +133,6 @@ class AdmisionController {
         });
     }
 
-    // ==========================================
-    // INICIALIZAR AÑO DE INGRESO FIJO EN 2026
-    // ==========================================
     inicializarAnioIngreso() {
         const input = document.getElementById('anioIngreso');
         if (!input) return;
@@ -184,9 +172,6 @@ class AdmisionController {
         });
     }
 
-    // ==========================================
-    // INICIALIZAR VALIDACIÓN DE EMAIL
-    // ==========================================
     inicializarValidacionEmail() {
         const emailInput = document.getElementById('email');
         if (!emailInput) return;
@@ -264,9 +249,6 @@ class AdmisionController {
         this.view.actualizarTitulacion(titulacion === 'Otro');
     }
 
-    // ==========================================
-    // VALIDACIONES CORREGIDAS
-    // ==========================================
     validarCamposRequeridos() {
         let esValido = true;
         const radiosRevisados = new Set();
@@ -279,8 +261,7 @@ class AdmisionController {
                 return;
             }
 
-            // Saltar CURP si es extranjero
-            if (campo.id === 'curp' && this.view.esNacionalidadExtranjera()) {
+            if (campo.id === 'curp' && this.view.nacionalidadExtranjeraContainer?.style.display !== 'none') {
                 console.log('⏭️ CURP omitido (extranjero)');
                 return;
             }
@@ -373,9 +354,10 @@ class AdmisionController {
         return this.view.validarPais();
     }
 
-    // ==========================================
-    // VALIDAR Y MOSTRAR RESUMEN
-    // ==========================================
+    validarNacionalidadExtranjera() {
+        return this.view.validarNacionalidadExtranjera();
+    }
+
     validarYMostrarResumen() {
         console.log('📋 Iniciando validación...');
         this.view.limpiarValidaciones();
@@ -387,7 +369,7 @@ class AdmisionController {
         const parentescoValido = this.validarParentesco();
         const tipoCalleValido = this.validarTipoCalle();
         const paisValido = this.validarPais();
-        const nacionalidadExtranjeraValida = this.view.validarNacionalidadExtranjera();
+        const nacionalidadExtranjeraValida = this.validarNacionalidadExtranjera();
 
         const esValido = emailValido &&
                          requeridosValidos && 
@@ -424,11 +406,30 @@ class AdmisionController {
         }
     }
 
-    // ==========================================
-    // ENVIAR DATOS CON VALIDACIÓN DE EMAIL
-    // ==========================================
     async enviarDatos() {
+
+        
         try {
+            // 🔥 DEPURACIÓN EXTREMA
+            console.log('========================================');
+            console.log('🔍 INICIANDO ENVÍO DE DATOS');
+            console.log('========================================');
+            
+            // Verificar el select de nacionalidad extranjera
+            const selectExtranjera = document.getElementById('nacionalidadExtranjera');
+            if (selectExtranjera) {
+                console.log('📌 SELECT EXTRANJERA:');
+                console.log('  - value:', selectExtranjera.value);
+                console.log('  - selectedIndex:', selectExtranjera.selectedIndex);
+                console.log('  - text:', selectExtranjera.options[selectExtranjera.selectedIndex]?.text);
+                console.log('  - está visible:', selectExtranjera.style.display !== 'none');
+            }
+            
+            // Verificar el radio de nacionalidad
+            const radioNacionalidad = document.querySelector('input[name="nacionalidad"]:checked');
+            console.log('📌 RADIO NACIONALIDAD:');
+            console.log('  - value:', radioNacionalidad?.value);
+
             if (!this.validarEmailParaEnvio()) {
                 const emailInput = document.getElementById('email');
                 if (emailInput) {
@@ -440,37 +441,79 @@ class AdmisionController {
             }
 
             const btn = document.getElementById('confirmarEnvio');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            
             if (btn) {
-                const textoOriginal = btn.textContent;
-                btn.textContent = 'Enviando...';
                 btn.disabled = true;
+                btn.textContent = '⏳ Enviando...';
+            }
+            
+            if (loadingOverlay) {
+                loadingOverlay.classList.add('active');
+            }
 
-                const datos = this.model.mapearDatosFormulario(this.view.form);
-                
-                console.log('📤 Enviando datos:', datos);
-                
-                // Aquí iría la llamada al backend
-                // const resultado = await enviarDatosAlServidor(datos);
-                
-                // Simulación de envío exitoso
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                btn.textContent = textoOriginal;
+            const datos = this.model.mapearDatosFormulario(this.view.form);
+            
+            // 🔥 MOSTRAR LOS DATOS COMPLETOS
+            console.log('📤 DATOS COMPLETOS A ENVIAR:');
+            console.log(JSON.stringify(datos, null, 2));
+            console.log('📌 NACIONALIDAD EXTRANJERA ID:', datos.nacionalidadExtranjeraId);
+            console.log('📌 NACIONALIDAD EXTRANJERA NOMBRE:', datos.nacionalidadExtranjera);
+            console.log('========================================');
+
+            const response = await fetch('guardar_aspirante.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(datos)
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                console.error('❌ Error del servidor:', text.substring(0, 200));
+                throw new Error('Error del servidor (status: ' + response.status + ')');
+            }
+
+            const resultado = await response.json();
+            console.log('📦 Respuesta:', resultado);
+
+            if (loadingOverlay) {
+                loadingOverlay.classList.remove('active');
+            }
+
+            if (btn) {
                 btn.disabled = false;
-                
+                btn.textContent = 'Confirmar envío';
+            }
+
+            if (resultado.success) {
                 this.view.mostrarBanner('exito');
-                alert('✅ Solicitud enviada con éxito. Pronto recibirás respuesta del INAOE.');
+                alert(`✅ ¡Solicitud enviada con éxito!\nID de registro: ${resultado.idAspirante || 'N/A'}`);
+                this.view.form.reset();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                this.view.mostrarBanner('error');
+                alert('❌ Error: ' + (resultado.error || 'Error desconocido'));
             }
             
         } catch (error) {
             console.error('❌ Error al enviar:', error);
-            alert('Error al enviar la solicitud. Por favor intenta de nuevo.');
+            
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.classList.remove('active');
+            }
             
             const btn = document.getElementById('confirmarEnvio');
             if (btn) {
                 btn.disabled = false;
                 btn.textContent = 'Confirmar envío';
             }
+            
+            this.view.mostrarBanner('error');
+            alert('❌ Error: ' + error.message);
         }
     }
 }
@@ -499,6 +542,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.view = view;
         
         console.log('✅ Aplicación inicializada correctamente');
+        console.log('📌 MÉXICO = ID 1, MEXICANA = ID 1');
     } catch (error) {
         console.error('❌ Error al inicializar:', error);
     }
